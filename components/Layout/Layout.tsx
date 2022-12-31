@@ -1,0 +1,21 @@
+import React from "react";
+import { SEO } from "@components/SEO";
+import { Header } from "@components/Header";
+
+type LayoutProps = {
+  children: React.ReactNode;
+  title: string;
+  className?: string;
+};
+
+const Layout: React.FC<LayoutProps> = ({ children, title, ...rest }) => {
+  return (
+    <>
+      <SEO title={title} />
+      <Header />
+      <div {...rest}>{children}</div>
+    </>
+  );
+};
+
+export default Layout;

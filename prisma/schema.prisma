@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String    @id @default(uuid())
+  name     String
+  finances Finance[]
+}
+
+model Finance {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  type      Type
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String?
+  amount    Int      @default(0)
+  color     String?  @default("#fff")
+  User      User?    @relation(fields: [userId], references: [id])
+}
+
+enum Type {
+  INCOME
+  EXPENSE
+}

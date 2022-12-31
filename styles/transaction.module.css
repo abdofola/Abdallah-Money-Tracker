@@ -1,0 +1,7 @@
+ .container {
+    @apply shadow-lg bg-rose-100;
+    width: min(35rem, 100%);
+ }
+ .iconButtons {
+    @apply w-full h-full p-2 rounded-md;
+ }
