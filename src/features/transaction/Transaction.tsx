@@ -3,9 +3,9 @@ import React from "react";
 import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
 import { DisplayAmount, Display, AddTransaction } from "@features/transaction";
-import { TransactionProps } from "./types";
+import { TransactionProps } from "@features/transaction/types";
 import { DateProvider } from "@components/contexts";
-import { transactionTypes, periods } from "./constants";
+import { transactionTypes, periods } from "@features/transaction/constants";
 
 
 // COMPONENT
