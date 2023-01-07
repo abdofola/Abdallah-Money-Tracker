@@ -27,11 +27,11 @@ const Donut: React.FC<DonutProps> = ({ data, donutInnerLabel }) => {
                 dy={0}
                 className="h-[40px] w-[50px] text-[7px] text-center text-gray-500"
               >
-                <p
+                <span
                   className="flex justify-center items-center h-full max-w-full leading-tight"
                 >
                   {donutInnerLabel}
-                </p>
+                </span>
               </foreignObject>
               <text x="50" y="50">
                 Your SVG viewer cannot display html.
