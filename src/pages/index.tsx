@@ -20,7 +20,7 @@ type HomeProps = {
 
 const Transaction = dynamic(
   () => import("@features/transaction").then(({ Transaction }) => Transaction),
-  { loading: () => "loading ..." }
+  { loading: () => "loading ...", ssr: false }
 );
 
 export const getServerSideProps: GetServerSideProps = async () => {
