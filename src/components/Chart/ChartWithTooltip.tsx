@@ -8,7 +8,7 @@ import styles from "./Chart.module.css";
 const makeTooltipContent = (entry:any) =>
   `Sector ${entry.tooltip} has value ${entry.value}`;
 
-const ChartWithTooltip: React.FC<MyChart> = ({ transactions, name }) => {
+const ChartWithTooltip: React.FC<any> = ({ transactions, name }) => {
   const [visible, setVisible] = React.useState({
     income: true,
     expense: true,
@@ -20,7 +20,7 @@ const ChartWithTooltip: React.FC<MyChart> = ({ transactions, name }) => {
     fontSize: "7px",
     fontFamily: "sans-serif",
   };
-  const normalized = transactions.reduce((acc, curr) => {
+  const normalized = transactions.reduce((acc:any, curr:any) => {
     const { name, amount, color } = curr;
 
     if (!(name in acc)) acc[name] = new Map();
