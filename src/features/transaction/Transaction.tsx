@@ -22,6 +22,7 @@ const AddTransaction = dynamic(
 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ data }) => {
+  console.log({data})
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
   const [display, setDisplay] = React.useState(true);
