@@ -5,7 +5,7 @@ import ReactTooltip from "react-tooltip";
 import styles from "./Chart.module.css";
 
 
-const makeTooltipContent = (entry) =>
+const makeTooltipContent = (entry:any) =>
   `Sector ${entry.tooltip} has value ${entry.value}`;
 
 const ChartWithTooltip: React.FC<MyChart> = ({ transactions, name }) => {
