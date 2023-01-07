@@ -29,7 +29,6 @@ const Donut: React.FC<DonutProps> = ({ data, donutInnerLabel }) => {
               >
                 <p
                   className="flex justify-center items-center h-full max-w-full leading-tight"
-                  xmlns="http://www.w3.org/1999/xhtml"
                 >
                   {donutInnerLabel}
                 </p>
