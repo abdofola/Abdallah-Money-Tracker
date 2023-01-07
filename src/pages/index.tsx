@@ -1,8 +1,9 @@
+import dynamic from "next/dynamic";
 import React from "react";
 import { GetServerSideProps } from "next";
 import { NextPageWithLayout } from "./_app";
 import { Layout } from "@components/Layout";
-import { Transaction } from "@features/transaction";
+// import { Transaction } from "@features/transaction";
 import { TransactionElement } from "@features/transaction/types";
 import styles from "../styles/Home.module.css";
 import { client } from "@lib/helpers";
@@ -17,24 +18,32 @@ type HomeProps = {
   initialValue: Transactions;
 };
 
+const Transaction = dynamic(
+  () => import("@features/transaction").then(({ Transaction }) => Transaction),
+  { loading: () => "loading ..." }
+);
+
 export const getServerSideProps: GetServerSideProps = async () => {
   let transactions: Transactions;
   return client("/transactions")
     .then((data) => {
-      transactions = data.data.reduce((acc, curr) => {
-        const { id, category, amount } = curr;
+      transactions = data.data.reduce(
+        (acc, curr) => {
+          const { id, category, amount } = curr;
 
-        acc[category.type].push({
-          ...curr,
-          key: id,
-          title: category.name,
-          value: Number(amount),
-          color: category.color,
-          amount: Number(amount),
-        });
+          acc[category.type].push({
+            ...curr,
+            key: id,
+            title: category.name,
+            value: Number(amount),
+            color: category.color,
+            amount: Number(amount),
+          });
 
-        return acc;
-      }, {income:[], expenses:[]} as Transactions);
+          return acc;
+        },
+        { income: [], expenses: [] } as Transactions
+      );
 
       return {
         props: {
