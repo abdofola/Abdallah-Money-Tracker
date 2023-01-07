@@ -1,10 +1,24 @@
+import dynamic from "next/dynamic";
 import React from "react";
 import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
-import { DisplayAmount, Display, AddTransaction } from "@features/transaction";
+import { DisplayAmount } from "@features/transaction";
 import { TransactionProps } from "./types";
 import { DateProvider } from "@components/contexts";
 import { transactionTypes, periods } from "./constants";
+
+const Display = dynamic(
+  () => import("@features/transaction").then(({ Display }) => Display),
+  { ssr: false }
+);
+
+const AddTransaction = dynamic(
+  () =>
+    import("@features/transaction").then(
+      ({ AddTransaction }) => AddTransaction
+    ),
+  { ssr: false }
+);
 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ data }) => {
