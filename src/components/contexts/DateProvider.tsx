@@ -12,6 +12,7 @@ const useDate = () => {
 };
 
 const DateProvider: React.FC<DateProviderProps> = ({ children, ...rest }) => {
+  console.log("DateProvider");
   return <DateContext.Provider value={rest}>{children}</DateContext.Provider>;
 };
 
