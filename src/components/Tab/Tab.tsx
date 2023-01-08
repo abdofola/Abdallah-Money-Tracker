@@ -56,11 +56,7 @@ const List: React.FC<TabItemsProps> = ({ tabs, renderTab, className }) => {
   );
 };
 
-const Tab: React.FC<TabProps> & Props = ({
-  className,
-  tab,
-  periodRef,
-}) => {
+const Tab: React.FC<TabProps> & Props = ({ className, tab, periodRef }) => {
   const { setSelected, onChange } = useTab();
   const { setItems } = React.useContext(ItemsContext) as TypeItemsContext;
 
@@ -93,14 +89,12 @@ const Tab: React.FC<TabProps> & Props = ({
   );
 };
 
-const Panels: React.FC<PanelsProps> = ({
-  children,
-  className,
-}) => {
+const Panels: React.FC<PanelsProps> = ({ children, className }) => {
   let id = 0;
   const renderedChildren = React.Children.toArray(children).map((child) => {
     let cloned;
-    if (child.type.name === "Panel") {
+
+    if (child.type.displayName === "Panel") {
       cloned = React.cloneElement(child, { id: id++ });
       return cloned;
     }
@@ -110,12 +104,17 @@ const Panels: React.FC<PanelsProps> = ({
   return <div className={className}>{renderedChildren}</div>;
 };
 
-const Panel: React.FC<{ children: React.ReactNode }> = ({ children, id }) => {
-  console.log({id})
+const Panel: React.FC<{ children: React.ReactNode; id: number }> = ({
+  children,
+  id,
+}) => {
+  console.log({ id });
   const { selectedIdx } = useTab();
-  if (id !== selectedIdx) return;
+  if (id !== selectedIdx) return <></>;
   return <div role="tabpanel">{children}</div>;
 };
+
+Panel.displayName = "Panel";
 
 const Wrapper = styled.div`
   position:relative;

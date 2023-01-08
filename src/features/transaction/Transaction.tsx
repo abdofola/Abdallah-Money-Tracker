@@ -41,7 +41,6 @@ const Transaction: React.FC<TransactionProps> = ({ data }) => {
     </Tab.Panel>
   ));
 
-  console.log({Panels})
   //prevent selecting multiple dates from date-picker when `period` tab not selected.
   if (selectedPeriod !== "period" && endDate) {
     setEndDate(null);
