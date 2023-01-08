@@ -17,6 +17,5 @@ export const api = createApi({
   }),
 });
 
-// console.log((api.endpoints.getCategories.select())(''))
 
 export const { useAddTransactionMutation, useGetTransactionsQuery } = api;

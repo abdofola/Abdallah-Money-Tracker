@@ -108,7 +108,6 @@ const Panel: React.FC<{ children: React.ReactNode; id: number }> = ({
   children,
   id,
 }) => {
-  console.log({ id });
   const { selectedIdx } = useTab();
   if (id !== selectedIdx) return <></>;
   return <div role="tabpanel">{children}</div>;

@@ -1,5 +1,5 @@
 export const enviroment = {
-  development: process.env.API_URL,
-  test: process.env.API_URL,
-  production: process.env.API_URL,
+  development: process.env.NEXT_PUBLIC_API,
+  test: process.env.NEXT_PUBLIC_API,
+  production: process.env.NEXT_PUBLIC_API,
 };
