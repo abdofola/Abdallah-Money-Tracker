@@ -67,7 +67,7 @@ const Tab: React.FC<TabProps> & Props = ({
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setSelected?.(Number(e.currentTarget.dataset["id"]));
     onChange?.(Number(e.currentTarget.dataset["id"]));
-    if (tab.txt === "period" && periodRef) periodRef.current.click();
+    if (tab.txt === "period" && periodRef) periodRef.current?.click();
   };
 
   return (
@@ -111,6 +111,7 @@ const Panels: React.FC<PanelsProps> = ({
 };
 
 const Panel: React.FC<{ children: React.ReactNode }> = ({ children, id }) => {
+  console.log({id})
   const { selectedIdx } = useTab();
   if (id !== selectedIdx) return;
   return <div role="tabpanel">{children}</div>;
