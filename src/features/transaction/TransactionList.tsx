@@ -10,13 +10,15 @@ const TransactionList: React.FC<TransactionListProps> = ({
   const [isScrollable, setIsScrollable] = React.useState(false);
   const [before, setBefore] = React.useState(false);
 
-  const handleScroll = () => {
-    if (ref && isScrollable) setBefore(ref.scrollTop > 0);
+  const handleScroll: React.UIEventHandler<HTMLUListElement> = (e) => {
+    if (ref && isScrollable) {
+      setBefore(ref.scrollTop > 0);
+    }
   };
   const refCallBack = (node: HTMLUListElement | null) => {
     if (node) {
       setRef(node);
-      setIsScrollable(node.scrollHeight > node.clientHeight ? true : false);
+      setIsScrollable(node.scrollHeight > node.clientHeight);
       setBefore(node.scrollTop > 0);
     } else {
       //clear

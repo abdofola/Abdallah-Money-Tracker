@@ -8,12 +8,12 @@ type LayoutProps = {
   className?: string;
 };
 
-const Layout: React.FC<LayoutProps> = ({ children, title, ...rest }) => {
+const Layout: React.FC<LayoutProps> = ({ children, title, ...style }) => {
   return (
     <>
       <SEO title={title} />
       <Header />
-      <div {...rest}>{children}</div>
+      <div {...style}>{children}</div>
     </>
   );
 };

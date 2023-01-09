@@ -5,9 +5,7 @@ import { Document, Home, Plus } from "@components/icons";
 import styles from "./Header.module.css";
 
 const getLinks = (props) => ({
-  create: { path: "/create", Icon: <Plus {...props} /> },
   home: { path: "/", Icon: <Home {...props} /> },
-  summary: { path: "/summary", Icon: <Document {...props} /> },
 });
 
 export default function Header() {

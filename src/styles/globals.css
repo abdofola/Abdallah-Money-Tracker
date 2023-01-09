@@ -2,30 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @layer components {
-  .grid-sm {
-    grid-template-areas:
-      "tab tab"
-      " income expense";
-    align-items: flex-start;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    grid-row-gap: 1rem;
-  }
-  .grid-lg {
-    grid-template-areas: "income tab tab expense";
-    grid-template-columns: repeat(4, 1fr);  
-  }
-  .tab {
-    grid-area: tab;
-  }
-  .income {
-    grid-area: income;
-  }
-  .expense {
-    grid-area: expense;
-  }
-} */
 
 html,
 body {
@@ -44,7 +20,7 @@ a {
   box-sizing: border-box;
 }
 body {
-  @apply bg-gray-50;
+  @apply bg-gray-50 pb-24;
 }
 .hideScrollBar::-webkit-scrollbar {
   width: 0;
@@ -52,6 +28,8 @@ body {
 .after::after,
 .before::before {
   content: "▼";
+  display: flex;
+  justify-content: center;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -60,18 +38,13 @@ body {
     rgb(255 255 255),
     rgb(255 255 255/0.75)
   );
-  text-align: center;
   color: rgb(0 0 0/0.35);
-  border-bottom-left-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
+  will-change: transform;
 }
 .before::before {
   content: "▲";
-  display: block;
-  position: sticky;
   top: 0;
+  bottom: unset;
   background-image: linear-gradient(180deg, rgb(255 255 255),rgb(255 255 255/0.75));
   border-radius: unset;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
 }

@@ -1,6 +1,5 @@
 .main {
-  @apply  min-h-screen;
-  padding: 4rem 0;
+  /* @apply  min-h-screen; */
 }
 .chartWrapper {
   width: 100%;

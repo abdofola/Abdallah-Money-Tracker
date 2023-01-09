@@ -148,7 +148,7 @@ const Display: React.FC<DisplayProps> = ({
       >
         <Tab.List
           tabs={periods}
-          className="flex justify-center font-medium gap-4 before:bg-gray-600"
+          className="flex justify-center gap-4 font-medium overflow-hidden before:bg-gray-600"
           renderTab={({ tab, isSelected }) => (
             <Tab
               key={tab.id}
@@ -185,7 +185,7 @@ const Display: React.FC<DisplayProps> = ({
         </Tab.Panels>
       </Tab.Group>
       <TransactionList
-        className="hideScrollBar relative w-full space-y-2 max-h-72 overflow-y-scroll"
+        className="hideScrollBar relative w-full space-y-2 max-h-72 rounded-lg overflow-y-scroll"
         data={mergedDuplicateData}
         renderItem={(item) => {
           const percentage = calculatePercentage(item.amount, total);
