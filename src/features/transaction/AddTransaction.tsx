@@ -136,7 +136,7 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
                       className="w-10 h-10 "
                     />
                   </span>
-                  <span className="text-sm capitalize">{name}</span>
+                  <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">{name}</span>
                   <input
                     className="appearance-none"
                     id={iconId}

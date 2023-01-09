@@ -30,7 +30,7 @@ body {
   content: "▼";
   display: flex;
   justify-content: center;
-  position: absolute;
+  position: sticky;
   bottom: 0;
   width: 100%;
   background-image: linear-gradient(

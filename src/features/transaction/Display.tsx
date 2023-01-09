@@ -185,7 +185,7 @@ const Display: React.FC<DisplayProps> = ({
         </Tab.Panels>
       </Tab.Group>
       <TransactionList
-        className="hideScrollBar relative w-full space-y-2 max-h-72 rounded-lg overflow-y-scroll"
+        className="hideScrollBar relative w-full space-y-2 max-h-72 rounded-lg overflow-y-auto"
         data={mergedDuplicateData}
         renderItem={(item) => {
           const percentage = calculatePercentage(item.amount, total);
