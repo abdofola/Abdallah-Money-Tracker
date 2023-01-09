@@ -118,7 +118,7 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
                   htmlFor={iconId}
                   onClick={() => setSelectedId(id)}
                   className={`relative flex flex-col items-center -mx-2 rounded-md cursor-pointer ${
-                    selectedId === id ? "shadow" : ""
+                    selectedId === id ? "bg-gray-100 shadow-inner" : ""
                   }`}
                 >
                   <span
