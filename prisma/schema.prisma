@@ -8,24 +8,48 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(uuid())
-  name     String
-  finances Finance[]
+  id           String        @id @default(uuid())
+  name         String?
+  email        String        @unique
+  transactions Transaction[]
+  categories   Category[]
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
-model Finance {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  type      Type
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String?
-  amount    Int      @default(0)
-  color     String?  @default("#fff")
-  User      User?    @relation(fields: [userId], references: [id])
+model Transaction {
+  id         String   @id @default(uuid())
+  userId     String
+  amount     Int
+  date       DateTime
+  comment    String?
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String   
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Category {
+  id          String       @id @default(uuid())
+  type        Type
+  name        String
+  color       String
+  iconId      String
+  userId      String
+  transactions Transaction[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  User        User         @relation(fields: [userId], references: [id])
 }
 
 enum Type {
-  INCOME
-  EXPENSE
+  income
+  expenses
+}
+
+enum Role {
+  ADMIN
+  USER
 }

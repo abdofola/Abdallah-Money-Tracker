@@ -49,10 +49,10 @@ const Transaction: React.FC<TransactionProps> = ({ data }) => {
   return (
     <div className="flex flex-col items-center gap-4 max-w-[95%] w-[25rem] mx-auto">
       <div className="flex items-end">
-        <Money className="w-5 h-5" stroke="rgb(0 0 0/0.3)" />
+        <Money className="w-5 h-5 stroke-gray-400" />
         <DisplayAmount
           amount={total}
-          className="mr-3 font-serif font-medium text-gray-700"
+          className="mr-3 font-medium text-gray-700"
         />
         <span className="text-gray-400">total</span>
       </div>

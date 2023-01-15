@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Document, Home, Plus } from "@components/icons";
+import {  Home } from "@components/icons";
 import styles from "./Header.module.css";
 
 const getLinks = (props) => ({

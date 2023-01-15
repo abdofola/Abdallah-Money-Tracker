@@ -51,7 +51,7 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
   const reset = () => {
     setSelectedId(null);
     setAmountValue("");
-    setDate((prevState) => prevState);
+    setDate(new Date());
     setComment("");
   };
   const refetchData = () => {
@@ -61,11 +61,12 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
+    console.log(Object.fromEntries(formData));
 
     addTransaction({ ...Object.fromEntries(formData), date, category })
       .unwrap()
       .then((payload) => {
-        console.log({ payload });
+        // console.log({ payload });
         refetchData();
         reset();
       })
@@ -136,7 +137,9 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
                       className="w-10 h-10 "
                     />
                   </span>
-                  <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">{name}</span>
+                  <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
+                    {name}
+                  </span>
                   <input
                     className="appearance-none"
                     id={iconId}
@@ -193,11 +196,7 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
         >
           add
         </button>
-        <button
-          className="border p-1 rounded-lg"
-          type="reset"
-          onClick={() => setSelectedId(null)}
-        >
+        <button className="border p-1 rounded-lg" type="reset" onClick={reset}>
           reset
         </button>
         <button

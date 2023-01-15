@@ -19,12 +19,16 @@
       "@components/*": ["src/components/*"],
       "@api": ["src/lib/api"],
       "@lib/*": ["src/lib/*"],
-      "@features/*":["src/features/*"],
-      "@services":["src/app/services"],
-      "@app/*":["src/app/*"]
-
+      "@features/*": ["src/features/*"],
+      "@services": ["src/app/services"],
+      "@app/*": ["src/app/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  }
 }

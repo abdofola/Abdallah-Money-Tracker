@@ -77,7 +77,7 @@ const Home: NextPageWithLayout<HomeProps> = ({
 };
 
 Home.Layout = function getLayout(page) {
-  return <Layout title="home">{page}</Layout>;
+  return <Layout title="home" className="p-2">{page}</Layout>;
 };
 
 export default Home;

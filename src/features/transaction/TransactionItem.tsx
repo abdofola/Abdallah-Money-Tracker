@@ -7,9 +7,6 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   percentage,
 }) => {
   const { id, amount, category } = item;
-  const comment = item.comment
-    ? item.comment.substring(0, 25).concat("...")
-    : "";
 
   return (
     <li
