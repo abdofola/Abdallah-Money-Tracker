@@ -2,6 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -25,23 +29,23 @@ model Transaction {
   date       DateTime
   comment    String?
   category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String   
+  categoryId String
   user       User     @relation(fields: [userId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
 
 model Category {
-  id          String       @id @default(uuid())
-  type        Type
-  name        String
-  color       String
-  iconId      String
-  userId      String
+  id           String        @id @default(uuid())
+  type         Type
+  name         String
+  color        String
+  iconId       String
+  userId       String
   transactions Transaction[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  User        User         @relation(fields: [userId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  User         User          @relation(fields: [userId], references: [id])
 }
 
 enum Type {
