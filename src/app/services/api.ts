@@ -1,5 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { TransactionElement } from "@features/transaction/types";
+import { gql } from 'graphql-request'
+import {graphqlRequestBaseQuery} from '@rtk-query/graphql-request-base-query'
+
 
 export const api = createApi({
   reducerPath: "api",

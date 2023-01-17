@@ -1,14 +1,12 @@
 import { builder } from "../builder";
 
-builder.prismaObject("Category", {
+builder.prismaObject("Transaction", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    type: t.exposeString("type"),
-    name: t.exposeString("name"),
-    color: t.exposeString("color"),
-    iconId: t.exposeString("iconId"),
+    amount: t.exposeInt("amount"),
+    category: t.relation("category"),
+    date: t.expose("date", { type: "Date" }),
     createdAt: t.expose("createdAt", { type: "Date" }),
     updatedAt: t.expose("createdAt", { type: "Date" }),
-
-}),
+  }),
 });

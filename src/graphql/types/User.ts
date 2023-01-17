@@ -16,10 +16,16 @@ builder.prismaObject("User", {
 
 builder.queryField("user", (t) =>
   t.prismaField({
-    type: ["User"],
-    resolve: async (query, root, args, ctx, info) => {
-      return prisma.user.findMany({ ...query });
+    type: "User",
+    args: {
+      id: t.arg.string(),
+    },
+    resolve: async (query, _root, args, ctx, info) => {
+      //TODO: replace findMany with findUnique
+      return prisma.user.findUniqueOrThrow({
+        ...query,
+        where: { id: args.id! },
+      });
     },
   })
 );
-
