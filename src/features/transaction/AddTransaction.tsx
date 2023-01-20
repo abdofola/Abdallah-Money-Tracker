@@ -3,20 +3,14 @@ import { useRouter } from "next/router";
 import { Check, Icon } from "@components/icons";
 import DateSelection from "./DateSelection";
 import { AddTransactionProps } from "./types";
-import {
-  selectCategoryById,
-  useAddTransactionMutation,
-  useGetCategoriesQuery,
-} from "@services";
-import { useAppSelector } from "@app/hooks";
-import { Category } from "./types";
+import { useAddTransactionMutation } from "@services";
 
-type TransformedState<T> = {
-  income: T[];
-  expenses: T[];
-};
 
-function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
+function AddTransaction({
+  categories,
+  displayOn,
+  transactionType,
+}: AddTransactionProps) {
   const amountRef = React.useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const [date, setDate] = React.useState(new Date());
@@ -24,29 +18,9 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
   const [amountValue, setAmountValue] = React.useState("");
   const [comment, setComment] = React.useState("");
   const [selectedTransaction, setSelectedTransaction] =
-    React.useState(transactionType);
-  const {
-    data = { ids: [], entities: {} },
-    isLoading,
-    isSuccess,
-    isError,
-    error,
-  } = useGetCategoriesQuery();
-  const categories = React.useMemo(() => {
-    const { ids, entities } = data;
-    return ids.reduce((acc, curr) => {
-      const { type } = entities[curr]!;
-      if (!(type in acc)) {
-        acc[type] = [];
-      }
-      acc[type].push(entities[curr]!);
-      return acc;
-    }, {} as TransformedState<Category>);
-  }, [data]);
+    React.useState(transactionType); // `transactionType` is mirrored in a state; in order to know when `transactionType` changes. Note:useRef doesn't do the job.
+
   const [addTransaction, { isLoading: loading }] = useAddTransactionMutation();
-  const category = useAppSelector((state) =>
-    selectCategoryById(state, selectedId as string)
-  );
   const canAdd = !loading && selectedId && amountValue;
   const reset = () => {
     setSelectedId(null);
@@ -63,7 +37,12 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
     const formData = new FormData(form);
     console.log(Object.fromEntries(formData));
 
-    addTransaction({ ...Object.fromEntries(formData), date, category })
+    addTransaction({
+      ...Object.fromEntries(formData),
+      amount: Number(amountValue),
+      date,
+      userId: null,
+    })
       .unwrap()
       .then((payload) => {
         // console.log({ payload });
@@ -77,7 +56,7 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
     amountRef.current?.focus();
   }, []);
 
-  // resetting the selectedIndex when switching between tabs.
+  // resetting the selectedId when switching between tabs.
   if (selectedTransaction !== transactionType) {
     setSelectedId(null);
     setSelectedTransaction(transactionType);
@@ -108,54 +87,51 @@ function AddTransaction({ displayOn, transactionType }: AddTransactionProps) {
       {/* categories */}
       <div className="flex flex-col gap-1">
         <span className="text-gray-400">categories</span>
-        {isLoading && <p>loading...</p>}
-        {isError && <p>{error.error}</p>}
         <div className="grid grid-cols-4 gap-4">
-          {isSuccess &&
-            categories[selectedTransaction].map(
-              ({ iconId, id, color, name }) => (
-                <label
-                  key={iconId}
-                  htmlFor={iconId}
-                  onClick={() => setSelectedId(id)}
-                  className={`relative flex flex-col items-center -mx-2 rounded-md cursor-pointer ${
-                    selectedId === id ? "bg-gray-100 shadow-inner" : ""
+          {categories[selectedTransaction].map(
+            ({ iconId, id, color, name }) => (
+              <label
+                key={iconId}
+                htmlFor={iconId}
+                onClick={() => setSelectedId(id)}
+                className={`relative flex flex-col items-center -mx-2 rounded-md cursor-pointer ${
+                  selectedId === id ? "bg-gray-100 shadow-inner" : ""
+                }`}
+              >
+                <span
+                  style={{
+                    borderBottom: `4px solid ${
+                      selectedId !== id ? color : "transparent"
+                    }`,
+                  }}
+                  className={`p-2 ${
+                    selectedId !== id ? `rounded-full shadow-sm` : ""
                   }`}
                 >
-                  <span
-                    style={{
-                      borderBottom: `4px solid ${
-                        selectedId !== id ? color : "transparent"
-                      }`,
-                    }}
-                    className={`p-2 ${
-                      selectedId !== id ? `rounded-full shadow-sm` : ""
-                    }`}
-                  >
-                    <Icon
-                      href={`/${selectedTransaction}/sprite.svg#${iconId}`}
-                      className="w-10 h-10 "
-                    />
-                  </span>
-                  <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
-                    {name}
-                  </span>
-                  <input
-                    className="appearance-none"
-                    id={iconId}
-                    type="radio"
-                    name="category"
-                    value={name}
-                    defaultChecked={selectedId === id}
+                  <Icon
+                    href={`/${selectedTransaction}/sprite.svg#${iconId}`}
+                    className="w-10 h-10 "
                   />
-                  {selectedId === id && (
-                    <span className="absolute right-1 top-1 p-px border border-green-400 bg-green-100 rounded-full">
-                      <Check className="w-3 h-3 fill-green-600" />
-                    </span>
-                  )}
-                </label>
-              )
-            )}
+                </span>
+                <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
+                  {name}
+                </span>
+                <input
+                  className="appearance-none"
+                  id={iconId}
+                  type="radio"
+                  name="categoryId"
+                  value={id}
+                  // defaultChecked={selectedId === id}
+                />
+                {selectedId === id && (
+                  <span className="absolute right-1 top-1 p-px border border-green-400 bg-green-100 rounded-full">
+                    <Check className="w-3 h-3 fill-green-600" />
+                  </span>
+                )}
+              </label>
+            )
+          )}
         </div>
       </div>
       {/* date */}

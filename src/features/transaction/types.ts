@@ -1,6 +1,10 @@
 import React, { SetStateAction } from "react";
 import { ReactDatePickerProps } from "react-datepicker";
 
+type Transform<T> = {
+  income: T[];
+  expenses: T[];
+};
 type PeriodType = "day" | "week" | "month" | "year" | "period";
 type TransactionType = "income" | "expenses";
 type Category = {
@@ -31,7 +35,10 @@ type FilterTransactions = ({
 
 // COMPONENTS
 type TransactionProps = {
-  data: { [key in TransactionType]: TransactionElement[] };
+  user: {
+    transactions: Transform<TransactionElement>;
+    categories: Transform<Category>;
+  };
 };
 type DisplayProps = {
   transactionType: TransactionType;
@@ -86,5 +93,6 @@ export type {
   AddTransactionProps,
   Category,
   TransactionItemProps,
-  TransactionListProps
+  TransactionListProps,
+  Transform
 };

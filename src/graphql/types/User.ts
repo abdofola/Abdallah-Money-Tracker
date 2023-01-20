@@ -1,5 +1,5 @@
 import { builder } from "../builder";
-import prisma from "@lib/prisma";
+import { categories } from "prisma/seed";
 
 builder.prismaObject("User", {
   fields: (t) => ({
@@ -18,13 +18,34 @@ builder.queryField("user", (t) =>
   t.prismaField({
     type: "User",
     args: {
-      id: t.arg.string(),
+      email: t.arg.string({ required: true }),
     },
-    resolve: async (query, _root, args, ctx, info) => {
-      //TODO: replace findMany with findUnique
-      return prisma.user.findUniqueOrThrow({
+    resolve: async (query, _root, args, ctx, _info) => {
+      return ctx.prisma.user.findUniqueOrThrow({
         ...query,
-        where: { id: args.id! },
+        where: { id: args.email },
+      });
+    },
+  })
+);
+
+builder.mutationField("addUser", (t) =>
+  t.prismaField({
+    type: "User",
+    args: { email: t.arg.string({ required: true }) },
+    resolve: async (query, _root, args, ctx, _info) => {
+      if (ctx.user && ctx.user.email) {
+        throw new Error(`email '${ctx.user.email}' already exists!`);
+      }
+      
+      return ctx.prisma.user.create({
+        ...query,
+        data: {
+          email: args.email,
+          categories: {
+            create: categories,
+          },
+        },
       });
     },
   })

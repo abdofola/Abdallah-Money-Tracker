@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import React from "react";
 import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
@@ -7,23 +6,23 @@ import { TransactionProps } from "@features/transaction/types";
 import { DateProvider } from "@components/contexts";
 import { transactionTypes, periods } from "@features/transaction/constants";
 
-
 // COMPONENT
-const Transaction: React.FC<TransactionProps> = ({ data }) => {
+const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
   const [display, setDisplay] = React.useState(true);
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState<Date | null>(null);
-  const total = data[transactionTypes[transactionIdx]["txt"]].reduce(
+  const selectedTransaction = transactionTypes[transactionIdx]["txt"];
+  const selectedPeriod = periods[periodIdx]["txt"];
+  const total = user.transactions[selectedTransaction].reduce(
     (acc, curr) => acc + curr.amount,
     0
   );
   const dates = { startDate, endDate, setStartDate, setEndDate };
-  const selectedPeriod = periods[periodIdx]["txt"];
   const Panels = transactionTypes.map((t) => (
     <Tab.Panel key={t.id}>
-      <DateProvider data={data[t.txt]} {...dates}>
+      <DateProvider data={user.transactions[t.txt]} {...dates}>
         {display ? (
           <Display
             transactionType={t.txt}
@@ -33,6 +32,7 @@ const Transaction: React.FC<TransactionProps> = ({ data }) => {
           />
         ) : (
           <AddTransaction
+            categories={user.categories}
             transactionType={t.txt}
             displayOn={() => setDisplay(true)}
           />
