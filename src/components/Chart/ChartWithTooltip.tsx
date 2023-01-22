@@ -1,4 +1,3 @@
-import { safeId } from "@lib/helpers";
 import React from "react";
 import { PieChart } from "react-minimal-pie-chart";
 import ReactTooltip from "react-tooltip";
