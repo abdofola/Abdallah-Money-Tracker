@@ -7,7 +7,7 @@ import { useAddTransactionMutation } from "@services";
 
 
 function AddTransaction({
-  categories,
+  user,
   displayOn,
   transactionType,
 }: AddTransactionProps) {
@@ -41,11 +41,11 @@ function AddTransaction({
       ...Object.fromEntries(formData),
       amount: Number(amountValue),
       date,
-      userId: null,
+      userId: user.id,
     })
       .unwrap()
       .then((payload) => {
-        // console.log({ payload });
+        console.log({ payload });
         refetchData();
         reset();
       })
@@ -88,7 +88,7 @@ function AddTransaction({
       <div className="flex flex-col gap-1">
         <span className="text-gray-400">categories</span>
         <div className="grid grid-cols-4 gap-4">
-          {categories[selectedTransaction].map(
+          {user.categories[selectedTransaction].map(
             ({ iconId, id, color, name }) => (
               <label
                 key={iconId}

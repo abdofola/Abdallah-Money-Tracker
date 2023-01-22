@@ -1,5 +1,6 @@
+import { fetchJson } from "@lib/utils";
+import { User } from "@prisma/client";
 import { builder } from "../builder";
-import { categories } from "prisma/seed";
 
 builder.prismaObject("User", {
   fields: (t) => ({
@@ -23,7 +24,7 @@ builder.queryField("user", (t) =>
     resolve: async (query, _root, args, ctx, _info) => {
       return ctx.prisma.user.findUniqueOrThrow({
         ...query,
-        where: { id: args.email },
+        where: { email: args.email },
       });
     },
   })
@@ -33,20 +34,25 @@ builder.mutationField("addUser", (t) =>
   t.prismaField({
     type: "User",
     args: { email: t.arg.string({ required: true }) },
-    resolve: async (query, _root, args, ctx, _info) => {
-      if (ctx.user && ctx.user.email) {
-        throw new Error(`email '${ctx.user.email}' already exists!`);
+    // @ts-ignore
+    resolve: async (_query, _root, args, _ctx, _info) => {
+      /**
+       * this resolver represents a wrapper around
+       * the endpoint /api/signup
+       */
+      try {
+        const user = await fetchJson<User>("http://localhost:3000/api/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(args),
+        });
+
+        console.log({ user });
+
+        return user;
+      } catch (error) {
+        throw error;
       }
-      
-      return ctx.prisma.user.create({
-        ...query,
-        data: {
-          email: args.email,
-          categories: {
-            create: categories,
-          },
-        },
-      });
     },
   })
 );

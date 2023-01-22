@@ -1,2 +1,2 @@
-export { client } from "./fetchWrapper";
+export { fetchJson } from "./fetchWrapper";
 export { myDate } from "./dates";

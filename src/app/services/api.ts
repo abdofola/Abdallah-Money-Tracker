@@ -8,7 +8,7 @@ interface User extends UserPrisma {
   transactions: TransactionElement[];
   categories: Category[];
 }
-type Response = { user: User };
+type UserResponse = { user: User };
 
 export const api = createApi({
   reducerPath: "api",
@@ -42,7 +42,7 @@ export const api = createApi({
         variables: { amount, date, categoryId, userId, comment },
       }),
     }),
-    getUser: builder.query<Response, { email: string }>({
+    getUser: builder.query<UserResponse, { email: string }>({
       query: ({ email }) => ({
         document: gql`
           query GetUser($email: String!) {
@@ -76,13 +76,32 @@ export const api = createApi({
         variables: { email },
       }),
     }),
-    addUser:builder.mutation<Response, {email:string}>({
-        query:({email})=>({
-            document:gql``,
-            variables:{email}
-        })
-    })
+    addUser: builder.mutation<UserResponse, { email: string }>({
+      query: ({ email }) => ({
+        document: gql`
+          mutation Adduser($email: String!) {
+            addUser(email: $email) {
+              id
+              email
+              role
+              categories {
+                id
+                type
+                name
+                color
+                iconId
+              }
+            }
+          }
+        `,
+        variables: { email },
+      }),
+    }),
   }),
 });
 
-export const { useAddTransactionMutation, useGetUserQuery } = api;
+export const {
+  useAddTransactionMutation,
+  useGetUserQuery,
+  useAddUserMutation,
+} = api;

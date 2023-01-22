@@ -32,7 +32,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
           />
         ) : (
           <AddTransaction
-            categories={user.categories}
+            user={user}
             transactionType={t.txt}
             displayOn={() => setDisplay(true)}
           />

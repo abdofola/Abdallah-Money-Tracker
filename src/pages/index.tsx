@@ -23,13 +23,13 @@ const Transaction = dynamic(
   }
 );
 
-export const getServerSideProps = withSessionSsr(async ({ req, res }) => {
+export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { session } = req;
-  
+
   console.log({ session });
-  if (!session)
-    return { redirect: { permanent: false, destination: "/login" } };
-  return { props: { session: session.user, accessToken: session.accessToken } };
+  if (!session.user)
+    return { redirect: { permanent: false, destination: "/signup" } };
+  return { props: { session: session.user } };
 });
 
 // COMPONENT
@@ -49,7 +49,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 
   if (isSuccess) {
     // transforming the response array into object
-    // using regular for loop instead of reduce cuz performance reasons
+    // using regular for loop instead of `Array.prototype.reduce` cuz performance reasons.
     const categories = { income: [], expenses: [] };
     for (const cat of data.user.categories) {
       categories[cat.type].push(cat);
@@ -65,6 +65,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
     }
     user.transactions = transactions;
     user.categories = categories;
+    user.id = session.id;
   }
 
   console.log({ user, session });
@@ -79,7 +80,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 //page layout
 Home.Layout = function getLayout(page) {
   return (
-    <Layout title="home" className="p-2">
+    <Layout title="home" className="p-2" withHeader>
       {page}
     </Layout>
   );

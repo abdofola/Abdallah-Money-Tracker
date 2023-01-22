@@ -5,14 +5,20 @@ import { Header } from "@components/Header";
 type LayoutProps = {
   children: React.ReactNode;
   title: string;
-  className?: string;
+  withHeader?: boolean;
+  [key: string]: any;
 };
 
-const Layout: React.FC<LayoutProps> = ({ children, title, ...style }) => {
+const Layout: React.FC<LayoutProps> = ({
+  children,
+  title,
+  withHeader = false,
+  ...style
+}) => {
   return (
     <>
       <SEO title={title} />
-      <Header />
+      {withHeader && <Header />}
       <div {...style}>{children}</div>
     </>
   );
