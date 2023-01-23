@@ -28,8 +28,8 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
   console.log({ session });
   if (!session.user)
-    return { redirect: { permanent: false, destination: "/signup" } };
-  return { props: { session: session.user } };
+    // return { redirect: { permanent: false, destination: "/signup" } };
+    return { props: { session: session.user } };
 });
 
 // COMPONENT
@@ -78,12 +78,14 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 };
 
 //page layout
-Home.Layout = function getLayout(page) {
+Home.Layout = (page) => {
   return (
     <Layout title="home" className="p-2" withHeader>
       {page}
-    </Layout>
+    </Layout> 
   );
 };
+
+Home.Layout.displayName = Layout;
 
 export default Home;

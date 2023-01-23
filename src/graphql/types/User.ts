@@ -47,8 +47,6 @@ builder.mutationField("addUser", (t) =>
           body: JSON.stringify(args),
         });
 
-        console.log({ user });
-
         return user;
       } catch (error) {
         throw error;

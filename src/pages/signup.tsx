@@ -16,9 +16,8 @@ const Signup: NextPageWithLayout = () => {
     e.preventDefault();
     try {
       const user = await addUser({ email }).unwrap();
-      console.log({ user });
       dispatch(setCredentials(user));
-      router.push("/");
+      // router.push("/");
     } catch (error) {
       console.log({ error });
     }
@@ -42,9 +41,10 @@ const Signup: NextPageWithLayout = () => {
 };
 
 // page layout
-// eslint-disable-next-line react/display-name
 Signup.Layout = (page) => {
   return <Layout title="signup">{page}</Layout>;
 };
+
+Signup.Layout.displayName = Signup;
 
 export default Signup;

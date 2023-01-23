@@ -5,16 +5,15 @@ import { Prisma } from "@prisma/client";
 
 export default withSessionRoute(async function signupRoute(req, res) {
   const { email } = req.body;
-  console.log("-----restApi------->", { email });
   try {
     if (email) {
       const user = await prisma.user.create({
         data: { email, categories: { create: categories } },
         // include:{categories:true, transactions:true}
       });
-      req.session.user = { ...user };
+      req.session.user = user;
       // save the session
-      // await req.session.save();
+      await req.session.save();
       console.log({session:req.session})
       return res.status(200).json(user);
     } else {
