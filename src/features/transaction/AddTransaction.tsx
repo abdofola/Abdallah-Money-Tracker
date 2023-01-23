@@ -1,5 +1,4 @@
 import React from "react";
-import { useRouter } from "next/router";
 import { Check, Icon } from "@components/icons";
 import DateSelection from "./DateSelection";
 import { AddTransactionProps } from "./types";
@@ -12,7 +11,6 @@ function AddTransaction({
   transactionType,
 }: AddTransactionProps) {
   const amountRef = React.useRef<HTMLInputElement | null>(null);
-  const router = useRouter();
   const [date, setDate] = React.useState(new Date());
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [amountValue, setAmountValue] = React.useState("");
@@ -27,9 +25,6 @@ function AddTransaction({
     setAmountValue("");
     setDate(new Date());
     setComment("");
-  };
-  const refetchData = () => {
-    return router.replace(router.asPath);
   };
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -46,7 +41,6 @@ function AddTransaction({
       .unwrap()
       .then((payload) => {
         console.log({ payload });
-        refetchData();
         reset();
       })
       .catch((error) => console.log({ error }));

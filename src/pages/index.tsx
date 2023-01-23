@@ -8,6 +8,7 @@ import { useGetUserQuery } from "@services";
 import { Transaction, Category } from "@prisma/client";
 import styles from "../styles/Home.module.css";
 import { withSessionSsr } from "@lib/session";
+import { useAuth } from "@lib/helpers/hooks";
 
 type HomeProps = {
   session?: { email: String; [k: string]: any };
@@ -27,17 +28,19 @@ export const getServerSideProps = withSessionSsr(
   async function getServerSideProps({ req }) {
     const { session } = req;
 
-    console.log({ session });
+    console.log("getServerSideProps", { session });
     // if (!session.user)
     //   return { redirect: { permanent: false, destination: "/signup" } };
-    return { props: { session: session.user } };
+    return { props: {} };
   }
 );
 
 // COMPONENT
-const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
+const Home: NextPageWithLayout<HomeProps> = () => {
+  const {user: auth} = useAuth();
+  console.log({auth})
   const { data, isLoading, isSuccess, error } = useGetUserQuery({
-    email: session?.email,
+    email: auth?.email,
   });
   const user: {
     transactions: Transform<Transaction>;
@@ -58,19 +61,18 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
     }
     const transactions = { income: [], expenses: [] };
     for (const trans of data.user.transactions) {
-      categories[trans.category.type].push({
+      transactions[trans.category.type].push({
         ...trans,
-        key: curr.id,
+        key: trans.id,
         color: trans.category.color,
         value: trans.amount,
       });
     }
     user.transactions = transactions;
     user.categories = categories;
-    user.id = session.id;
+    user.id = auth?.id;
   }
 
-  console.log({ user, session });
   return (
     <main className={styles.main}>
       {isLoading && <h1>loading...</h1>}

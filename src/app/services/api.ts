@@ -8,7 +8,7 @@ interface User extends UserPrisma {
   transactions: TransactionElement[];
   categories: Category[];
 }
-type UserResponse = { user: User };
+type UserResponse = { addUser: { user: User } };
 
 export const api = createApi({
   reducerPath: "api",
@@ -41,6 +41,7 @@ export const api = createApi({
         `,
         variables: { amount, date, categoryId, userId, comment },
       }),
+      invalidatesTags: ["transactions"],
     }),
     getUser: builder.query<UserResponse, { email: string }>({
       query: ({ email }) => ({
@@ -75,6 +76,7 @@ export const api = createApi({
         `,
         variables: { email },
       }),
+      providesTags: ["transactions"],
     }),
     addUser: builder.mutation<UserResponse, { email: string }>({
       query: ({ email }) => ({
@@ -98,6 +100,7 @@ export const api = createApi({
       }),
     }),
   }),
+  tagTypes: ["transactions"],
 });
 
 export const {

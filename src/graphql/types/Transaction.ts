@@ -23,8 +23,8 @@ builder.mutationField("addTransaction", (t) =>
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
-      if (!ctx.user)
-        throw new Error(`you need to signin to create your transaction!`);
+      // if (!ctx.user)
+      //   throw new Error(`you need to signin to create your transaction!`);
 
       return await ctx.prisma.transaction.create({
         data: {

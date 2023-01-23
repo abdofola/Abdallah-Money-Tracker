@@ -16,7 +16,8 @@ const Signup: NextPageWithLayout = () => {
     e.preventDefault();
     try {
       const user = await addUser({ email }).unwrap();
-      dispatch(setCredentials(user));
+      dispatch(setCredentials(user.addUser));
+      console.log('payload',{user})
       router.push("/");
     } catch (error) {
       console.log({ error });
