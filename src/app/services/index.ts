@@ -1,2 +1,2 @@
-export { useAddTransactionMutation, useGetTransactionsQuery,useGetUserQuery } from "./api";
+export { useAddTransactionMutation,useGetUserQuery, useAddUserMutation } from "./api";
 export { useGetCategoriesQuery, selectCategoryById } from "./categories";

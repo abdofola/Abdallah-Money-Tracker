@@ -1,7 +1,7 @@
 import React from "react";
 import { NextPageWithLayout } from "./_app";
 import { useAppDispatch } from "@app/hooks";
-import { useAddUserMutation } from "@app/services/api";
+import { useAddUserMutation } from "@app/services";
 import { Layout } from "@components/Layout";
 import { setCredentials } from "@features/auth";
 import { useRouter } from "next/router";
@@ -17,7 +17,7 @@ const Signup: NextPageWithLayout = () => {
     try {
       const user = await addUser({ email }).unwrap();
       dispatch(setCredentials(user));
-      // router.push("/");
+      router.push("/");
     } catch (error) {
       console.log({ error });
     }
@@ -45,6 +45,6 @@ Signup.Layout = (page) => {
   return <Layout title="signup">{page}</Layout>;
 };
 
-Signup.Layout.displayName = Signup;
+Signup.Layout.displayName = "Signup";
 
 export default Signup;

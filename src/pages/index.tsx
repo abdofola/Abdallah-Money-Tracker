@@ -23,14 +23,16 @@ const Transaction = dynamic(
   }
 );
 
-export const getServerSideProps = withSessionSsr(async ({ req }) => {
-  const { session } = req;
+export const getServerSideProps = withSessionSsr(
+  async function getServerSideProps({ req }) {
+    const { session } = req;
 
-  console.log({ session });
-  if (!session.user)
-    // return { redirect: { permanent: false, destination: "/signup" } };
+    console.log({ session });
+    // if (!session.user)
+    //   return { redirect: { permanent: false, destination: "/signup" } };
     return { props: { session: session.user } };
-});
+  }
+);
 
 // COMPONENT
 const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
@@ -82,10 +84,10 @@ Home.Layout = (page) => {
   return (
     <Layout title="home" className="p-2" withHeader>
       {page}
-    </Layout> 
+    </Layout>
   );
 };
 
-Home.Layout.displayName = Layout;
+Home.Layout.displayName = "Layout";
 
 export default Home;

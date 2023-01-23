@@ -10,7 +10,7 @@ import { User } from "@prisma/client";
 
 export const sessionOptions: IronSessionOptions = {
   password: process.env.SECRET_COOKIE_PASSWORD as string,
-  cookieName: "money-flow",
+  cookieName: "money-management",
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
   },
