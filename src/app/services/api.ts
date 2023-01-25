@@ -8,7 +8,8 @@ interface User extends UserPrisma {
   transactions: TransactionElement[];
   categories: Category[];
 }
-type UserResponse = { addUser: { user: User } };
+type UserResponse = { addUser: UserPrisma };
+type NestedUserResponse = {user : User}
 
 export const api = createApi({
   reducerPath: "api",
@@ -43,7 +44,7 @@ export const api = createApi({
       }),
       invalidatesTags: ["transactions"],
     }),
-    getUser: builder.query<UserResponse, { email: string }>({
+    getUser: builder.query<NestedUserResponse, { email: string }>({
       query: ({ email }) => ({
         document: gql`
           query GetUser($email: String!) {
@@ -86,13 +87,6 @@ export const api = createApi({
               id
               email
               role
-              categories {
-                id
-                type
-                name
-                color
-                iconId
-              }
             }
           }
         `,

@@ -40,7 +40,7 @@ function AddTransaction({
     })
       .unwrap()
       .then((payload) => {
-        console.log({ payload });
+        // console.log({ payload });
         reset();
       })
       .catch((error) => console.log({ error }));

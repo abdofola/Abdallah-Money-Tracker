@@ -9,12 +9,12 @@ export default withSessionRoute(async function signupRoute(req, res) {
     if (email) {
       const user = await prisma.user.create({
         data: { email, categories: { create: categories } },
-        // include:{categories:true, transactions:true}
       });
       req.session.user = user;
       // save the session
       await req.session.save();
-      console.log({session:req.session})
+      console.log('----apiRoute---->',{session:req.session})
+      
       return res.status(200).json(user);
     } else {
       return res.status(305).json({ message: `field 'email' is required!` });

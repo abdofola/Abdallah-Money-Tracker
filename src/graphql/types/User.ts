@@ -39,12 +39,15 @@ builder.mutationField("addUser", (t) =>
       /**
        * this resolver represents a wrapper around
        * the endpoint /api/signup
+       * TODO:
+       * session cookies does not get safed when making the request from the resolver?
        */
       try {
         const user = await fetchJson<User>("http://localhost:3000/api/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(args),
+          referrer: "http://localhost:3000/api/graphql",
         });
 
         return user;

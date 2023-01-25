@@ -8,10 +8,10 @@ import { useGetUserQuery } from "@services";
 import { Transaction, Category } from "@prisma/client";
 import styles from "../styles/Home.module.css";
 import { withSessionSsr } from "@lib/session";
-import { useAuth } from "@lib/helpers/hooks";
+import { useGetHeight } from "@lib/helpers/hooks";
 
 type HomeProps = {
-  session?: { email: String; [k: string]: any };
+  session: { email: string; [k: string]: any };
 };
 
 const Transaction = dynamic(
@@ -24,23 +24,18 @@ const Transaction = dynamic(
   }
 );
 
-export const getServerSideProps = withSessionSsr(
-  async function getServerSideProps({ req }) {
-    const { session } = req;
+export const getServerSideProps = withSessionSsr(async ({ req }) => {
+  const { user } = req.session;
 
-    console.log("getServerSideProps", { session });
-    // if (!session.user)
-    //   return { redirect: { permanent: false, destination: "/signup" } };
-    return { props: {} };
-  }
-);
+  console.log("-----getServerSideProps---->", { session: user });
+  if (!user) return { redirect: { permanent: false, destination: "/login" } };
+  return { props: { session: user } };
+});
 
 // COMPONENT
-const Home: NextPageWithLayout<HomeProps> = () => {
-  const {user: auth} = useAuth();
-  console.log({auth})
+const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   const { data, isLoading, isSuccess, error } = useGetUserQuery({
-    email: auth?.email,
+    email: session.email,
   });
   const user: {
     transactions: Transform<Transaction>;
@@ -70,7 +65,7 @@ const Home: NextPageWithLayout<HomeProps> = () => {
     }
     user.transactions = transactions;
     user.categories = categories;
-    user.id = auth?.id;
+    user.id = session?.id;
   }
 
   return (
@@ -82,9 +77,17 @@ const Home: NextPageWithLayout<HomeProps> = () => {
 };
 
 //page layout
+//TODO:fix the typing
 Home.Layout = (page) => {
+  const { height } = useGetHeight("#navLogin");
+  const { height: navHeight } = useGetHeight("#nav");
   return (
-    <Layout title="home" className="p-2" withHeader>
+    <Layout
+      title="home"
+      className="p-2"
+      withHeader
+      style={{ padding: `${height}px 0 ${navHeight}px`  }}
+    >
       {page}
     </Layout>
   );

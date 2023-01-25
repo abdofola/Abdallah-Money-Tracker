@@ -21,7 +21,7 @@ export async function fetchJson<JSON = unknown>(
   });
 }
 
-class FetchError extends Error {
+export class FetchError extends Error {
   response: Response;
   data: {
     message: string;

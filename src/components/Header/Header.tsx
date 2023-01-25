@@ -29,15 +29,18 @@ export default function Header() {
     <nav id="nav" className={styles.nav}>
       <div
         id="navLogin"
-        className="fixed inline-flex top-0 right-0 left-0 p-2 items-center justify-end bg-white rounded-bl-3xl"
+        className="fixed inline-flex top-0 right-0 left-0 p-2 items-center justify-end bg-white border border-gray-100"
       >
-        <Link href={user ? "/api/logout" : "/api/login"}>
+        <Link href={user ? "/api/logout" : "/login"}>
           <a className="px-2 py-px text-gray-500 bg-gray-100 rounded-sm">
             {user ? "logout" : "login"}{" "}
           </a>
         </Link>
       </div>
+      <div>
+
       <ul className={styles.list}>{renderedLink}</ul>
+      </div>
     </nav>
   );
 }
