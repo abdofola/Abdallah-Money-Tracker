@@ -9,13 +9,12 @@ import { useAsync } from "@lib/helpers/hooks";
 import { User } from "@prisma/client";
 import { Icon } from "@components/icons";
 
-//TODO: `url` should come from .env
-const url = "http://localhost:3000/api/login";
+const URL = process.env["NODE_ENV"] + "/api/login";
 
 //COMPONENT
 const Login: NextPageWithLayout = () => {
   const [email, setEmail] = React.useState("");
-  const [execute, { error, status }] = useAsync(url);
+  const [execute, { error, status }] = useAsync(URL);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const handleChange = (e) => setEmail(e.target.value);
