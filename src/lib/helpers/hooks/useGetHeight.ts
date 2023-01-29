@@ -12,5 +12,5 @@ export function useGetHeight(selector: string) {
     setHeight(elem.clientHeight);
   }, [selector]);
 
-  return { height };
+  return height;
 }

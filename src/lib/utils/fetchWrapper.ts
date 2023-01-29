@@ -1,8 +1,17 @@
 export async function fetchJson<JSON = unknown>(
   input: RequestInfo,
-  init?: RequestInit
+  { headers, body, ...customConfig }: RequestInit = {}
 ): Promise<JSON> {
-  const response = await fetch(input, init);
+  const config: RequestInit = {
+    headers: { "Content-type": "application/json", ...headers },
+    method: body ? "POST" : "GET",
+    ...customConfig,
+  };
+
+  if (body) {
+    config.body = JSON.stringify(body);
+  }
+  const response = await fetch(input, config);
 
   // if the server replies, there's always some data in json
   // if there's a network error, it will throw at the previous line

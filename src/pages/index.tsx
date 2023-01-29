@@ -79,14 +79,13 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 //page layout
 //TODO:fix the typing
 Home.Layout = (page) => {
-  const { height } = useGetHeight("#navLogin");
-  const { height: navHeight } = useGetHeight("#nav");
+  const loginHeight = useGetHeight("#navLogin");
+  const navHeight = useGetHeight("#nav");
   return (
     <Layout
       title="home"
-      className="p-2"
+      style={{paddingTop:loginHeight,paddingBottom:navHeight}}
       withHeader
-      style={{ padding: `${height}px 0 ${navHeight}px`  }}
     >
       {page}
     </Layout>

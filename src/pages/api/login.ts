@@ -1,6 +1,5 @@
 import { withSessionRoute } from "@lib/session";
 import prisma from "@lib/prisma";
-import { Prisma } from "@prisma/client";
 
 export default withSessionRoute(async (req, res) => {
   const { email } = req.body;
