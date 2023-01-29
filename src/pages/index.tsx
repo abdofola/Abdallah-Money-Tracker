@@ -3,81 +3,95 @@ import React from "react";
 import { GetServerSideProps } from "next";
 import { NextPageWithLayout } from "./_app";
 import { Layout } from "@components/Layout";
-// import { Transaction } from "@features/transaction";
-import { TransactionElement } from "@features/transaction/types";
+import { Transform } from "@features/transaction/types";
+import { useGetUserQuery } from "@services";
+import { Transaction, Category } from "@prisma/client";
 import styles from "../styles/Home.module.css";
-import { client } from "@lib/helpers";
+import { withSessionSsr } from "@lib/session";
+import { useGetHeight } from "@lib/helpers/hooks";
 
-type Transactions<T = TransactionElement> = {
-  income: T[];
-  expenses: T[];
-};
 type HomeProps = {
-  data: Transactions;
-  error: string;
-  initialValue: Transactions;
+  session: { email: string; [k: string]: any };
 };
 
 const Transaction = dynamic(
   () => import("@features/transaction").then(({ Transaction }) => Transaction),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: (loadingProps) => (
+      <h1 className="mt-10 text-center">loading...</h1>
+    ),
+  }
 );
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  let transactions: Transactions;
-  return client("/transactions")
-    .then((data) => {
-      transactions = data.data.reduce(
-        (acc, curr) => {
-          const { id, category, amount } = curr;
+export const getServerSideProps = withSessionSsr(async ({ req }) => {
+  const { user } = req.session;
 
-          acc[category.type].push({
-            ...curr,
-            key: id,
-            title: category.name,
-            value: Number(amount),
-            color: category.color,
-            amount: Number(amount),
-          });
-
-          return acc;
-        },
-        { income: [], expenses: [] } as Transactions
-      );
-
-      return {
-        props: {
-          data: transactions,
-          error: data.error,
-        },
-      };
-    })
-    .catch((error) => {
-      return {
-        props: { error: error.message, data: null },
-      };
-    });
-};
+  console.log("-----getServerSideProps---->", { session: user });
+  if (!user) return { redirect: { permanent: false, destination: "/login" } };
+  return { props: { session: user } };
+});
 
 // COMPONENT
-const Home: NextPageWithLayout<HomeProps> = ({
-  data,
-  error,
-  initialValue = { income: [], expenses: [] },
-}) => {
+const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
+  const { data, isLoading, isSuccess, error } = useGetUserQuery({
+    email: session.email,
+  });
+  const user: {
+    transactions: Transform<Transaction>;
+    categories: Transform<Category>;
+  } = {};
+
   if (error) {
+    //TODO: do something here
     console.error({ error });
+  }
+
+  if (isSuccess) {
+    // transforming the response array into object
+    // using regular for loop instead of `Array.prototype.reduce` cuz performance reasons.
+    const categories = { income: [], expenses: [] };
+    for (const cat of data.user.categories) {
+      categories[cat.type].push(cat);
+    }
+    const transactions = { income: [], expenses: [] };
+    for (const trans of data.user.transactions) {
+      transactions[trans.category.type].push({
+        ...trans,
+        key: trans.id,
+        color: trans.category.color,
+        value: trans.amount,
+      });
+    }
+    user.transactions = transactions;
+    user.categories = categories;
+    user.id = session?.id;
   }
 
   return (
     <main className={styles.main}>
-      <Transaction data={!error ? data : initialValue} />
+      {isLoading && <h1>loading...</h1>}
+      {isSuccess && <Transaction user={user} />}
     </main>
   );
 };
 
-Home.Layout = function getLayout(page) {
-  return <Layout title="home" className="p-2">{page}</Layout>;
+//page layout
+//TODO:fix the typing
+Home.Layout = (page) => {
+  const loginHeight = useGetHeight("#navLogin");
+  const navHeight = useGetHeight("#nav");
+  return (
+    <Layout
+      title="home"
+      style={{paddingTop:loginHeight,paddingBottom:navHeight}}
+      withHeader
+    >
+      {page}
+    </Layout>
+  );
 };
+
+Home.Layout.displayName = "Layout";
 
 export default Home;
