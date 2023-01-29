@@ -8,8 +8,9 @@ import { Form, Spinner } from "@components/ui";
 import { useAsync } from "@lib/helpers/hooks";
 import { User } from "@prisma/client";
 import { Icon } from "@components/icons";
+import { enviroment } from "@lib/enviroment";
 
-const URL = process.env["NODE_ENV"] + "/api/login";
+const URL = enviroment[process.env["NODE_ENV"]] + "/api/login";
 
 //COMPONENT
 const Login: NextPageWithLayout = () => {
