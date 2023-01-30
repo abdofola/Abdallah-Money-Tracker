@@ -3,18 +3,19 @@ import { Category, TransactionElement } from "@features/transaction/types";
 import { gql } from "graphql-request";
 import { graphqlRequestBaseQuery } from "@rtk-query/graphql-request-base-query";
 import { Transaction, User as UserPrisma } from "@prisma/client";
+import { enviroment } from "@lib/enviroment";
 
 interface User extends UserPrisma {
   transactions: TransactionElement[];
   categories: Category[];
 }
 type UserResponse = { addUser: UserPrisma };
-type NestedUserResponse = {user : User}
+type NestedUserResponse = { user: User };
 
 export const api = createApi({
   reducerPath: "api",
   baseQuery: graphqlRequestBaseQuery({
-    url: "http://localhost:3000/api/graphql",
+    url: enviroment[process.env.NODE_ENV] + "/api/graphql",
   }),
   endpoints: (builder) => ({
     addTransaction: builder.mutation<Transaction, Partial<Transaction>>({
