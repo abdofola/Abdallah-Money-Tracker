@@ -46,7 +46,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 
   if (error) {
     //TODO: do something here
-    console.error({ error });
+    console.error('error while fetching user',{ error });
   }
 
   if (isSuccess) {
