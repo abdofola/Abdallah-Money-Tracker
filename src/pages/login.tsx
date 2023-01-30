@@ -22,9 +22,9 @@ const Login: NextPageWithLayout = () => {
 
   const handleSubmit = (formData) => {
     execute({ body: formData })
-      .then((data) => {
+      .then(({ data }) => {
         // console.log({ data });
-        dispatch(setCredentials(data.data));
+        dispatch(setCredentials(data));
         router.push("/");
       })
       .catch(() => {});
