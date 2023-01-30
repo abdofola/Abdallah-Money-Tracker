@@ -11,7 +11,7 @@ import { withSessionSsr } from "@lib/session";
 import { useGetHeight } from "@lib/helpers/hooks";
 
 type HomeProps = {
-  session: { email: string; [k: string]: any };
+  session: { id: string; email: string; [k: string]: any };
 };
 
 const Transaction = dynamic(
@@ -37,7 +37,9 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   const { data, isLoading, isSuccess, error } = useGetUserQuery({
     email: session.email,
   });
+  const loginHeight = useGetHeight("#navLogin");
   const user: {
+    id: string;
     transactions: Transform<Transaction>;
     categories: Transform<Category>;
   } = {};
@@ -50,11 +52,18 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   if (isSuccess) {
     // transforming the response array into object
     // using regular for loop instead of `Array.prototype.reduce` cuz performance reasons.
-    const categories = { income: [], expenses: [] };
+    const categories = {
+      income: [],
+      expenses: [],
+    } as typeof user["categories"];
+    const transactions = {
+      income: [],
+      expenses: [],
+    } as typeof user["transactions"];
+
     for (const cat of data.user.categories) {
       categories[cat.type].push(cat);
     }
-    const transactions = { income: [], expenses: [] };
     for (const trans of data.user.transactions) {
       transactions[trans.category.type].push({
         ...trans,
@@ -69,7 +78,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   }
 
   return (
-    <main className={styles.main}>
+    <main className={styles.main} style={{ paddingTop: loginHeight }}>
       {isLoading && <h1>loading...</h1>}
       {isSuccess && <Transaction user={user} />}
     </main>
@@ -77,21 +86,12 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 };
 
 //page layout
-//TODO:fix the typing
-Home.Layout = (page) => {
-  const loginHeight = useGetHeight("#navLogin");
-  const navHeight = useGetHeight("#nav");
+Home.Layout = function getLayout(page) {
   return (
-    <Layout
-      title="home"
-      style={{paddingTop:loginHeight,paddingBottom:navHeight}}
-      withHeader
-    >
+    <Layout title="home" withHeader>
       {page}
     </Layout>
   );
 };
-
-Home.Layout.displayName = "Layout";
 
 export default Home;

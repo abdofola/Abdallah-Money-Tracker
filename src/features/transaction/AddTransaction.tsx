@@ -30,8 +30,6 @@ function AddTransaction({
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    console.log(Object.fromEntries(formData));
-
     addTransaction({
       ...Object.fromEntries(formData),
       amount: Number(amountValue),
