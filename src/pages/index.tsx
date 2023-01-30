@@ -11,7 +11,7 @@ import { withSessionSsr } from "@lib/session";
 import { useGetHeight } from "@lib/helpers/hooks";
 
 type HomeProps = {
-  session: { email: string; [k: string]: any };
+  session: { id: string; email: string; [k: string]: any };
 };
 
 const Transaction = dynamic(
@@ -39,6 +39,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   });
   const loginHeight = useGetHeight("#navLogin");
   const user: {
+    id: string;
     transactions: Transform<Transaction>;
     categories: Transform<Category>;
   } = {};
@@ -51,9 +52,15 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   if (isSuccess) {
     // transforming the response array into object
     // using regular for loop instead of `Array.prototype.reduce` cuz performance reasons.
-    const categories = { income: [], expenses: [] };
-    const transactions = { income: [], expenses: [] };
-    
+    const categories = {
+      income: [],
+      expenses: [],
+    } as typeof user["categories"];
+    const transactions = {
+      income: [],
+      expenses: [],
+    } as typeof user["transactions"];
+
     for (const cat of data.user.categories) {
       categories[cat.type].push(cat);
     }
@@ -79,15 +86,12 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 };
 
 //page layout
-//TODO:fix the typing
-Home.Layout = (page) => {
+Home.Layout = function getLayout(page) {
   return (
     <Layout title="home" withHeader>
       {page}
     </Layout>
   );
 };
-
-Home.Layout.displayName = "Layout";
 
 export default Home;

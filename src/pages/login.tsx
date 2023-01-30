@@ -15,7 +15,7 @@ const URL = enviroment[process.env["NODE_ENV"]] + "/api/login";
 //COMPONENT
 const Login: NextPageWithLayout = () => {
   const [email, setEmail] = React.useState("");
-  const [execute, { error, status }] = useAsync(URL);
+  const [execute, { error, status }] = useAsync<{ data: User }>(URL);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const handleChange = (e) => setEmail(e.target.value);
@@ -63,7 +63,7 @@ const Login: NextPageWithLayout = () => {
 };
 
 // page layout
-Login.Layout = (page) => {
+Login.Layout = function getLayout(page) {
   return (
     <Layout
       title="login"
@@ -73,7 +73,5 @@ Login.Layout = (page) => {
     </Layout>
   );
 };
-
-Login.Layout.displayName = "Login";
 
 export default Login;

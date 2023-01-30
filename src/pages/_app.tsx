@@ -2,11 +2,11 @@ import React from "react";
 import { NextComponentType, NextPage, NextPageContext } from "next";
 import { Provider } from "react-redux";
 import { store } from "../app/store";
-import type { AppProps } from "next/app";
+import { AppProps } from "next/app";
 import "../styles/globals.css";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-  Layout?: React.FC<NextComponentType<NextPageContext, any, {}>>;
+  Layout?: (page: ReactElement) => ReactNode;
 };
 type AppPropsWithLayout = AppProps & { Component: NextPageWithLayout };
 
