@@ -34,6 +34,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
     email: session.email,
   });
   const loginHeight = useGetHeight("#navLogin");
+  const navHeight = useGetHeight("#nav");
   const user: {
     id: string;
     categories: Transform<Category>;
@@ -62,7 +63,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   return (
     <main
       className="flex justify-center items-center min-h-full"
-      style={{ paddingTop: loginHeight }}
+      style={{ paddingTop: loginHeight, paddingBottom: navHeight }}
     >
       <div className="mt-8">
         {isLoading && <Spinner variants={{ width: "lg" }} />}
