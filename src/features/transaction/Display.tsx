@@ -1,5 +1,9 @@
 import React from "react";
-import { DisplayProps, FilterTransactions, PeriodType } from "@features/transaction/types";
+import {
+  DisplayProps,
+  FilterTransactions,
+  PeriodType,
+} from "@features/transaction/types";
 import { Tab } from "@components/Tab";
 import {
   TransactionList,
@@ -62,32 +66,30 @@ const Display: React.FC<DisplayProps> = ({
 }) => {
   const periodRef = React.useRef<HTMLButtonElement | null>(null);
   const { data, startDate: start, endDate: end } = useDate();
-  const [filteredTransactions, setFilteredTransactions] = React.useState(() => {
-    return filterTransactions({
+  const mergedDuplicateData = React.useMemo(() => {
+    const filteredData = filterTransactions({
       data,
       periodType: periods[periodIndex]["txt"],
       selectedDate: { start, end },
     });
-  });
-  const mergedDuplicateData = React.useMemo(() => {
     const duplicates: { [k: string]: TransactionElement[] } = {};
     const merged: TransactionElement[] = [];
 
     // if there's only one item, then just return the array.
-    if (filteredTransactions.length < 2) return filteredTransactions;
+    if (filteredData.length < 2) return filteredData;
 
-    for (let i = 0; i < filteredTransactions.length; i++) {
-      const trans = filteredTransactions[i];
+    for (let i = 0; i < filteredData.length; i++) {
+      const trans = filteredData[i];
       const { category: elem } = trans;
 
       if (!(elem.id in duplicates)) duplicates[elem.id] = [];
       //don't check the same element against duplication twice.
       if (duplicates[elem.id].length > 1) continue;
 
-      for (let j = i + 1; j < filteredTransactions.length; j++) {
-        const { category: nextElem } = filteredTransactions[j];
+      for (let j = i + 1; j < filteredData.length; j++) {
+        const { category: nextElem } = filteredData[j];
         if (elem.id === nextElem.id) {
-          duplicates[elem.id].push(filteredTransactions[j]);
+          duplicates[elem.id].push(filteredData[j]);
         }
       }
 
@@ -107,12 +109,9 @@ const Display: React.FC<DisplayProps> = ({
     }
 
     return merged;
-  }, [filteredTransactions]);
+  }, [start, end, periodIndex, data]);
   const selectedPeriod = periods[periodIndex]["txt"];
-  const total = filteredTransactions.reduce(
-    (acc, curr) => acc + curr.amount,
-    0
-  );
+  const total = mergedDuplicateData.reduce((acc, curr) => acc + curr.amount, 0);
   const Panels = periods.map((p) => {
     return (
       <Tab.Panel key={p.id}>
@@ -133,18 +132,7 @@ const Display: React.FC<DisplayProps> = ({
       <Tab.Group
         className="w-full p-2 bg-white rounded-lg border border-gray-100"
         defaultTab={periodIndex}
-        onChange={(selectedIdx: number) => {
-          const selected = periods[selectedIdx]["txt"];
-          setPeriod(selectedIdx);
-          if (selected === "period") return; // prevent setting data immediately when tab `period` selected
-          setFilteredTransactions(
-            filterTransactions({
-              data,
-              periodType: selected,
-              selectedDate: { start },
-            })
-          );
-        }}
+        onChange={setPeriod}
       >
         <Tab.List
           tabs={periods}
@@ -163,17 +151,8 @@ const Display: React.FC<DisplayProps> = ({
         <Tab.Panels className="relative p-4">
           <DateSelection
             periodRef={periodRef}
-            className="flex mx-auto mb-8 text-sm font-medium border-b border-gray-400"
+            className="flex mx-auto mb-8 text-sm font-medium border-b border-dashed border-gray-400"
             selection={selectedPeriod}
-            filter={({ start, end }) =>
-              setFilteredTransactions(
-                filterTransactions({
-                  data,
-                  periodType: selectedPeriod,
-                  selectedDate: { start, end },
-                })
-              )
-            }
           />
           {Panels}
           <button

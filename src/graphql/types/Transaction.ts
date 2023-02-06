@@ -12,6 +12,22 @@ builder.prismaObject("Transaction", {
   }),
 });
 
+builder.queryField("transactions", (t) =>
+  t.prismaField({
+    type: ["Transaction"],
+    args: {
+      userId: t.arg.string({ required: true }),
+    },
+    resolve: async (query, _root, args, ctx, _info) => {
+      return await ctx.prisma.transaction.findMany({
+        ...query,
+        where: {
+          userId: args.userId,
+        },
+      });
+    },
+  })
+);
 builder.mutationField("addTransaction", (t) =>
   t.prismaField({
     type: "Transaction",
@@ -23,6 +39,8 @@ builder.mutationField("addTransaction", (t) =>
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
+      //Due to `iron-session` not working properly with `graphql`
+      // no way to add the userSession to the context!
       // if (!ctx.user)
       //   throw new Error(`you need to signin to create your transaction!`);
 
