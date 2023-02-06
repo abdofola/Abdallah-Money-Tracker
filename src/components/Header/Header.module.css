@@ -2,8 +2,7 @@
   position: fixed; 
   padding: 1rem;
   z-index: 10;
-  /* box-shadow: 0px -1px 5px rgb(0 0 0 / 19%); */
-  @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:static;
+  @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:rounded-none sm:static;
 }
 .list {
   @apply flex justify-center space-x-6 sm:justify-center;
