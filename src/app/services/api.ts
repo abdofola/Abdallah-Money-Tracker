@@ -17,7 +17,31 @@ export const api = createApi({
   baseQuery: graphqlRequestBaseQuery({
     url: enviroment[process.env.NODE_ENV] + "/api/graphql",
   }),
+  tagTypes: ["transactions"],
   endpoints: (builder) => ({
+    getTransactions: builder.query<{transactions:Transaction[]}, {userId:string}>({
+      query: ({userId})=>({
+        document:gql`
+          query GetTransactions($userId:String!){
+            transactions(userId:$userId){
+              id,
+              amount,
+              date,
+              comment,
+              category {
+                id
+                name
+                type
+                color
+                iconId
+              }
+            }
+          }
+        `,
+        variables:{userId}
+      }),
+      providesTags: ["transactions"],
+    }),
     addTransaction: builder.mutation<Transaction, Partial<Transaction>>({
       query: ({ amount, date, categoryId, comment, userId }) => ({
         document: gql`
@@ -78,7 +102,6 @@ export const api = createApi({
         `,
         variables: { email },
       }),
-      providesTags: ["transactions"],
     }),
     addUser: builder.mutation<UserResponse, { email: string }>({
       query: ({ email }) => ({
@@ -95,11 +118,11 @@ export const api = createApi({
       }),
     }),
   }),
-  tagTypes: ["transactions"],
 });
 
 export const {
   useAddTransactionMutation,
+  useGetTransactionsQuery,
   useGetUserQuery,
   useAddUserMutation,
 } = api;

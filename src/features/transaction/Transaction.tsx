@@ -5,24 +5,40 @@ import { DisplayAmount, Display, AddTransaction } from "@features/transaction";
 import { TransactionProps } from "@features/transaction/types";
 import { DateProvider } from "@components/contexts";
 import { transactionTypes, periods } from "@features/transaction/constants";
+import { useGetTransactionsQuery } from "@app/services/api";
 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
+  const { data = { transactions: [] }, } = useGetTransactionsQuery({
+    userId: user.id,
+  });
+  const transactions = React.useMemo(() => {
+    const trans = { income: [], expenses: [] };
+    for (let t of data.transactions) {
+      trans[t.category.type].push({
+        ...t,
+        key: t.id,
+        color: t.category.color,
+        value: t.amount,
+      });
+    }
+    return trans;
+  }, [data.transactions]);
   const [display, setDisplay] = React.useState(true);
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState<Date | null>(null);
   const selectedTransaction = transactionTypes[transactionIdx]["txt"];
   const selectedPeriod = periods[periodIdx]["txt"];
-  const total = user.transactions[selectedTransaction].reduce(
+  const total = transactions[selectedTransaction].reduce(
     (acc, curr) => acc + curr.amount,
     0
   );
   const dates = { startDate, endDate, setStartDate, setEndDate };
   const Panels = transactionTypes.map((t) => (
     <Tab.Panel key={t.id}>
-      <DateProvider data={user.transactions[t.txt]} {...dates}>
+      <DateProvider data={transactions[t.txt]} {...dates}>
         {display ? (
           <Display
             transactionType={t.txt}

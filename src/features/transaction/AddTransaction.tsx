@@ -3,7 +3,7 @@ import { Check, Icon } from "@components/icons";
 import DateSelection from "./DateSelection";
 import { AddTransactionProps } from "./types";
 import { useAddTransactionMutation } from "@services";
-
+import { Spinner } from "@components/ui";
 
 function AddTransaction({
   user,
@@ -18,8 +18,8 @@ function AddTransaction({
   const [selectedTransaction, setSelectedTransaction] =
     React.useState(transactionType); // `transactionType` is mirrored in a state; in order to know when `transactionType` changes. Note:useRef doesn't do the job.
 
-  const [addTransaction, { isLoading: loading }] = useAddTransactionMutation();
-  const canAdd = !loading && selectedId && amountValue;
+  const [addTransaction, { isLoading }] = useAddTransactionMutation();
+  const canAdd = !isLoading && selectedId && amountValue;
   const reset = () => {
     setSelectedId(null);
     setAmountValue("");
@@ -40,6 +40,7 @@ function AddTransaction({
       .then((payload) => {
         // console.log({ payload });
         reset();
+        displayOn();
       })
       .catch((error) => console.log({ error }));
   };
@@ -150,6 +151,7 @@ function AddTransaction({
           onChange={(e) => {
             const { value, style } = e.target;
             setComment(value);
+            // the next 2 lines for increasing & decreasing the height of the `textarea` dynamically.
             style.height = "inherit";
             style.height = e.target.scrollHeight + "px";
           }}
@@ -158,17 +160,19 @@ function AddTransaction({
       {/* buttons */}
       <div className="flex gap-2">
         <button
-          className="border p-1 rounded-lg"
+          className={`flex justify-center items-center capitalize p-1 basis-1/3 rounded-lg shadow-md ${
+            !canAdd ? "text-gray-300" : ""
+          }`}
           type="submit"
           disabled={!canAdd}
         >
-          add
+          {!isLoading ? "add" : <Spinner />}
         </button>
-        <button className="border p-1 rounded-lg" type="reset" onClick={reset}>
+        <button className="border-b p-1" type="reset" onClick={reset}>
           reset
         </button>
         <button
-          className="border p-1 rounded-lg ml-auto"
+          className="border-b p-1  ml-auto"
           type="button"
           onClick={displayOn}
         >
