@@ -30,7 +30,7 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
 // COMPONENT
 const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
-  const { data, isLoading, isFetching, isSuccess, error } = useGetUserQuery({
+  const { data, isLoading, isSuccess, error } = useGetUserQuery({
     email: session.email,
   });
   const loginHeight = useGetHeight("#navLogin");
@@ -63,7 +63,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   return (
     <main
       className="flex justify-center items-center min-h-full"
-      style={{ paddingTop: loginHeight, paddingBottom: navHeight }}
+      style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 10 }}
     >
       <div className="mt-8">
         {isLoading && <Spinner variants={{ width: "lg" }} />}

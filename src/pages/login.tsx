@@ -31,12 +31,7 @@ const Login: NextPageWithLayout = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 mt-[15%] p-4">
-      <p className="text-xl font-bold">
-        What are the things that you spend most of your money on?
-        <br /> How to balance my expenses against my income?
-        <br /> Hummmm.. let's login and find out!
-      </p>
+    <div className="space-y-2 basis-1/3">
       <Form onSubmit={handleSubmit} variants={{ margin: 0, padding: "2" }}>
         <div className="flex items-center gap-2">
           <label htmlFor="email">
@@ -44,7 +39,7 @@ const Login: NextPageWithLayout = () => {
           </label>
           <input
             required
-            className="bg-transparent ring-offset-4 focus:outline-none"
+            className="basis-auto grow shrink bg-transparent ring-offset-4 focus:outline-none"
             id="email"
             type="email"
             name="email"
@@ -67,7 +62,7 @@ Login.Layout = function getLayout(page) {
   return (
     <Layout
       title="login"
-      className="flex justify-center h-screen bg-gradient-to-tr from-pink-100 to-blue-200"
+      className="flex justify-center items-center min-w-screen min-h-screen bg-gradient-to-tr from-pink-100 to-blue-200"
     >
       {page}
     </Layout>
