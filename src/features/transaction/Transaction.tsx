@@ -63,7 +63,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 max-w-[95%] w-[25rem] mx-auto">
+    <div className="flex flex-col items-center gap-4 max-w-[95%] w-[50rem] mx-auto">
       <div className="flex items-end">
         <Money className="w-5 h-5 stroke-gray-400" />
         <DisplayAmount

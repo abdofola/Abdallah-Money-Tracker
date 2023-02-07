@@ -10,7 +10,7 @@ const getLinks = (props) => ({
 });
 
 export default function Header() {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const isActive = (path: string) => router.pathname === path;
   const renderedLink = Object.entries(getLinks({})).map(
@@ -27,19 +27,16 @@ export default function Header() {
   );
   return (
     <nav id="nav" className={styles.nav}>
-      <div
-        id="navLogin"
-        className="fixed inline-flex top-0 right-0 left-0 p-2 items-center bg-white sm:bg-transparent justify-end"
-      >
-        <Link href={user ? "/api/logout" : "/login"}>
-          <a className="px-2 py-px text-gray-500 bg-gray-100 rounded-sm">
-            {user ? "logout" : "login"}{" "}
-          </a>
-        </Link>
-      </div>
-      <div>
-      <ul className={styles.list}>{renderedLink}</ul>
-      </div>
+        <ul className="flex justify-center gap-2">
+          {renderedLink}
+          <li id="navLogin" className="fixed flex bg-white top-0 left-0 right-0 p-2 sm:static sm:p-0 sm:inline sm:ml-auto">
+            <Link href={user ? "/api/logout" : "/login"}>
+              <a className="ml-auto px-2 py-px text-gray-500 bg-gray-50 rounded-sm">
+                {user ? "logout" : "login"}{" "}
+              </a>
+            </Link>
+          </li>
+        </ul>
     </nav>
   );
 }

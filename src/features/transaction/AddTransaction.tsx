@@ -56,7 +56,7 @@ function AddTransaction({
   }
   return (
     <form
-      className="flex flex-col gap-6 bg-white mt-4 p-4 rounded-lg border border-gray-100"
+      className="w-[25rem] max-w-full mx-auto flex flex-col gap-6 bg-white mt-4 p-4 rounded-lg border border-gray-100"
       onSubmit={handleSubmit}
     >
       {/* amount */}
@@ -64,7 +64,7 @@ function AddTransaction({
         <label htmlFor="amount" className=" text-gray-400">
           amount
         </label>
-        <div className="flex space-x-1">
+        <div className="flex gap-2 items-center">
           <input
             className="transition basis-full px-2 py-1 bg-gray-100 shadow-inner rounded-md ring-offset-4 focus:outline-none  focus:ring-1 focus:ring-gray-300"
             ref={amountRef}
