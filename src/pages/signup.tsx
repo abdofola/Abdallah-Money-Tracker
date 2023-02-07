@@ -1,26 +1,22 @@
 import React from "react";
 import { NextPageWithLayout } from "./_app";
 import { useAppDispatch } from "@app/hooks";
-import { useAddUserMutation } from "@app/services";
 import { Layout } from "@components/Layout";
 import { setCredentials } from "@features/auth";
 import { useRouter } from "next/router";
 import { fetchJson } from "@lib/utils";
+import { enviroment } from "@lib/enviroment";
 //COMPONENT
 const Signup: NextPageWithLayout = () => {
   const [email, setEmail] = React.useState("");
-  // const [addUser] = useAddUserMutation();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const handleChange = (e) => setEmail(e.target.value);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const data = await addUser({ email }).unwrap();
-      const user = await fetchJson("http://localhost:3000/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const user = await fetchJson(enviroment[process.env.NODE_ENV]+"/api/signup", {
+        body: { email },
       });
       dispatch(setCredentials(user));
       console.log("payload", user);
