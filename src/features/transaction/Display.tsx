@@ -11,7 +11,7 @@ import {
   DateSelection,
 } from "@features/transaction";
 import { Donut } from "@components/Chart";
-import { Plus } from "@components/icons";
+import { Icon, Plus } from "@components/icons";
 import { useDate } from "@components/contexts";
 import { myDate } from "@lib/utils";
 import { periods } from "./constants";
@@ -128,7 +128,7 @@ const Display: React.FC<DisplayProps> = ({
   });
 
   return (
-    <div className="flex flex-col gap-4 mt-4">
+    <div className="flex flex-col gap-4 mt-4 sm:mt-8 sm:flex-row">
       <Tab.Group
         className="w-full p-2 bg-white rounded-lg border border-gray-100"
         defaultTab={periodIndex}
@@ -163,20 +163,42 @@ const Display: React.FC<DisplayProps> = ({
           </button>
         </Tab.Panels>
       </Tab.Group>
-      <TransactionList
-        className="hideScrollBar relative w-full space-y-2 max-h-72 rounded-lg overflow-y-auto"
-        data={mergedDuplicateData}
-        renderItem={(item) => {
-          const percentage = calculatePercentage(item.amount, total);
-          return (
-            <TransactionItem
-              key={item.id}
-              item={item}
-              percentage={percentage.toString().concat("%")}
-            />
-          );
-        }}
-      />
+      <div className="flex flex-col w-full gap-3">
+        <h3 className="relative z-10 capitalize text-gray-500 before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-1/4 before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 sm:self-center">
+          {" "}
+          transactions summary
+        </h3>
+        {mergedDuplicateData.length === 0 && (
+          <div className="flex flex-col items-center self-center max-w-[90%]">
+          <span>
+            <Icon href="/sprite.svg#search" />
+          </span>
+          <p className="text-gray-400 text-center">
+            <span className="float-left">No transaction found in this time, hit </span>
+            <span className="flex px-2">
+            &quot;
+            <Plus className="w-5 h-5" />
+            &quot;
+            </span>
+            <span>the plus sign to add one.</span>
+          </p>
+          </div>
+        )}
+        <TransactionList
+          className="hideScrollBar relative space-y-2 max-h-72 rounded-lg overflow-y-auto"
+          data={mergedDuplicateData}
+          renderItem={(item) => {
+            const percentage = calculatePercentage(item.amount, total);
+            return (
+              <TransactionItem
+                key={item.id}
+                item={item}
+                percentage={percentage.toString().concat("%")}
+              />
+            );
+          }}
+        />
+      </div>
     </div>
   );
 };
