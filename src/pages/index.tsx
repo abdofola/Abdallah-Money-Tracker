@@ -33,8 +33,6 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   const { data, isLoading, isSuccess, error } = useGetUserQuery({
     email: session.email,
   });
-  const loginHeight = useGetHeight("#navLogin");
-  const navHeight = useGetHeight("#nav");
   const user: {
     id: string;
     categories: Transform<Category>;
@@ -63,7 +61,6 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   return (
     <main
       className="flex justify-center items-center min-h-full"
-      style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 10 }}
     >
       <div className="mt-8">
         {isLoading && <Spinner variants={{ width: "lg" }} />}
@@ -76,7 +73,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 //page layout
 Home.Layout = function getLayout(page) {
   return (
-    <Layout withHeader title="home">
+    <Layout withHeader title="home" className="mt-6">
       {page}
     </Layout>
   );

@@ -50,12 +50,14 @@ export const api = createApi({
             $date: String!
             $userId: String!
             $categoryId: String!
+            $comment: String
           ) {
             addTransaction(
-              amount: $amount
-              date: $date
-              userId: $userId
-              categoryId: $categoryId
+              amount: $amount,
+              date: $date,
+              userId: $userId,
+              categoryId: $categoryId,
+              comment: $comment
             ) {
               amount
               date

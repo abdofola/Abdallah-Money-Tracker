@@ -5,8 +5,9 @@ import { TransactionItemProps } from "./types";
 const TransactionItem: React.FC<TransactionItemProps> = ({
   item,
   percentage,
+  withComment=false,
 }) => {
-  const { id, amount, category } = item;
+  const { id, amount, category, comment } = item;
 
   return (
     <li
@@ -21,7 +22,14 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             className="w-6 h-6"
           />
         </span>
-        <span className="text-gray-800 capitalize">{category.name}</span>
+        <div>
+          <span className="text-gray-800 capitalize">{category.name}</span>
+          {withComment && (
+            <p className="w-44 text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis">
+              {comment}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex gap-2">
