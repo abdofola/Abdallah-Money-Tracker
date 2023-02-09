@@ -21,6 +21,9 @@ builder.queryField("transactions", (t) =>
     resolve: async (query, _root, args, ctx, _info) => {
       return await ctx.prisma.transaction.findMany({
         ...query,
+        orderBy: {
+          date: "desc",
+        },
         where: {
           userId: args.userId,
         },
