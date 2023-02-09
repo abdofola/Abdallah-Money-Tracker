@@ -104,13 +104,14 @@ const Panels: React.FC<PanelsProps> = ({ children, className }) => {
   return <div className={className}>{renderedChildren}</div>;
 };
 
-const Panel: React.FC<{ children: React.ReactNode; id: number }> = ({
+const Panel: React.FC<{ children: React.ReactNode; className:string, id: number }> = ({
   children,
+  className,
   id,
 }) => {
   const { selectedIdx } = useTab();
   if (id !== selectedIdx) return <></>;
-  return <div role="tabpanel">{children}</div>;
+  return <div role="tabpanel" className={className}>{children}</div>;
 };
 
 Panel.displayName = "Panel";
