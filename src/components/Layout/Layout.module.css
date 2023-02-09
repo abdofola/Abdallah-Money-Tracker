@@ -1,5 +1,5 @@
 .container {
-  @apply px-8
+  @apply sm:p-0 !important;
 }
 
 

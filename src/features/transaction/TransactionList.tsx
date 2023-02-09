@@ -30,7 +30,7 @@ const TransactionList: React.FC<TransactionListProps> = ({
     <ul
       onScroll={handleScroll}
       ref={refCallBack}
-      className={(className!).concat(
+      className={(className ?? "").concat(
         " ",
         isScrollable ? (before ? "before" : "after") : ""
       )}

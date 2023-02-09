@@ -38,7 +38,7 @@ function AddTransaction({
     })
       .unwrap()
       .then((payload) => {
-        // console.log({ payload });
+        console.log({ payload });
         reset();
         displayOn();
       })

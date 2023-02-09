@@ -7,7 +7,10 @@ export function useGetHeight(selector: string) {
     const elem = window.document.querySelector(selector);
 
     // no element match the specified selector
-    if (!elem) throw new Error(`${selector} is not a valid selector`);
+    if (!elem) {
+      console.warn(`${selector} is not a valid selector`);
+      return;
+    }
 
     setHeight(elem.clientHeight);
   }, [selector]);

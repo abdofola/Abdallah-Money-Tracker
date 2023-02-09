@@ -6,6 +6,8 @@ import { setCredentials } from "@features/auth";
 import { useRouter } from "next/router";
 import { fetchJson } from "@lib/utils";
 import { enviroment } from "@lib/enviroment";
+
+//TODO: this is should be a protected route `adduser`, and only admin user can add new users.
 //COMPONENT
 const Signup: NextPageWithLayout = () => {
   const [email, setEmail] = React.useState("");

@@ -164,7 +164,7 @@ const Display: React.FC<DisplayProps> = ({
         </Tab.Panels>
       </Tab.Group>
       <div className="flex flex-col w-full gap-3">
-        <h3 className="relative z-10 capitalize text-gray-500 before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-1/4 before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 sm:self-center">
+        <h3 className="relative z-10 w-max capitalize text-gray-500 before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 sm:self-center">
           {" "}
           transactions summary
         </h3>
