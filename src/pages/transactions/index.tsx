@@ -11,6 +11,7 @@ import { Spinner } from "@components/ui";
 import { Tab } from "@components/Tab";
 import { transactionTypes } from "@features/transaction/constants";
 import styles from "./transactions.module.css";
+import Link from "next/link";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
@@ -63,10 +64,16 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
                   {date}
                 </h4>
                 <TransactionList
-                  className="space-y-2 w-full"
+                  className="flex flex-col gap-2"
                   data={trans}
                   renderItem={(t) => {
-                    return <TransactionItem key={t.id} withComment item={t} />;
+                    return (
+                      <Link key={t.id} href={"transactions/" + t.id}>
+                        <a>
+                          <TransactionItem withComment item={t} />
+                        </a>
+                      </Link>
+                    );
                   }}
                 />
               </div>
