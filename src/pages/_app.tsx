@@ -1,5 +1,5 @@
 import React from "react";
-import { NextComponentType, NextPage, NextPageContext } from "next";
+import { NextPage } from "next";
 import { Provider } from "react-redux";
 import { store } from "../app/store";
 import { AppProps } from "next/app";

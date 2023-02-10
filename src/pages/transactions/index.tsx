@@ -4,7 +4,7 @@ import { withSessionSsr } from "@lib/session";
 import { useGetTransactionsQuery } from "@app/services/api";
 import { Layout } from "@components/Layout";
 import { useAppDispatch } from "@app/hooks";
-import { useAuth } from "@lib/helpers/hooks";
+import { useAuth, useGetHeight } from "@lib/helpers/hooks";
 import { setCredentials } from "@features/auth";
 import { TransactionItem, TransactionList } from "@features/transaction";
 import { Spinner } from "@components/ui";
@@ -24,8 +24,11 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 const AccountStatement: NextPageWithLayout = ({ session }) => {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
-  const { data, isSuccess, isLoading, isFetching, isError, error } =
-    useGetTransactionsQuery({ userId: session.id });
+  const navHeight = useGetHeight("#nav");
+  const loginHeight = useGetHeight("#navLogin");
+  const { data, isSuccess, isLoading, error } = useGetTransactionsQuery({
+    userId: session.id,
+  });
   let transactions = { income: new Map(), expenses: new Map() };
 
   if (!user) {
@@ -36,7 +39,7 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
     console.error("fetching transactions error", error);
   }
   if (isSuccess) {
-    // transform data into object literal
+    // map data into key as date, value as array of data that corresponds to this date.
     for (let t of data.transactions) {
       const itemMap = transactions[t.category.type];
       if (!itemMap.has(t.date)) itemMap.set(t.date, []);
@@ -45,23 +48,23 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
   }
   const Panels = transactionTypes.map((t) => {
     return (
-      <Tab.Panel key={t.id} className="space-y-2">
+      <Tab.Panel key={t.id} className="grid place-items-center">
         {isLoading && <Spinner variants={{ width: "lg" }} />}
         {transactions[t.txt].size === 0 ? (
           <p>no {t.txt} yet!</p>
         ) : (
           [...transactions[t.txt]].map(([date, trans]) => {
             return (
-              <React.Fragment key={date}>
+              <div key={date} className="w-full">
                 <h4 className={styles.fullBleed}>{date}</h4>
                 <TransactionList
-                  className="space-y-2"
+                  className="space-y-2 w-full"
                   data={trans}
                   renderItem={(t) => {
-                    return <TransactionItem withComment key={t.id} item={t} />;
+                    return <TransactionItem key={t.id} withComment item={t} />;
                   }}
                 />
-              </React.Fragment>
+              </div>
             );
           })
         )}
@@ -70,22 +73,26 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
   });
 
   return (
-    <Tab.Group className="w-[35rem] max-w-full mx-auto">
-      <Tab.List
-        tabs={transactionTypes}
-        className="flex justify-center items-center gap-10 mb-4 before:bg-gray-600"
-        renderTab={({ tab, isSelected }) => (
-          <Tab
-            key={tab.id}
-            tab={tab}
-            className={`uppercase font-medium ${
-              isSelected ? "text-gray-700" : " text-gray-300"
-            }`}
-          />
-        )}
-      />
-      <Tab.Panels>{Panels}</Tab.Panels>
-    </Tab.Group>
+    <div
+      style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
+    >
+      <Tab.Group className="w-[35rem] max-w-full mx-auto">
+        <Tab.List
+          tabs={transactionTypes}
+          className="flex justify-center items-center gap-10 mb-4 before:bg-gray-600"
+          renderTab={({ tab, isSelected }) => (
+            <Tab
+              key={tab.id}
+              tab={tab}
+              className={`uppercase font-medium ${
+                isSelected ? "text-gray-700" : " text-gray-300"
+              }`}
+            />
+          )}
+        />
+        <Tab.Panels className="w-full">{Panels}</Tab.Panels>
+      </Tab.Group>
+    </div>
   );
 };
 
@@ -99,5 +106,3 @@ AccountStatement.Layout = function getLayout(page) {
 };
 
 export default AccountStatement;
-
-new Map([]).entries();

@@ -33,7 +33,7 @@ export default function Header() {
         {renderedListItems}
         <li
           id="navLogin"
-          className="fixed flex bg-white top-0 left-0 right-0 p-2 sm:static sm:p-0 sm:inline sm:ml-auto"
+          className="fixed flex bg-white border-b top-0 left-0 right-0 p-2 sm:static sm:border-none sm:p-0 sm:inline sm:ml-auto"
         >
           <Link href={user ? "/api/logout" : "/login"}>
             <a className="ml-auto px-2 py-px text-gray-500 bg-gray-50 rounded-sm">
