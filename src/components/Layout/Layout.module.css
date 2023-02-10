@@ -1,5 +1,5 @@
 .container {
-  @apply sm:p-0 !important;
+  @apply sm:pt-0 !important;
 }
 
 

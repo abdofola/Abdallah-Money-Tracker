@@ -17,14 +17,8 @@ const Layout: React.FC<LayoutProps> = ({
   withHeader = false,
   ...style
 }) => {
-  const navHeight = useGetHeight("#nav");
-  const loginHeight = useGetHeight("#navLogin");
-
   return (
-    <div
-      style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 10 }}
-      className={styles.container}
-    >
+    <div className={styles.container}>
       <SEO title={title} />
       {withHeader && <Header />}
       <div {...style}>{children}</div>
