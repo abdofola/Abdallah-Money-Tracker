@@ -19,15 +19,18 @@ export const api = createApi({
   }),
   tagTypes: ["transactions"],
   endpoints: (builder) => ({
-    getTransactions: builder.query<{transactions:Transaction[]}, {userId:string}>({
-      query: ({userId})=>({
-        document:gql`
-          query GetTransactions($userId:String!){
-            transactions(userId:$userId){
-              id,
-              amount,
-              date,
-              comment,
+    getTransactions: builder.query<
+      { transactions: Transaction[] },
+      { userId: string }
+    >({
+      query: ({ userId }) => ({
+        document: gql`
+          query GetTransactions($userId: String!) {
+            transactions(userId: $userId) {
+              id
+              amount
+              date
+              comment
               category {
                 id
                 name
@@ -38,10 +41,34 @@ export const api = createApi({
             }
           }
         `,
-        variables:{userId}
+        variables: { userId },
       }),
       providesTags: ["transactions"],
     }),
+    getTransaction: builder.query<{ transaction: Transaction }, { id: string }>(
+      {
+        query: ({ id }) => {
+          return {
+            document: gql`
+              query GetTransaction($id: String!) {
+                transaction(id: $id) {
+                  amount
+                  date
+                  comment
+                  category {
+                    type
+                    name
+                    color
+                    iconId
+                  }
+                }
+              }
+            `,
+            variables: { id },
+          };
+        },
+      }
+    ),
     addTransaction: builder.mutation<Transaction, Partial<Transaction>>({
       query: ({ amount, date, categoryId, comment, userId }) => ({
         document: gql`
@@ -53,10 +80,10 @@ export const api = createApi({
             $comment: String
           ) {
             addTransaction(
-              amount: $amount,
-              date: $date,
-              userId: $userId,
-              categoryId: $categoryId,
+              amount: $amount
+              date: $date
+              userId: $userId
+              categoryId: $categoryId
               comment: $comment
             ) {
               amount
@@ -125,6 +152,7 @@ export const api = createApi({
 export const {
   useAddTransactionMutation,
   useGetTransactionsQuery,
+  useGetTransactionQuery,
   useGetUserQuery,
   useAddUserMutation,
 } = api;

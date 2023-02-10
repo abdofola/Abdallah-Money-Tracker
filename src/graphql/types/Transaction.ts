@@ -11,7 +11,7 @@ builder.prismaObject("Transaction", {
     updatedAt: t.expose("createdAt", { type: "Date" }),
   }),
 });
-
+// get transactions
 builder.queryField("transactions", (t) =>
   t.prismaField({
     type: ["Transaction"],
@@ -24,13 +24,29 @@ builder.queryField("transactions", (t) =>
         orderBy: {
           date: "desc",
         },
-        where: {
-          userId: args.userId,
-        },
+        where: args,
       });
     },
   })
 );
+
+//get single transaction
+builder.queryField("transaction", (t) =>
+  t.prismaField({
+    type: "Transaction",
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async (query, _root, args, ctx, _info) => {
+      return await ctx.prisma.transaction.findUniqueOrThrow({
+        ...query,
+        where: args,
+      });
+    },
+  })
+);
+
+// add new transaction
 builder.mutationField("addTransaction", (t) =>
   t.prismaField({
     type: "Transaction",

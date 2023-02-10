@@ -5,6 +5,7 @@ import { withSessionSsr } from "@lib/session";
 import { Layout } from "@components/Layout";
 import { useAuth, useGetHeight } from "@lib/helpers/hooks";
 import { Spinner } from "@components/ui";
+import { useGetTransactionQuery } from "@app/services/api";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
@@ -15,7 +16,8 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 });
 
 const Transaction: NextPageWithLayout = ({ session }) => {
-  const router = useRouter();
+  const { query } = useRouter();
+  const { data } = useGetTransactionQuery({ id: query.id, userId: session.id });
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
 
@@ -24,12 +26,11 @@ const Transaction: NextPageWithLayout = ({ session }) => {
    * 1- api call to get the transaction of this id
    * 2- display the transaction, with options to mutate
    */
-  console.log({ router });
   return (
     <div
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
-      still under contstruction!
+      <pre>{JSON.stringify(data?.transaction, null, 2)}</pre>
     </div>
   );
 };
