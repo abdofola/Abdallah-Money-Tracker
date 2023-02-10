@@ -56,7 +56,12 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
           [...transactions[t.txt]].map(([date, trans]) => {
             return (
               <div key={date} className="w-full">
-                <h4 className={styles.fullBleed}>{date}</h4>
+                <h4
+                  className={styles.fullBleed}
+                  style={{ top: loginHeight + "px" }}
+                >
+                  {date}
+                </h4>
                 <TransactionList
                   className="space-y-2 w-full"
                   data={trans}
