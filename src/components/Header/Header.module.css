@@ -2,7 +2,7 @@
   position: fixed;
   padding: 1rem;
   z-index: 10;
-  @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:rounded-none sm:static;
+  @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:rounded-none sm:static sm:border-none;
 }
 .list {
   @apply flex justify-center gap-4;
