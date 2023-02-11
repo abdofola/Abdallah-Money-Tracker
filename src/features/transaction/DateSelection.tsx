@@ -14,7 +14,6 @@ const DateSelection: React.FC<DateSelectionProps> = ({
   selection = "day",
   periodRef = { current: null },
   setDate,
-  filter,
 }) => {
   const { startDate, endDate, setEndDate, setStartDate } = useDate();
   const { format } = myDate;
@@ -34,7 +33,6 @@ const DateSelection: React.FC<DateSelectionProps> = ({
       setEndDate(end);
     }
     setStartDate(start);
-    filter?.({ start, end });
   };
   const getCalenderTitle = (period: string) =>
     ({
@@ -91,6 +89,7 @@ function DateButton(
     <button
       className={className}
       type="button"
+      name="date"
       onClick={onClick}
       ref={periodRef}
     >

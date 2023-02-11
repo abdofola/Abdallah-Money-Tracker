@@ -4,7 +4,7 @@ import { getStyle } from "@lib/utils";
 type Variants = ["layout", "padding", "margin"];
 
 const style = getStyle<Variants>({
-  defaultStyle: "bg-white border border-gray-100 rounded-lg",
+  defaultStyle: "mx-auto bg-white border border-gray-100 rounded-lg",
   variants: {
     layout: {
       vertical: "flex flex-col gap-6",
@@ -27,7 +27,12 @@ const style = getStyle<Variants>({
   },
 });
 
-export default function Form({ children, onSubmit, variants=null }) {
+export default function Form({
+  children,
+  className,
+  onSubmit,
+  variants = null,
+}) {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -36,7 +41,10 @@ export default function Form({ children, onSubmit, variants=null }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={style(variants)}>
+    <form
+      onSubmit={handleSubmit}
+      className={style(variants).concat(className ? " " + className : "")}
+    >
       {children}
     </form>
   );

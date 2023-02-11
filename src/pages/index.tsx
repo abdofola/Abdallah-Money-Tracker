@@ -2,9 +2,6 @@ import dynamic from "next/dynamic";
 import React from "react";
 import { NextPageWithLayout } from "./_app";
 import { Layout } from "@components/Layout";
-import { Transform } from "@features/transaction/types";
-import { useGetUserQuery } from "@services";
-import { Category } from "@prisma/client";
 import { withSessionSsr } from "@lib/session";
 import { useGetHeight } from "@lib/helpers/hooks";
 import { Spinner } from "@components/ui";
@@ -17,6 +14,7 @@ const Transaction = dynamic(
   () => import("@features/transaction").then(({ Transaction }) => Transaction),
   {
     ssr: false,
+    loading: () => <Spinner variants={{ width: "lg" }} />,
   }
 );
 
@@ -32,43 +30,13 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
-  const { data, isLoading, isSuccess, error } = useGetUserQuery({
-    email: session.email,
-  });
-  const user: {
-    id: string;
-    categories: Transform<Category>;
-  } = {};
-
-  if (error) {
-    //TODO: do something here
-    console.error("error while fetching user", { error });
-  }
-
-  if (isSuccess) {
-    // transforming the response array into object
-    // using regular for loop instead of `Array.prototype.reduce` due to performance reasons.
-    const categories = {
-      income: [],
-      expenses: [],
-    } as typeof user["categories"];
-
-    for (const cat of data.user.categories) {
-      categories[cat.type].push(cat);
-    }
-    user.categories = categories;
-    user.id = session?.id;
-  }
 
   return (
     <main
       className="flex justify-center items-center min-h-full"
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
-      <div className="mt-8">
-        {isLoading && <Spinner variants={{ width: "lg" }} />}
-      </div>
-      {isSuccess && <Transaction user={user} />}
+      <Transaction user={session} />
     </main>
   );
 };
