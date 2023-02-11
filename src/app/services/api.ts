@@ -56,6 +56,7 @@ export const api = createApi({
                   date
                   comment
                   category {
+                    id
                     type
                     name
                     color

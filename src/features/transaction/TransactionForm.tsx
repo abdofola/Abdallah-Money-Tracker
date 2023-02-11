@@ -2,41 +2,40 @@ import React from "react";
 import { Check, Icon } from "@components/icons";
 import DateSelection from "./DateSelection";
 import { AddTransactionProps } from "./types";
-import { useAddTransactionMutation } from "@services";
-import { Spinner } from "@components/ui";
+import { Form, Spinner } from "@components/ui";
 
-function AddTransaction({
+// TODO: change the name to TransactionForm
+
+function TransactionForm({
   user,
-  displayOn,
+  displayOn = () => {},
   transactionType,
-}: AddTransactionProps) {
+  mutation,
+  status = { isLoading: false },
+  transactionComment,
+  transactionDate,
+  categoryId,
+  transactionAmount,
+}) {
   const amountRef = React.useRef<HTMLInputElement | null>(null);
-  const [date, setDate] = React.useState(new Date());
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
-  const [amountValue, setAmountValue] = React.useState("");
-  const [comment, setComment] = React.useState("");
+  const [date, setDate] = React.useState(transactionDate ?? new Date());
+  const [selectedId, setSelectedId] = React.useState<string | null>(
+    categoryId ?? null
+  );
+  const [amountValue, setAmountValue] = React.useState(transactionAmount ?? "");
+  const [comment, setComment] = React.useState(transactionComment ?? "");
   const [selectedTransaction, setSelectedTransaction] =
     React.useState(transactionType); // `transactionType` is mirrored in a state; in order to know when `transactionType` changes. Note:useRef doesn't do the job.
 
-  const [addTransaction, { isLoading }] = useAddTransactionMutation();
-  const canAdd = !isLoading && selectedId && amountValue;
+  const canAdd = !status.isLoading && selectedId && amountValue;
   const reset = () => {
     setSelectedId(null);
     setAmountValue("");
     setDate(new Date());
     setComment("");
   };
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    addTransaction({
-      ...Object.fromEntries(formData),
-      amount: Number(amountValue),
-      date,
-      userId: user.id,
-    })
-      .unwrap()
+  const handleSubmit = (formData) => {
+    mutation({ ...formData, date, amount: Number(amountValue) })
       .then((payload) => {
         console.log({ payload });
         reset();
@@ -45,18 +44,20 @@ function AddTransaction({
       .catch((error) => console.log({ error }));
   };
 
-  React.useEffect(() => {
-    amountRef.current?.focus();
-  }, []);
-
   // resetting the selectedId when switching between tabs.
   if (selectedTransaction !== transactionType) {
     setSelectedId(null);
     setSelectedTransaction(transactionType);
   }
+
+  React.useEffect(() => {
+    amountRef.current?.focus();
+  }, []);
+
   return (
-    <form
-      className="w-[25rem] max-w-full mx-auto flex flex-col gap-6 bg-white mt-4 p-4 rounded-lg border border-gray-100"
+    <Form
+      variants={{ padding: 4 }}
+      className="max-w-[29rem]"
       onSubmit={handleSubmit}
     >
       {/* amount */}
@@ -115,7 +116,7 @@ function AddTransaction({
                   type="radio"
                   name="categoryId"
                   value={id}
-                  // defaultChecked={selectedId === id}
+                  defaultChecked={selectedId === id}
                 />
                 {selectedId === id && (
                   <span className="absolute right-1 top-1 p-px border border-green-400 bg-green-100 rounded-full">
@@ -160,27 +161,23 @@ function AddTransaction({
       {/* buttons */}
       <div className="flex gap-2">
         <button
-          className={`flex justify-center items-center capitalize p-1 basis-1/3 rounded-lg shadow-md ${
+          className={`flex justify-center items-center capitalize p-1 basis-1/3 rounded-lg shadow ${
             !canAdd ? "text-gray-300" : ""
           }`}
           type="submit"
           disabled={!canAdd}
         >
-          {!isLoading ? "add" : <Spinner />}
+          {!status.isLoading ? "add" : <Spinner />}
         </button>
-        <button className="border-b p-1" type="reset" onClick={reset}>
+        <button type="reset" onClick={reset}>
           reset
         </button>
-        <button
-          className="border-b p-1  ml-auto"
-          type="button"
-          onClick={displayOn}
-        >
+        <button className="ml-auto" type="button" onClick={displayOn}>
           back
         </button>
       </div>
-    </form>
+    </Form>
   );
 }
 
-export default AddTransaction;
+export default TransactionForm;

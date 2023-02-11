@@ -1,17 +1,20 @@
 import React from "react";
 import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
-import { DisplayAmount, Display, AddTransaction } from "@features/transaction";
+import { DisplayAmount, Display, TransactionForm } from "@features/transaction";
 import { TransactionProps } from "@features/transaction/types";
 import { DateProvider } from "@components/contexts";
 import { transactionTypes, periods } from "@features/transaction/constants";
-import { useGetTransactionsQuery } from "@app/services/api";
+import {
+  useAddTransactionMutation,
+  useGetTransactionsQuery,
+} from "@app/services/api";
 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
-  const { data = { transactions: [] }, } = useGetTransactionsQuery({
+  const { data = { transactions: [] } } = useGetTransactionsQuery({
     userId: user.id,
   });
   const transactions = React.useMemo(() => {
@@ -29,6 +32,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const [display, setDisplay] = React.useState(true);
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState<Date | null>(null);
+  const [addTransaction, { isLoading }] = useAddTransactionMutation();
   const selectedTransaction = transactionTypes[transactionIdx]["txt"];
   const selectedPeriod = periods[periodIdx]["txt"];
   const total = transactions[selectedTransaction].reduce(
@@ -47,10 +51,17 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
             displayOff={() => setDisplay(false)}
           />
         ) : (
-          <AddTransaction
+          <TransactionForm
             user={user}
             transactionType={t.txt}
             displayOn={() => setDisplay(true)}
+            mutation={(data) => {
+             return addTransaction({
+                ...data,
+                userId: user.id,
+              }).unwrap();
+            }}
+            status={{ isLoading }}
           />
         )}
       </DateProvider>
