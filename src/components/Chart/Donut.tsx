@@ -1,16 +1,23 @@
-import { TransactionElement } from "@features/transaction/types";
 import React from "react";
 import { PieChart } from "react-minimal-pie-chart";
+import ReactTooltip from "react-tooltip";
+import { TransactionElement } from "@features/transaction/types";
 
 type DonutProps = {
-  data: TransactionElement[],
-  donutInnerLabel: string
-}
+  data: TransactionElement[];
+  donutInnerLabel: string;
+};
+
 const initialData = [{ key: 0, value: 0 }];
+const makeTooltipContent = (entry: any) => {
+  return `Sector ${entry.category.name} has value ${entry.value}`;
+};
 
 const Donut: React.FC<DonutProps> = ({ data, donutInnerLabel }) => {
+  const [hover, setHover] = React.useState<null | number>(null);
+
   return (
-    <div>
+    <div data-tip="" data-for="chart">
       <PieChart
         data={data.length === 0 ? initialData : data}
         animate
@@ -27,9 +34,7 @@ const Donut: React.FC<DonutProps> = ({ data, donutInnerLabel }) => {
                 dy={0}
                 className="h-[40px] w-[50px] text-[7px] text-center text-gray-500"
               >
-                <span
-                  className="flex justify-center items-center h-full max-w-full leading-tight"
-                >
+                <span className="flex justify-center items-center h-full max-w-full leading-tight">
                   {donutInnerLabel}
                 </span>
               </foreignObject>
@@ -38,6 +43,16 @@ const Donut: React.FC<DonutProps> = ({ data, donutInnerLabel }) => {
               </text>{" "}
             </switch>
           );
+        }}
+        onMouseOver={(_, segmentIdx) => setHover(segmentIdx)}
+        onMouseOut={() => setHover(null)}
+      />
+      <ReactTooltip
+        id="chart"
+        getContent={() => {
+          return typeof hover === "number"
+            ? makeTooltipContent(data[hover])
+            : null;
         }}
       />
     </div>
