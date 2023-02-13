@@ -1,5 +1,6 @@
 import { builder } from "../builder";
 
+//Type Transaction Schema structure
 builder.prismaObject("Transaction", {
   fields: (t) => ({
     id: t.exposeID("id"),
@@ -11,7 +12,8 @@ builder.prismaObject("Transaction", {
     updatedAt: t.expose("createdAt", { type: "Date" }),
   }),
 });
-// get transactions
+
+// get all transactions
 builder.queryField("transactions", (t) =>
   t.prismaField({
     type: ["Transaction"],
@@ -72,6 +74,42 @@ builder.mutationField("addTransaction", (t) =>
           comment: args.comment,
         },
         ...query,
+      });
+    },
+  })
+);
+
+// update transaction
+builder.mutationField("updateTransaction", (t) =>
+  t.prismaField({
+    type: "Transaction",
+    args: {
+      id: t.arg.string({ required: true }),
+      amount: t.arg.int({ required: true }),
+      date: t.arg.string({ required: true }),
+      categoryId: t.arg.string({ required: true }),
+      comment: t.arg.string(),
+    },
+    resolve: async (query, _root, args, ctx, _info) => {
+      const { id, ...data } = args;
+      return await ctx.prisma.transaction.update({
+        ...query,
+        where: { id },
+        data,
+      });
+    },
+  })
+);
+
+//delete transaction
+builder.mutationField("deleteTransaction", (t) =>
+  t.prismaField({
+    type: "Transaction",
+    args: { id: t.arg.string({ required: true }) },
+    resolve: async (query, _root, args, ctx, _info) => {
+      return await ctx.prisma.transaction.delete({
+        ...query,
+        where: args,
       });
     },
   })

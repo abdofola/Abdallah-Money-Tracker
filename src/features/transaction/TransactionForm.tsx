@@ -67,7 +67,7 @@ function TransactionForm({
         </label>
         <div className="flex gap-2 items-center">
           <input
-            className="transition basis-full px-2 py-1 bg-gray-100 shadow-inner rounded-md ring-offset-4 focus:outline-none  focus:ring-1 focus:ring-gray-300"
+            className="transition basis-full px-2 py-1 bg-gray-100 shadow-inner rounded-md ring-offset-4 focus:outline-0  focus:ring-1 focus:ring-gray-300"
             ref={amountRef}
             id="amount"
             type="number"
@@ -145,9 +145,13 @@ function TransactionForm({
           comment
         </label>
         <textarea
+          ref={(elem) => {
+            // if it's rendered with content, make the height equals to the content.
+            if (elem) elem.style.height = elem.scrollHeight + "px";
+          }}
           id="comment"
           name="comment"
-          className="transition px-2 py-px bg-gray-100 shadow-inner rounded-md resize-none focus:outline-none ring-offset-4 focus:ring-1 focus:ring-gray-300"
+          className="transition px-2 py-px bg-gray-100 shadow-inner rounded-md resize-none focus:outline-0 ring-offset-4 focus:ring-1 focus:ring-gray-300"
           value={comment}
           onChange={(e) => {
             const { value, style } = e.target;

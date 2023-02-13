@@ -1,13 +1,18 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { Layout } from "@components/Layout";
 import { useAuth, useGetHeight } from "@lib/helpers/hooks";
-import { Spinner } from "@components/ui";
-import { useGetTransactionQuery } from "@app/services/api";
+import { Modal, Spinner } from "@components/ui";
+import {
+  useDeleteTransactionMutation,
+  useGetTransactionQuery,
+  useUpdateTransactionMutation,
+} from "@app/services/api";
 import { TransactionForm } from "@features/transaction";
 import { DateProvider } from "@components/contexts";
+import { Transaction } from "@prisma/client";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
@@ -20,44 +25,56 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 const Transaction: NextPageWithLayout = ({ session }) => {
   const { query } = useRouter();
   const [display, setDisplay] = React.useState(true);
-  const { data = { transaction: {} } } = useGetTransactionQuery({
-    id: query.id,
-    userId: session.id,
-  });
+  const { data = { transaction: {} }, isLoading: fetchLoading } =
+    useGetTransactionQuery({
+      id: query.id,
+      userId: session.id,
+    });
+  const [updateTransaction, { isLoading }] = useUpdateTransactionMutation();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
-  const { amount, date, category, comment } = data.transaction;
+  const { amount, date, category, comment } = data.transaction as Transaction;
+  let content;
+  if (fetchLoading) {
+    content = <Spinner variants={{ width: "lg" }} />;
+  } else {
+    content = display ? (
+      <DisplayDetails
+        details={{ transactionId: query.id, amount, date, category, comment }}
+        displayOff={() => setDisplay(false)}
+      />
+    ) : (
+      <DateProvider>
+        <TransactionForm
+          user={session}
+          displayOn={() => setDisplay(true)}
+          transactionType={category.type}
+          transactionAmount={amount}
+          categoryId={category.id}
+          transactionComment={comment}
+          transactionDate={new Date(date)}
+          mutation={(data) => {
+            return updateTransaction({ ...data, id: query.id }).unwrap();
+          }}
+          status={{ isLoading }}
+        />
+      </DateProvider>
+    );
+  }
 
-  /**
-   * TODO:
-   * 1- api call to get the transaction of this id ✅
-   * 2- display the transaction, with options to mutate(update or delete)✅
-   * 3- onclick `update` button display `TransactionForm` with the corresponding data.✅
-   * 4- after updating the field send `update request` and forward to ??
-   * 5- onclick `delete` button display a `Modal` with two options to confirm or cancel
-   */
   return (
     <main
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
-      {display ? (
-        <DisplayDetails
-          details={{ amount, date, category, comment }}
-          displayOff={() => setDisplay(false)}
-        />
-      ) : (
-        <DateProvider>
-          <TransactionForm
-            user={session}
-            displayOn={() => setDisplay(true)}
-            transactionType={category.type}
-            transactionAmount={amount}
-            categoryId={category.id}
-            transactionComment={comment}
-            transactionDate={new Date(date)}
-          />
-        </DateProvider>
-      )}
+          <header className="px-2 capitalize">
+        <h2>
+          <strong className="relative z-10 font-medium text-gray-700 before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 ">
+            transaction details
+          </strong>
+        </h2>
+      </header>
+
+      {content}
     </main>
   );
 };
@@ -72,14 +89,13 @@ Transaction.Layout = function getLayout(page) {
 };
 
 function DisplayDetails({ details, displayOff }) {
-  const { amount, category, date, comment } = details;
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [deleteTranaction, { isLoading }] = useDeleteTransactionMutation();
+  const router = useRouter();
+  const { amount, category, date, comment, transactionId } = details;
+
   return (
     <div className="grid gap-4 px-2">
-      <header className="capitalize">
-        <h2>
-          <strong className="relative z-10 font-medium text-gray-700 before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 ">transaction details</strong>
-        </h2>
-      </header>
       <dl className="flex flex-col gap-1">
         <div>
           <dt className="text-gray-400">amount</dt>
@@ -108,7 +124,28 @@ function DisplayDetails({ details, displayOff }) {
         >
           update
         </button>
-        <button type="button">delete</button>
+        <button type="button" onClick={() => setIsOpen(true)}>
+          delete
+        </button>
+        {isOpen && (
+          <Modal
+            headerTxt="delete transaction"
+            confirmationStatus={{ isLoading }}
+            onConfirm={() => {
+              deleteTranaction({ id: transactionId })
+                .unwrap()
+                .then((payload) => {
+                  console.log({ payload });
+                  router.push("/transactions");
+                })
+                .catch((err) => console.error({ err }))
+                .finally(() => setIsOpen(false));
+            }}
+            close={() => setIsOpen(false)}
+          >
+            <p>Are you sure you want to delete this transaction!</p>
+          </Modal>
+        )}
       </div>
     </div>
   );

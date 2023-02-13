@@ -68,6 +68,7 @@ export const api = createApi({
             variables: { id },
           };
         },
+        providesTags: ["transactions"],
       }
     ),
     addTransaction: builder.mutation<Transaction, Partial<Transaction>>({
@@ -96,6 +97,50 @@ export const api = createApi({
           }
         `,
         variables: { amount, date, categoryId, userId, comment },
+      }),
+      invalidatesTags: ["transactions"],
+    }),
+    updateTransaction: builder.mutation<Transaction, Partial<Transaction>>({
+      query: (transaction) => ({
+        document: gql`
+          mutation UpdateTransaction(
+            $id: String!
+            $amount: Int!
+            $date: String!
+            $categoryId: String!
+            $comment: String
+          ) {
+            updateTransaction(
+              id: $id
+              amount: $amount
+              date: $date
+              categoryId: $categoryId
+              comment: $comment
+            ) {
+              amount
+              date
+              comment
+              category {
+                name
+                type
+              }
+            }
+          }
+        `,
+        variables: transaction,
+      }),
+      invalidatesTags: ["transactions"],
+    }),
+    deleteTransaction: builder.mutation<Transaction, { id: string }>({
+      query: ({ id }) => ({
+        document: gql`
+          mutation DeleteTransaction($id: String!) {
+            deleteTransaction(id: $id) {
+              id
+            }
+          }
+        `,
+        variables: { id },
       }),
       invalidatesTags: ["transactions"],
     }),
@@ -151,6 +196,8 @@ export const api = createApi({
 });
 
 export const {
+  useDeleteTransactionMutation,
+  useUpdateTransactionMutation,
   useAddTransactionMutation,
   useGetTransactionsQuery,
   useGetTransactionQuery,

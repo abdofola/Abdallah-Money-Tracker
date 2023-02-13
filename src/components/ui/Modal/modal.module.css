@@ -1,0 +1,27 @@
+.overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @apply fixed inset-0 z-50 px-4 bg-gray-400 bg-opacity-25;
+}
+.modal {
+  @apply bg-white shadow-2xl overflow-x-clip rounded-md;
+}
+.header {
+  @apply px-5 py-4 text-gray-700 capitalize font-semibold;
+}
+.body {
+  @apply px-5 pb-4 text-gray-400;
+}
+.footer {
+  @apply p-4 text-sm text-end space-x-4 bg-gray-50;
+}
+.footer > * {
+  @apply capitalize font-medium;
+}
+.footer > [name="cancel"] {
+  @apply text-gray-500;
+}
+.footer > [name="confirm"] {
+  @apply px-4 py-1 text-white bg-red-500 rounded-md;
+}
