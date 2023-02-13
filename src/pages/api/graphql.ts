@@ -2,6 +2,7 @@ import { createYoga } from "graphql-yoga";
 import { schema } from "src/graphql/schema";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createContext } from "src/graphql/context";
+import prisma from "@lib/prisma";
 
 type TCreateYoga = {
   req: NextApiRequest;
@@ -19,5 +20,5 @@ export default createYoga<TCreateYoga>({
   schema,
   // Needed to be defined explicitly because our endpoint lives at a different path other than `/graphql`
   graphqlEndpoint: "/api/graphql",
-  context: createContext
+  context: { prisma },
 });
