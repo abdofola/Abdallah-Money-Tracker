@@ -37,6 +37,7 @@ const nextConfig = {
       },
     ];
   },
+  webpack:false
 };
 
 module.exports = nextConfig;
