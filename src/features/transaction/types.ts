@@ -1,5 +1,6 @@
 import React, { SetStateAction } from "react";
 import { ReactDatePickerProps } from "react-datepicker";
+import type { Url } from "url";
 
 type Transform<T> = {
   income: T[];
@@ -73,7 +74,9 @@ type AddTransactionProps = {
 
 type TransactionItemProps = {
   item: TransactionElement,
-  percentage:string
+  percentage?:string,
+  href: Partial<Url>,
+  withComment?:boolean
 }
 type TransactionListProps<T=TransactionElement> = {
   data: T[],

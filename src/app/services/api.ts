@@ -17,16 +17,16 @@ export const api = createApi({
   baseQuery: graphqlRequestBaseQuery({
     url: enviroment[process.env.NODE_ENV] + "/api/graphql",
   }),
-  tagTypes: ["transactions"],
+  tagTypes: ["transactions", "transaction"],
   endpoints: (builder) => ({
     getTransactions: builder.query<
       { transactions: Transaction[] },
-      { userId: string }
+      { userId: string; category?: string }
     >({
-      query: ({ userId }) => ({
+      query: ({ userId, category }) => ({
         document: gql`
-          query GetTransactions($userId: String!) {
-            transactions(userId: $userId) {
+          query GetTransactions($userId: String!, $category: String) {
+            transactions(userId: $userId, category: $category) {
               id
               amount
               date
@@ -41,7 +41,7 @@ export const api = createApi({
             }
           }
         `,
-        variables: { userId },
+        variables: { userId, category },
       }),
       providesTags: ["transactions"],
     }),
@@ -129,7 +129,7 @@ export const api = createApi({
         `,
         variables: transaction,
       }),
-      invalidatesTags: ["transactions"],
+      invalidatesTags: ["transactions", "transaction"],
     }),
     deleteTransaction: builder.mutation<Transaction, { id: string }>({
       query: ({ id }) => ({

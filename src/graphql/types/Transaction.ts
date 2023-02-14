@@ -1,6 +1,6 @@
 import { builder } from "../builder";
 
-//Type Transaction Schema structure
+//Schema structure
 builder.prismaObject("Transaction", {
   fields: (t) => ({
     id: t.exposeID("id"),
@@ -13,20 +13,26 @@ builder.prismaObject("Transaction", {
   }),
 });
 
+//Schema behavior
 // get all transactions
 builder.queryField("transactions", (t) =>
   t.prismaField({
     type: ["Transaction"],
     args: {
       userId: t.arg.string({ required: true }),
+      category: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
+      const { userId, category } = args;
       return await ctx.prisma.transaction.findMany({
         ...query,
         orderBy: {
           date: "desc",
         },
-        where: args,
+        // if there's a query param of `categoryId` 
+        where: !category
+          ? { userId }
+          : { category: { is: { id: category } } },
       });
     },
   })
