@@ -1,5 +1,5 @@
 import { TransactionType, PeriodType } from "./types";
-
+  
 const transactionTypes = Array.from(
   ["income", "expenses"],
   (v: TransactionType, idx) => ({

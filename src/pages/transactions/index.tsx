@@ -11,6 +11,7 @@ import { Spinner } from "@components/ui";
 import { Tab } from "@components/Tab";
 import { transactionTypes } from "@features/transaction/constants";
 import styles from "./transactions.module.css";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
@@ -25,11 +26,14 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 const AccountStatement: NextPageWithLayout = ({ session }) => {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
+  const { query } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
   const { data, isSuccess, isLoading, error } = useGetTransactionsQuery({
+    category: query.category as string,
     userId: session.id,
   });
+  const tabIdx = transactionTypes.findIndex((t) => t.txt === query.type);
   let transactions = { income: new Map(), expenses: new Map() };
 
   if (!user) {
@@ -68,11 +72,15 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
                   data={trans}
                   renderItem={(t) => {
                     return (
-                      <Link key={t.id} href={"transactions/" + t.id}>
-                        <a>
-                          <TransactionItem withComment item={t} />
-                        </a>
-                      </Link>
+                      <TransactionItem
+                        withComment
+                        key={t.id}
+                        href={{
+                          pathname: "/transactions/[id]",
+                          query: { id: t.id },
+                        }}
+                        item={t}
+                      />
                     );
                   }}
                 />
@@ -88,7 +96,10 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
     <div
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
-      <Tab.Group className="w-[35rem] max-w-full mx-auto">
+      <Tab.Group
+        className="w-[35rem] max-w-full mx-auto"
+        defaultTab={tabIdx < 0 ? 0 : tabIdx}
+      >
         <Tab.List
           tabs={transactionTypes}
           className="flex justify-center items-center gap-10 mb-4 before:bg-gray-600"
@@ -116,5 +127,22 @@ AccountStatement.Layout = function getLayout(page) {
     </Layout>
   );
 };
+
+function Records({ date, data, loginHeight }) {
+  return (
+    <div>
+      <h4 className={styles.fullBleed} style={{ top: loginHeight + "px" }}>
+        {date}
+      </h4>
+      <TransactionList
+        className="flex flex-col gap-2"
+        data={data}
+        renderItem={(t) => {
+          return <TransactionItem key={t.id} withComment item={t} />;
+        }}
+      />
+    </div>
+  );
+}
 
 export default AccountStatement;

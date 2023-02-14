@@ -165,22 +165,26 @@ const Display: React.FC<DisplayProps> = ({
       </Tab.Group>
       <div className="flex flex-col w-full gap-3">
         <h3 className="text-lg sm:self-center">
-          <strong className="relative z-10 w-max capitalize text-lg text-gray-700 font-medium before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 ">transactions summary</strong> 
+          <strong className="relative z-10 w-max capitalize text-lg text-gray-700 font-medium before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 ">
+            transactions summary
+          </strong>
         </h3>
         {mergedDuplicateData.length === 0 && (
           <div className="flex flex-col items-center self-center max-w-[90%]">
-          <span>
-            <Icon href="/sprite.svg#search" />
-          </span>
-          <p className="text-gray-400 text-center">
-            <span className="float-left">No transaction found in this time, hit </span>
-            <span className="flex px-2">
-            &quot;
-            <Plus className="w-5 h-5" />
-            &quot;
+            <span>
+              <Icon href="/sprite.svg#search" />
             </span>
-            <span>the plus sign to add one.</span>
-          </p>
+            <p className="text-gray-400 text-center">
+              <span className="float-left">
+                No transaction found in this time, hit{" "}
+              </span>
+              <span className="flex px-2">
+                &quot;
+                <Plus className="w-5 h-5" />
+                &quot;
+              </span>
+              <span>the plus sign to add one.</span>
+            </p>
           </div>
         )}
         <TransactionList
@@ -192,6 +196,10 @@ const Display: React.FC<DisplayProps> = ({
               <TransactionItem
                 key={item.id}
                 item={item}
+                href={{
+                  pathname: "/transactions",
+                  query: { category: item.category.id, type: transactionType },
+                }}
                 percentage={percentage.toString().concat("%")}
               />
             );
