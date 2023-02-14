@@ -24,11 +24,17 @@
   @apply sm:text-gray-700 sm:bg-gray-100;
 }
 .pageLink > span:first-child {
-  @apply px-2 py-1 rounded-md sm:p-0 sm:bg-none;
+  @apply px-4 py-1 rounded-md sm:p-0 sm:bg-none;
 }
 .pageLink > span:last-child {
-  @apply text-gray-700;
+  @apply text-gray-400 font-medium;
+}
+.pageLink[data-active="true"] > span:last-child {
+  @apply text-gray-700 font-medium;
 }
 .pageLink[data-active="true"] > span:first-child {
-  @apply bg-gray-100 rounded-xl sm:p-0 sm:bg-none;
+  @apply bg-gray-200 bg-opacity-60 rounded-2xl sm:p-0 sm:bg-none;
+}
+.pageLink[data-active="true"] > span:first-child >svg {
+  stroke: black;
 }

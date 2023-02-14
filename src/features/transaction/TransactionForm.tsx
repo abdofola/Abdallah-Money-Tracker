@@ -165,7 +165,7 @@ function TransactionForm({
       {/* buttons */}
       <div className="flex gap-2">
         <button
-          className={`flex justify-center items-center capitalize p-1 basis-1/3 rounded-lg shadow ${
+          className={`flex justify-center items-center capitalize py-1 basis-1/3 rounded-lg shadow ${
             !canAdd ? "text-gray-300" : ""
           }`}
           type="submit"
@@ -173,10 +173,10 @@ function TransactionForm({
         >
           {!status.isLoading ? "add" : <Spinner />}
         </button>
-        <button type="reset" onClick={reset}>
+        <button type="reset" className="text-gray-500" onClick={reset}>
           reset
         </button>
-        <button className="ml-auto" type="button" onClick={displayOn}>
+        <button type="button" className="ml-auto px-2 text-gray-500 bg-gray-50 rounded-lg" onClick={displayOn}>
           back
         </button>
       </div>

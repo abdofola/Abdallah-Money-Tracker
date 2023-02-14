@@ -39,7 +39,11 @@ export default function Modal({
             cancel
           </button>
           <button name="confirm" type="button" onClick={onConfirm}>
-            {status.isLoading ? <Spinner /> : "Delete"}
+            {status.isLoading ? (
+              <Spinner variants={{ intent: "secondary", width: "xs" }} />
+            ) : (
+              "Delete"
+            )}
           </button>
         </footer>
       </div>
@@ -50,9 +54,11 @@ export default function Modal({
     const body = document.body;
     const windowScrollY = window.scrollY;
     body.style.position = "fixed";
+    body.style.right = "0";
+    body.style.left = "0";
     body.style.top = `-${windowScrollY}px`;
 
-    ref.current.focus();
+    ref.current?.focus();
 
     //cleanup
     return () => {
