@@ -36,7 +36,7 @@ const Transaction: NextPageWithLayout = ({ session }) => {
   const { amount, date, category, comment } = data.transaction as Transaction;
   let content;
   if (fetchLoading) {
-    content = <Spinner variants={{ width: "lg" }} />;
+    content = <Spinner variants={{ width: "md", margin: 4 }} />;
   } else {
     content = display ? (
       <DisplayDetails
@@ -63,15 +63,15 @@ const Transaction: NextPageWithLayout = ({ session }) => {
   }
 
   return (
-    <main
+    <main className="max-w-md mx-auto"
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
-          <header className="px-2 capitalize">
-        <h2>
+      <header className="px-2 mb-4 capitalize">
+        <h1 className="text-lg">
           <strong className="relative z-10 font-medium text-gray-700 before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 ">
             transaction details
           </strong>
-        </h2>
+        </h1>
       </header>
 
       {content}
@@ -116,15 +116,19 @@ function DisplayDetails({ details, displayOff }) {
           </div>
         )}
       </dl>
-      <div className="flex gap-4">
+      <div className="flex gap-4 py-4">
         <button
           type="button"
-          className="px-4 py-1 shadow rounded-md"
+          className="basis-1/3 py-1 capitalize shadow rounded-md"
           onClick={displayOff}
         >
           update
         </button>
-        <button type="button" onClick={() => setIsOpen(true)}>
+        <button
+          type="button"
+          className="basis-1/3 py-1 capitalize text-gray-500 bg-gray-100 bg-opacity-60 rounded-md"
+          onClick={() => setIsOpen(true)}
+        >
           delete
         </button>
         {isOpen && (

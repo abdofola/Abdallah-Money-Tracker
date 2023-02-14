@@ -51,18 +51,18 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
             displayOff={() => setDisplay(false)}
           />
         ) : (
-          <TransactionForm
-            user={user}
-            transactionType={t.txt}
-            displayOn={() => setDisplay(true)}
-            mutation={(data) => {
-             return addTransaction({
-                ...data,
-                userId: user.id,
-              }).unwrap();
-            }}
-            status={{ isLoading }}
-          />
+            <TransactionForm
+              user={user}
+              transactionType={t.txt}
+              displayOn={() => setDisplay(true)}
+              mutation={(data) => {
+                return addTransaction({
+                  ...data,
+                  userId: user.id,
+                }).unwrap();
+              }}
+              status={{ isLoading }}
+            />
         )}
       </DateProvider>
     </Tab.Panel>
