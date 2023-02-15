@@ -1,25 +1,18 @@
 import React from "react";
-import { TDataContext, TransactionElement } from "./types";
+import { DataProviderProps, TDateContex } from "./types";
 
-const DataContext = React.createContext<TDataContext | null>(null);
+const DateContext = React.createContext<TDateContex | null>(null);
 
-const useData = () => {
-  const dataContext = React.useContext(DataContext);
+const useDate = () => {
+  const dateContext = React.useContext(DateContext);
+  if (!dateContext)
+    throw new Error("dateContext must be used within `DataProvider` component");
 
-  if (!dataContext)
-    throw new Error(
-      "dataContext must be used within `DataProvider` component."
-    );
-
-  return dataContext;
+  return dateContext;
 };
 
-function DataProvider(props:{children:React.ReactNode}) {
-  const [data, setData] = React.useState<TDataContext["data"]>({
-    income: null,
-    expenses: null,
-  });
-  return <DataContext.Provider value={[data, setData]} {...props} />;
-}
+const DataProvider: React.FC<DataProviderProps> = ({ children, ...rest }) => {
+  return <DateContext.Provider value={rest}>{children}</DateContext.Provider>;
+};
 
-export { DataProvider as default, useData };
+export { DataProvider as default, useDate };

@@ -1,1 +1,1 @@
-export { default as DateProvider, useDate } from "./DateProvider";
+export { default as DataProvider, useDate } from "./DataProvider";

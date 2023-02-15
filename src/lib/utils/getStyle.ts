@@ -11,7 +11,7 @@ type Style<V extends Array<string>> = {
 };
 
 type Variants<V extends Array<string>> = {
-  [k in keyof Style<V>["variants"]]: string;
+  [k in keyof Style<V>["variants"]]?: Style<V>['variants'][''];
 };
 
 export function getStyle<V extends Array<string>>(style: Style<V>) {

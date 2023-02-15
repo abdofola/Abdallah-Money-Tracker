@@ -1,7 +1,13 @@
 import { getStyle } from "@lib/utils";
 import React from "react";
 
-const style = getStyle({
+//TODO: the typing is shit, fix it!
+type Variants = ["width", "intent", "margin"];
+type SpinnerProps = {
+  variants?: { [k in Variants[number]]?: string };
+  className?: string;
+};
+const style = getStyle<Variants>({
   defaultStyle: "border-gray-400 rounded-full animate-spin",
   variants: {
     width: {
@@ -23,11 +29,11 @@ const style = getStyle({
   defaultVariants: {
     width: "sm",
     intent: "primary",
-    margin: '0',
+    margin: "0",
   },
 });
 
-export default function Spinner({ variants = null, className }) {
+export default function Spinner({ variants, className }:SpinnerProps) {
   return (
     <div className={style(variants).concat(className ? " " + className : "")} />
   );
