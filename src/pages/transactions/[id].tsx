@@ -11,7 +11,7 @@ import {
   useUpdateTransactionMutation,
 } from "@app/services/api";
 import { TransactionForm } from "@features/transaction";
-import { DateProvider } from "@components/contexts";
+import { DataProvider } from "@components/contexts";
 import { Transaction } from "@prisma/client";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
@@ -44,7 +44,7 @@ const Transaction: NextPageWithLayout = ({ session }) => {
         displayOff={() => setDisplay(false)}
       />
     ) : (
-      <DateProvider>
+      <DataProvider>
         <TransactionForm
           user={session}
           displayOn={() => setDisplay(true)}
@@ -58,12 +58,13 @@ const Transaction: NextPageWithLayout = ({ session }) => {
           }}
           status={{ isLoading }}
         />
-      </DateProvider>
+      </DataProvider>
     );
   }
 
   return (
-    <main className="max-w-md mx-auto"
+    <main
+      className="max-w-md mx-auto"
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
       <header className="px-2 mb-4 capitalize">
@@ -82,7 +83,12 @@ const Transaction: NextPageWithLayout = ({ session }) => {
 // page layout
 Transaction.Layout = function getLayout(page) {
   return (
-    <Layout withHeader title="transaction" className="px-2 py-4">
+    <Layout
+      withHeader
+      session={page.props.session}
+      title="transaction"
+      className="px-2 py-4"
+    >
       {page}
     </Layout>
   );

@@ -3,7 +3,7 @@ import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
 import { DisplayAmount, Display, TransactionForm } from "@features/transaction";
 import { TransactionProps } from "@features/transaction/types";
-import { DateProvider } from "@components/contexts";
+import { DataProvider } from "@components/contexts";
 import { transactionTypes, periods } from "@features/transaction/constants";
 import {
   useAddTransactionMutation,
@@ -42,7 +42,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const dates = { startDate, endDate, setStartDate, setEndDate };
   const Panels = transactionTypes.map((t) => (
     <Tab.Panel key={t.id}>
-      <DateProvider data={transactions[t.txt]} {...dates}>
+      <DataProvider data={transactions[t.txt]} {...dates}>
         {display ? (
           <Display
             transactionType={t.txt}
@@ -64,7 +64,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
               status={{ isLoading }}
             />
         )}
-      </DateProvider>
+      </DataProvider>
     </Tab.Panel>
   ));
 

@@ -35,7 +35,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             {percentage && <span className=" text-gray-300">{percentage}</span>}
             <DisplayAmount
               className="text-gray-800 text-sm font-medium"

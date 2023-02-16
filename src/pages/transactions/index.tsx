@@ -1,18 +1,15 @@
 import React from "react";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { useGetTransactionsQuery } from "@app/services/api";
 import { Layout } from "@components/Layout";
-import { useAppDispatch } from "@app/hooks";
-import { useAuth, useGetHeight } from "@lib/helpers/hooks";
-import { setCredentials } from "@features/auth";
+import {  useGetHeight } from "@lib/helpers/hooks";
 import { TransactionItem, TransactionList } from "@features/transaction";
 import { Spinner } from "@components/ui";
 import { Tab } from "@components/Tab";
 import { transactionTypes } from "@features/transaction/constants";
 import styles from "./transactions.module.css";
 import { useRouter } from "next/router";
-import Link from "next/link";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
@@ -24,8 +21,6 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
 // component
 const AccountStatement: NextPageWithLayout = ({ session }) => {
-  const { user } = useAuth();
-  const dispatch = useAppDispatch();
   const { query } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
@@ -36,15 +31,11 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
   const tabIdx = transactionTypes.findIndex((t) => t.txt === query.type);
   let transactions = { income: new Map(), expenses: new Map() };
 
-  if (!user) {
-    // set the user to the current session.
-    dispatch(setCredentials(session));
-  }
   if (error) {
     console.error("fetching transactions error", error);
   }
   if (isSuccess) {
-    // map data into key as date, value as array of data that corresponds to this date.
+    // map data into date as key, value as array of data that corresponds to this date.
     for (let t of data.transactions) {
       const itemMap = transactions[t.category.type];
       if (!itemMap.has(t.date)) itemMap.set(t.date, []);
@@ -122,27 +113,11 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
 // page layout
 AccountStatement.Layout = function getLayout(page) {
   return (
-    <Layout withHeader title="transactions" className="px-2 py-4">
+    <Layout withHeader title="transactions" className="px-2 py-4" session={page.props.session}>
       {page}
     </Layout>
   );
 };
 
-function Records({ date, data, loginHeight }) {
-  return (
-    <div>
-      <h4 className={styles.fullBleed} style={{ top: loginHeight + "px" }}>
-        {date}
-      </h4>
-      <TransactionList
-        className="flex flex-col gap-2"
-        data={data}
-        renderItem={(t) => {
-          return <TransactionItem key={t.id} withComment item={t} />;
-        }}
-      />
-    </div>
-  );
-}
 
 export default AccountStatement;

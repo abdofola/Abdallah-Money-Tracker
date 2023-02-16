@@ -12,13 +12,13 @@ type TDataContext<T = TransactionElement> = [
   data: { income: T[] | null; expenses: T[] | null },
   setData: React.Dispatch<React.SetStateAction<T[]>>
 ];
-type DateProviderProps = {
+type DataProviderProps = {
   children: React.ReactNode;
 } & TDateContex;
 
 export type {
   TDateContex,
-  DateProviderProps,
+  DataProviderProps,
   TDataContext,
   TransactionElement,
 };
