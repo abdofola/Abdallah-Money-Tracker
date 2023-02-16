@@ -10,8 +10,10 @@ const getLinks = (props) => ({
   statement: { path: "/transactions", Icon: <Document {...props} /> },
 });
 
-export default function Header() {
-  const { user } = useAuth();
+// the user comes from cookie instead of state
+// because when refreshing a page, the state gets destroyed
+export default function Header({user}) {
+  // const { user } = useAuth();
   const router = useRouter();
   const isActive = (path: string) => router.pathname === path;
   const renderedListItems = Object.entries(getLinks({})).map(

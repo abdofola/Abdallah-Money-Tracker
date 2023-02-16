@@ -113,27 +113,11 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
 // page layout
 AccountStatement.Layout = function getLayout(page) {
   return (
-    <Layout withHeader title="transactions" className="px-2 py-4">
+    <Layout withHeader title="transactions" className="px-2 py-4" session={page.props.session}>
       {page}
     </Layout>
   );
 };
 
-function Records({ date, data, loginHeight }) {
-  return (
-    <div>
-      <h4 className={styles.fullBleed} style={{ top: loginHeight + "px" }}>
-        {date}
-      </h4>
-      <TransactionList
-        className="flex flex-col gap-2"
-        data={data}
-        renderItem={(t) => {
-          return <TransactionItem key={t.id} withComment item={t} />;
-        }}
-      />
-    </div>
-  );
-}
 
 export default AccountStatement;

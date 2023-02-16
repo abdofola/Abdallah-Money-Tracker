@@ -44,7 +44,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ session }) => {
 //page layout
 Home.Layout = function getLayout(page) {
   return (
-    <Layout withHeader title="home" className="mt-6">
+    <Layout session={page.props.session} withHeader title="home" className="mt-6">
       {page}
     </Layout>
   );

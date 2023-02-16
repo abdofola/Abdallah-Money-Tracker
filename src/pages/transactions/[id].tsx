@@ -63,7 +63,8 @@ const Transaction: NextPageWithLayout = ({ session }) => {
   }
 
   return (
-    <main className="max-w-md mx-auto"
+    <main
+      className="max-w-md mx-auto"
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
       <header className="px-2 mb-4 capitalize">
@@ -82,7 +83,12 @@ const Transaction: NextPageWithLayout = ({ session }) => {
 // page layout
 Transaction.Layout = function getLayout(page) {
   return (
-    <Layout withHeader title="transaction" className="px-2 py-4">
+    <Layout
+      withHeader
+      session={page.props.session}
+      title="transaction"
+      className="px-2 py-4"
+    >
       {page}
     </Layout>
   );
