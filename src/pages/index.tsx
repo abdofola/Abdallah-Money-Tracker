@@ -53,7 +53,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
 
-  // console.log({ user });
+  console.log({ user });
 
   return (
     <main
