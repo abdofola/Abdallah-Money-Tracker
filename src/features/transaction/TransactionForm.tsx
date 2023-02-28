@@ -3,8 +3,8 @@ import { Check, Icon } from "@components/icons";
 import DateSelection from "./DateSelection";
 import { AddTransactionProps } from "./types";
 import { Form, Spinner } from "@components/ui";
-
-// TODO: change the name to TransactionForm
+import { useRouter } from "next/router";
+import { en, ar } from "@locales";
 
 function TransactionForm({
   user,
@@ -18,6 +18,7 @@ function TransactionForm({
   transactionAmount,
 }) {
   const amountRef = React.useRef<HTMLInputElement | null>(null);
+  const { locale } = useRouter();
   const [date, setDate] = React.useState(transactionDate ?? new Date());
   const [selectedId, setSelectedId] = React.useState<string | null>(
     categoryId ?? null
@@ -28,6 +29,7 @@ function TransactionForm({
     React.useState(transactionType); // `transactionType` is mirrored in a state; in order to know when `transactionType` changes. Note:useRef doesn't do the job.
 
   const canAdd = !status.isLoading && selectedId && amountValue;
+  const translation = locale === "en" ? en : ar;
   const reset = () => {
     setSelectedId(null);
     setAmountValue("");
@@ -44,7 +46,7 @@ function TransactionForm({
       .catch((error) => console.log({ error }));
   };
 
-  // resetting the selectedId when switching between tabs.
+  // resetting the `selectedId` when switching between tabs.
   if (selectedTransaction !== transactionType) {
     setSelectedId(null);
     setSelectedTransaction(transactionType);
@@ -63,7 +65,7 @@ function TransactionForm({
       {/* amount */}
       <div className="flex flex-col gap-1">
         <label htmlFor="amount" className=" text-gray-400">
-          amount
+          {translation.transactionDetails.amount}
         </label>
         <div className="flex gap-2 items-center">
           <input
@@ -75,12 +77,12 @@ function TransactionForm({
             value={amountValue}
             onChange={(e) => setAmountValue(e.target.value)}
           />
-          <span>SDG</span>
+          <span>{translation.transactionDetails.currency}</span>
         </div>
       </div>
       {/* categories */}
       <div className="flex flex-col gap-1">
-        <span className="text-gray-400">categories</span>
+        <span className="text-gray-400">{translation.transactionDetails.category}</span>
         <div className="grid grid-cols-4 gap-4">
           {user.categories[selectedTransaction].map(
             ({ iconId, id, color, name }) => (
@@ -108,7 +110,7 @@ function TransactionForm({
                   />
                 </span>
                 <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
-                  {name}
+                  {name[locale]}
                 </span>
                 <input
                   className="appearance-none"
@@ -131,7 +133,7 @@ function TransactionForm({
       {/* date */}
       <div className="flex flex-col gap-1">
         <label className="text-gray-400" htmlFor="date">
-          date
+          {translation.transactionDetails.date}
         </label>
         <DateSelection
           date={date}
@@ -142,7 +144,7 @@ function TransactionForm({
       {/* comment */}
       <div className="flex flex-col gap-1">
         <label htmlFor="comment" className="text-gray-400">
-          comment
+          {translation.transactionDetails.comment}
         </label>
         <textarea
           ref={(elem) => {
@@ -171,13 +173,18 @@ function TransactionForm({
           type="submit"
           disabled={!canAdd}
         >
-          {!status.isLoading ? "add" : <Spinner />}
+          {!status.isLoading ? translation.buttons.add : <Spinner />}
         </button>
-        <button type="reset" className="text-gray-500" onClick={reset}>
-          reset
+        <button type="reset" className="text-gray-400" onClick={reset}>
+          {translation.buttons.reset}
         </button>
-        <button type="button" className="ml-auto px-2 text-gray-500 bg-gray-50 rounded-lg" onClick={displayOn}>
-          back
+        <button
+          type="button"
+          className="px-2 text-gray-500 bg-gray-50 rounded-lg"
+          style={{ marginInlineStart: "auto" }}
+          onClick={displayOn}
+        >
+          {translation.buttons.back}
         </button>
       </div>
     </Form>

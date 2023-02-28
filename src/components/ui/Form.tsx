@@ -37,7 +37,7 @@ export default function Form({
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    onSubmit(Object.fromEntries(formData));
+    onSubmit(Object.fromEntries(formData), formData.getAll.bind(formData));
   };
 
   return (

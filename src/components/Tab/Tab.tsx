@@ -8,7 +8,6 @@ import {
   TypeItemsContext,
   PanelsProps,
 } from "./types";
-import styled from "styled-components";
 
 const TabContext = React.createContext<TypeTabContext | null>(null);
 const ItemsContext = React.createContext<TypeItemsContext | null>(null);
@@ -37,33 +36,45 @@ const TabProvider: React.FC<TabGroupProps> = ({
 };
 
 const List: React.FC<TabItemsProps> = ({ tabs, renderTab, className }) => {
-  const [items, setItems] = React.useState(new Map());
-  const { selectedIdx } = useTab();
+  const [items, setItems] = React.useState<Map<number, HTMLButtonElement>>(
+    new Map()
+    );
+    const { selectedIdx } = useTab();
+    const elem = items.get(selectedIdx);
+    const [width, setWidth] = React.useState(elem?.clientWidth);
+    const [offsetLeft, setOffset] = React.useState(elem?.offsetLeft);
+
+  //when the element `offset` or `clientWidth` changes, update the state.
+  if (elem && elem.offsetLeft !== offsetLeft) {
+    setWidth(elem.clientWidth);
+    setOffset(elem.offsetLeft)
+  }  
 
   return (
     <ItemsContext.Provider value={{ setItems }}>
-      <Wrapper
-        className={className}
-        role="tablist"
-        $selected={selectedIdx}
-        $items={items}
-      >
+      <div className={className?.concat(" ", "relative")}>
         {tabs.map((tab) =>
           renderTab({ tab, isSelected: tab.id === selectedIdx })
         )}
-      </Wrapper>
+        <span
+          className="transition-all absolute bottom-0 h-[2px] bg-gray-600"
+          style={{
+            width: width + "px",
+            left: offsetLeft + "px",
+          }}
+        />
+      </div>
     </ItemsContext.Provider>
   );
 };
 
-const Tab: React.FC<TabProps> & Props = ({ className, tab, periodRef }) => {
+const Tab: React.FC<TabProps> & Props = ({ className, tab, cb }) => {
   const { setSelected, onChange } = useTab();
   const { setItems } = React.useContext(ItemsContext) as TypeItemsContext;
-
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setSelected?.(Number(e.currentTarget.dataset["id"]));
     onChange?.(Number(e.currentTarget.dataset["id"]));
-    if (tab.txt === "period" && periodRef) periodRef.current?.click();
+    cb?.();
   };
 
   return (
@@ -95,6 +106,7 @@ const Panels: React.FC<PanelsProps> = ({ children, className }) => {
     let cloned;
 
     if (child.type.displayName === "Panel") {
+      // if the child is `Panel` component; clone the element and add `id`prop.
       cloned = React.cloneElement(child, { id: id++ });
       return cloned;
     }
@@ -104,29 +116,21 @@ const Panels: React.FC<PanelsProps> = ({ children, className }) => {
   return <div className={className}>{renderedChildren}</div>;
 };
 
-const Panel: React.FC<{ children: React.ReactNode; className:string, id: number }> = ({
-  children,
-  className,
-  id,
-}) => {
+const Panel: React.FC<{
+  children: React.ReactNode;
+  className: string;
+  id: number;
+}> = ({ children, className, id }) => {
   const { selectedIdx } = useTab();
   if (id !== selectedIdx) return <></>;
-  return <div role="tabpanel" className={className}>{children}</div>;
+  return (
+    <div role="tabpanel" className={className}>
+      {children}
+    </div>
+  );
 };
 
 Panel.displayName = "Panel";
-
-const Wrapper = styled.div`
-  position:relative;
-  &::before {
-  content: '';
-  position:absolute;
-  bottom:0;
-  left:${({ $selected, $items }) => $items.get($selected)?.offsetLeft}px;
-  width: ${({ $selected, $items }) => $items.get($selected)?.clientWidth}px;
-  height: 2px;
-  transition:left 0.15s linear;
-`;
 
 Tab.Group = TabProvider;
 Tab.List = List;

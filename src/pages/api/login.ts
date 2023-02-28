@@ -10,14 +10,9 @@ export default withSessionRoute(async (req, res) => {
   try {
     const user = await prisma.user.findUniqueOrThrow({
       where: { email },
-      include: { categories: true },
     });
 
-    for (let c of user.categories) {
-      categories[c.type].push(c);
-    }
-
-    const data = { ...user, categories };
+    const data = user;
     req.session.user = data;
     
     await req.session.save();

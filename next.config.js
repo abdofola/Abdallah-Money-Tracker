@@ -16,6 +16,10 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  i18n: {
+    locales: ["en", "ar"],
+    defaultLocale: "ar",
+  },
   async headers() {
     return [
       {

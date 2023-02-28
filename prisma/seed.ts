@@ -2,61 +2,61 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 export const categories: Prisma.CategoryCreateWithoutUserInput[] = [
   {
-    name: "groceries",
+    name: { en: "groceries", ar: "خضروات" },
     color: "lavender",
     iconId: "groceries",
     type: "expenses",
   },
   {
-    name: "education",
+    name: { en: "education", ar: "تعليم" },
     color: "blueviolet",
     iconId: "education",
     type: "expenses",
   },
   {
-    name: "health",
+    name: { en: "health", ar: "صحة" },
     color: "orchid",
     iconId: "health",
     type: "expenses",
   },
   {
-    name: "electricity",
+    name: { en: "electricity", ar: "كهرباء" },
     color: "gold",
     iconId: "electricity",
     type: "expenses",
   },
   {
-    name: "snacks",
+    name: { en: "snacks", ar: "وجبات" },
     color: "teal",
     iconId: "snacks",
     type: "expenses",
   },
   {
-    name: "transportation",
+    name: { en: "transportation", ar: "مواصلات" },
     color: "tan",
     iconId: "transportation",
     type: "expenses",
   },
   {
-    name: "fuel",
+    name: { en: "fuel", ar: "بنزين" },
     color: "magenta",
     iconId: "fuel",
     type: "expenses",
   },
   {
-    name: "salary",
+    name: { en: "salary", ar: "مرتب" },
     color: "blue",
     iconId: "salary",
     type: "income",
   },
   {
-    name: "transfer",
+    name: { en: "transfer", ar: "حوالة" },
     color: "skyblue",
     iconId: "transfer",
     type: "income",
   },
   {
-    name: "gift",
+    name: { en: "gift", ar: "هدية" },
     color: "orange",
     iconId: "gift",
     type: "income",
@@ -64,7 +64,7 @@ export const categories: Prisma.CategoryCreateWithoutUserInput[] = [
 ];
 const prisma = new PrismaClient();
 let userData: Prisma.UserCreateInput = {
-  email: "fola@a.com",
+  email: "fola@admin.com",
   role: "ADMIN",
   categories: {
     create: categories,
@@ -78,7 +78,6 @@ async function main() {
       categories: true,
     },
   });
-  console.log(`Created user with email: ${user.email}`);
 }
 
 main()

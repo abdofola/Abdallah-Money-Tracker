@@ -34,7 +34,7 @@ CREATE TABLE "Transaction" (
 CREATE TABLE "Category" (
     "id" TEXT NOT NULL,
     "type" "Type" NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" JSONB NOT NULL,
     "color" TEXT NOT NULL,
     "iconId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
@@ -47,14 +47,11 @@ CREATE TABLE "Category" (
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Transaction_categoryId_key" ON "Transaction"("categoryId");
-
--- AddForeignKey
-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Category" ADD CONSTRAINT "Category_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Category" ADD CONSTRAINT "Category_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -3,10 +3,6 @@ import { fetchJson, FetchError } from "@lib/utils";
 
 //This hook inspired by https://usehooks.com/useAsync/
 
-type AsyncConfig = {
-  url: string;
-  immediate?: boolean;
-};
 
 type Status = "idle" | "pending" | "success" | "error";
 
