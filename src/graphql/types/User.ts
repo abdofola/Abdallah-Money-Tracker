@@ -45,8 +45,7 @@ builder.mutationField("addUser", (t) =>
       try {
         const user = await fetchJson<User>("http://localhost:3000/api/signup", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(args),
+          body: args,
           referrer: "http://localhost:3000/api/graphql",
         });
 

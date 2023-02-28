@@ -1,15 +1,17 @@
 import React from "react";
+import Link from "next/link";
 import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { useGetTransactionsQuery } from "@app/services/api";
 import { Layout } from "@components/Layout";
-import {  useGetHeight } from "@lib/helpers/hooks";
+import { useGetHeight } from "@lib/helpers/hooks";
 import { TransactionItem, TransactionList } from "@features/transaction";
-import { Spinner } from "@components/ui";
+import { EmptyState, Spinner } from "@components/ui";
 import { Tab } from "@components/Tab";
 import { transactionTypes } from "@features/transaction/constants";
-import styles from "./transactions.module.css";
 import { useRouter } from "next/router";
+import { en, ar } from "@locales";
+import styles from "./transactions.module.css";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
@@ -21,35 +23,56 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
 // component
 const AccountStatement: NextPageWithLayout = ({ session }) => {
-  const { query } = useRouter();
+  const { query, locale } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
   const { data, isSuccess, isLoading, error } = useGetTransactionsQuery({
     category: query.category as string,
     userId: session.id,
   });
-  const tabIdx = transactionTypes.findIndex((t) => t.txt === query.type);
+  const tabIdx = transactionTypes.findIndex((t) => t.txt.en === query.type);
   let transactions = { income: new Map(), expenses: new Map() };
 
   if (error) {
     console.error("fetching transactions error", error);
   }
   if (isSuccess) {
-    // map data into date as key, value as array of data that corresponds to this date.
+    // map data into `date` as key, value as array of `transaciton` that corresponds to this date.
     for (let t of data.transactions) {
       const itemMap = transactions[t.category.type];
       if (!itemMap.has(t.date)) itemMap.set(t.date, []);
       itemMap.get(t.date).push(t);
     }
   }
+  const translation = locale === "en" ? en : ar;
+
   const Panels = transactionTypes.map((t) => {
     return (
       <Tab.Panel key={t.id} className="grid place-items-center">
         {isLoading && <Spinner variants={{ width: "lg" }} />}
-        {transactions[t.txt].size === 0 ? (
-          <p>no {t.txt} yet!</p>
+        {transactions[t.txt.en].size === 0 && !isLoading ? (
+          /** -------empty state----- */
+          <EmptyState
+            className="flex flex-col items-center self-center max-w-[90%]"
+            icon="/sprite.svg#search"
+            renderParagraph={() => (
+              <p className="text-gray-400 text-center text-sm">
+                {translation.messages.emptyState.p3}
+                <Link
+                  href={{
+                    pathname: "/transactions",
+                  }}
+                >
+                  <a className="ltr:ml-1 rtl:mr-1 underline">
+                    {translation.messages.emptyState.p4}
+                  </a>
+                </Link>
+              </p>
+            )}
+          />
         ) : (
-          [...transactions[t.txt]].map(([date, trans]) => {
+          /** -------transaction records----- */
+          [...transactions[t.txt.en]].map(([date, trans]) => {
             return (
               <div key={date} className="w-full">
                 <h4
@@ -93,11 +116,11 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
       >
         <Tab.List
           tabs={transactionTypes}
-          className="flex justify-center items-center gap-10 mb-4 before:bg-gray-600"
+          className="flex justify-center items-center gap-10 mb-4"
           renderTab={({ tab, isSelected }) => (
             <Tab
               key={tab.id}
-              tab={tab}
+              tab={{ id: tab.id, txt: tab.txt[locale] }}
               className={`uppercase font-medium ${
                 isSelected ? "text-gray-700" : " text-gray-300"
               }`}
@@ -113,11 +136,15 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
 // page layout
 AccountStatement.Layout = function getLayout(page) {
   return (
-    <Layout withHeader title="transactions" className="px-2 py-4" session={page.props.session}>
+    <Layout
+      withHeader
+      title="transactions"
+      className="px-2 py-4"
+      session={page.props.session}
+    >
       {page}
     </Layout>
   );
 };
-
 
 export default AccountStatement;

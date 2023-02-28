@@ -27,7 +27,7 @@ type TabItemsProps = {
 type TabProps = {
   tab: RenderTabParam["tab"];
   className?: string;
-  periodRef?: React.MutableRefObject<HTMLButtonElement | null>;
+  cb?: ()=>void;
 };
 
 type TypeTabContext = {

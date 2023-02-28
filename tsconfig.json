@@ -21,7 +21,8 @@
       "@lib/*": ["src/lib/*"],
       "@features/*": ["src/features/*"],
       "@services": ["src/app/services"],
-      "@app/*": ["src/app/*"]
+      "@app/*": ["src/app/*"],
+      "@locales":["src/locales"],
     }
   },
   "include": ["next-env.d.ts", "**/*.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"],

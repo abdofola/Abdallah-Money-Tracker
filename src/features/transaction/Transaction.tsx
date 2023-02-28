@@ -9,9 +9,12 @@ import {
   useAddTransactionMutation,
   useGetTransactionsQuery,
 } from "@app/services/api";
+import { useRouter } from "next/router";
+import { ar, en } from "@locales";
 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
+  const { locale } = useRouter();
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
   const { data = { transactions: [] } } = useGetTransactionsQuery({
@@ -33,8 +36,8 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const [startDate, setStartDate] = React.useState(new Date());
   const [endDate, setEndDate] = React.useState<Date | null>(null);
   const [addTransaction, { isLoading }] = useAddTransactionMutation();
-  const selectedTransaction = transactionTypes[transactionIdx]["txt"];
-  const selectedPeriod = periods[periodIdx]["txt"];
+  const selectedTransaction = transactionTypes[transactionIdx]["txt"].en;
+  const selectedPeriod = periods[periodIdx]["txt"][locale];
   const total = transactions[selectedTransaction].reduce(
     (acc, curr) => acc + curr.amount,
     0
@@ -42,7 +45,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const dates = { startDate, endDate, setStartDate, setEndDate };
   const Panels = transactionTypes.map((t) => (
     <Tab.Panel key={t.id}>
-      <DataProvider data={transactions[t.txt]} {...dates}>
+      <DataProvider data={transactions[t.txt.en]} {...dates}>
         {display ? (
           <Display
             transactionType={t.txt}
@@ -51,22 +54,23 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
             displayOff={() => setDisplay(false)}
           />
         ) : (
-            <TransactionForm
-              user={user}
-              transactionType={t.txt}
-              displayOn={() => setDisplay(true)}
-              mutation={(data) => {
-                return addTransaction({
-                  ...data,
-                  userId: user.id,
-                }).unwrap();
-              }}
-              status={{ isLoading }}
-            />
+          <TransactionForm
+            user={user}
+            transactionType={t.txt.en}
+            displayOn={() => setDisplay(true)}
+            mutation={(data) => {
+              return addTransaction({
+                ...data,
+                userId: user.id,
+              }).unwrap();
+            }}
+            status={{ isLoading }}
+          />
         )}
       </DataProvider>
     </Tab.Panel>
   ));
+  const translation = locale === "en" ? en : ar;
 
   //prevent selecting multiple dates from date-picker when `period` tab not selected.
   if (selectedPeriod !== "period" && endDate) {
@@ -79,9 +83,10 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
         <Money className="w-5 h-5 stroke-gray-400" />
         <DisplayAmount
           amount={total}
-          className="mr-3 font-medium text-gray-700"
+          className=" font-medium text-gray-700"
+          style={{ marginInlineEnd: "12px" }}
         />
-        <span className="text-gray-400">total</span>
+        <span className="text-gray-400">{translation.total}</span>
       </div>
 
       <Tab.Group
@@ -91,11 +96,11 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
       >
         <Tab.List
           tabs={transactionTypes}
-          className="flex justify-center items-center gap-10 before:bg-gray-600"
+          className="flex justify-center items-center gap-10"
           renderTab={({ tab, isSelected }) => (
             <Tab
               key={tab.id}
-              tab={tab}
+              tab={{ id: tab.id, txt: tab.txt[locale] }}
               className={`uppercase font-medium ${
                 isSelected ? "text-gray-700" : " text-gray-300"
               }`}

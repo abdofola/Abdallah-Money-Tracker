@@ -1,6 +1,8 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { Spinner } from "@components/ui";
+import { useRouter } from "next/router";
+import { en, ar } from "@locales";
 import styles from "./modal.module.css";
 
 type ModalProps = {
@@ -21,6 +23,8 @@ export default function Modal({
   className,
 }: ModalProps) {
   const ref = React.useRef<HTMLDivElement | null>(null);
+  const { locale } = useRouter();
+  const translation = locale === "en" ? en : ar;
   const child = (
     <div className={styles.overlay} onClick={close}>
       <div
@@ -36,13 +40,13 @@ export default function Modal({
         <main className={styles.body}>{children}</main>
         <footer className={styles.footer}>
           <button name="cancel" type="button" onClick={close}>
-            cancel
+            {translation.buttons.cancel}
           </button>
           <button name="confirm" type="button" onClick={onConfirm}>
             {status.isLoading ? (
               <Spinner variants={{ intent: "secondary", width: "xs" }} />
             ) : (
-              "Delete"
+              translation.buttons.delete
             )}
           </button>
         </footer>

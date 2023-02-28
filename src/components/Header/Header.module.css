@@ -1,15 +1,25 @@
 .nav {
   position: fixed;
+  display: grid;
+  grid-template-columns: repeat(12,1fr);
+  grid-auto-flow: column;
+  align-items: center;
   padding: 1rem;
   z-index: 10;
   @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:rounded-none sm:static sm:border-none;
 }
 .list {
-  @apply flex justify-center gap-4;
+  @apply col-span-12 flex justify-center gap-4;
 }
+/* center the pages' links regardless the direction
+------------------------------------*/
 .item:first-child {
-  @apply sm:ml-auto;
+  @apply sm:ltr:ml-auto sm:rtl:mr-auto;
 }
+.item:nth-last-child(2){
+  @apply sm:ltr:mr-auto sm:rtl:ml-auto;
+}
+/*----------------------------------------*/
 .pageLink {
   display: flex;
   flex-direction: column;

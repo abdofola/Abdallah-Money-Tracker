@@ -16,6 +16,9 @@ import { useDate } from "@components/contexts";
 import { myDate } from "@lib/utils";
 import { periods } from "./constants";
 import { TransactionElement } from "@features/transaction/types";
+import { useRouter } from "next/router";
+import { en, ar } from "@locales";
+import { EmptyState } from "@components/ui";
 
 const isInselectedTime = (
   selectedTime: PeriodType,
@@ -44,14 +47,21 @@ const filterTransactions: FilterTransactions = ({
   return filteredByDate;
 };
 const donutInnerText = (
-  period: string,
+  period: { ar: string; en: string },
   transaction: string,
-  total: number = 0
+  total = 0,
+  locale = "ar"
 ) => {
-  let text = "There were no ";
-  if (total) return total.toFixed(2).toString().concat(" SDG");
-  if (period === "day") text += `${transaction} today`;
-  else text += `${transaction} in this ${period}`;
+  const arabicTrx = locale === "ar" && transaction.replace("ال", "");
+  const currency = locale === "en" ? "SDG" : "ج";
+  const pronoun = ["السنة", "المدة"].includes(period[locale]) ? "هذه" : "هذا";
+  let text = locale === "en" ? "There were no " : `لا يوجد ${arabicTrx}`;
+  if (total) return total.toFixed(2).toString().concat(` ${currency}`);
+  else
+    text +=
+      locale === "en"
+        ? `${transaction} in this ${period[locale]}`
+        : ` في ${pronoun} ${period[locale]}`;
   return text;
 };
 const calculatePercentage = (amount: number, total: number) =>
@@ -65,11 +75,12 @@ const Display: React.FC<DisplayProps> = ({
   displayOff,
 }) => {
   const periodRef = React.useRef<HTMLButtonElement | null>(null);
+  const { locale } = useRouter();
   const { data, startDate: start, endDate: end } = useDate();
   const mergedDuplicateData = React.useMemo(() => {
     const filteredData = filterTransactions({
       data,
-      periodType: periods[periodIndex]["txt"],
+      periodType: periods[periodIndex]["txt"].en,
       selectedDate: { start, end },
     });
     const duplicates: { [k: string]: TransactionElement[] } = {};
@@ -110,7 +121,7 @@ const Display: React.FC<DisplayProps> = ({
 
     return merged;
   }, [start, end, periodIndex, data]);
-  const selectedPeriod = periods[periodIndex]["txt"];
+  const selectedPeriod = periods[periodIndex]["txt"].en;
   const total = mergedDuplicateData.reduce((acc, curr) => acc + curr.amount, 0);
   const Panels = periods.map((p) => {
     return (
@@ -118,14 +129,16 @@ const Display: React.FC<DisplayProps> = ({
         <Donut
           data={mergedDuplicateData}
           donutInnerLabel={donutInnerText(
-            selectedPeriod,
-            transactionType,
-            total
+            periods[periodIndex]["txt"],
+            transactionType[locale],
+            total,
+            locale
           )}
         />
       </Tab.Panel>
     );
   });
+  const translation = locale === "en" ? en : ar;
 
   return (
     <div className="flex flex-col gap-4 mt-4 sm:mt-8 sm:flex-row">
@@ -140,8 +153,8 @@ const Display: React.FC<DisplayProps> = ({
           renderTab={({ tab, isSelected }) => (
             <Tab
               key={tab.id}
-              tab={tab}
-              periodRef={periodRef}
+              tab={{ id: tab.id, txt: tab.txt[locale] }}
+              cb={() => tab.txt.en === "period" && periodRef.current?.click()}
               className={`capitalize ${
                 isSelected ? "text-gray-700" : " text-gray-300"
               }`}
@@ -166,26 +179,28 @@ const Display: React.FC<DisplayProps> = ({
       <div className="flex flex-col w-full gap-3">
         <h3 className="text-lg sm:self-center">
           <strong className="relative z-10 w-max capitalize text-lg text-gray-700 font-medium before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 ">
-            transactions summary
+            {translation.headings.summary}
           </strong>
         </h3>
+        {/* ----------empty state--------- */}
         {mergedDuplicateData.length === 0 && (
-          <div className="flex flex-col items-center self-center max-w-[90%]">
-            <span>
-              <Icon href="/sprite.svg#search" />
-            </span>
-            <p className="text-gray-400 text-center">
-              <span className="float-left">
-                No transaction found in this time, hit{" "}
-              </span>
-              <span className="flex px-2">
-                &quot;
-                <Plus className="w-5 h-5" />
-                &quot;
-              </span>
-              <span>the plus sign to add one.</span>
-            </p>
-          </div>
+          <EmptyState
+            className="flex flex-col items-center self-center max-w-[90%]"
+            icon="/sprite.svg#search"
+            renderParagraph={() => (
+              <p className="text-gray-400 text-center">
+                <span style={{ float: locale === "en" ? "left" : "right" }}>
+                  {translation.messages.emptyState.p1}
+                </span>
+                <span className="flex px-2">
+                  &quot;
+                  <Plus className="w-5 h-5" />
+                  &quot;
+                </span>
+                <span>{translation.messages.emptyState.p2}</span>
+              </p>
+            )}
+          />
         )}
         <TransactionList
           className="hideScrollBar relative space-y-2 max-h-72 rounded-lg overflow-y-auto"
@@ -197,8 +212,12 @@ const Display: React.FC<DisplayProps> = ({
                 key={item.id}
                 item={item}
                 href={{
+                  /**  /transactions?category=`id`&type=`transactionType` */
                   pathname: "/transactions",
-                  query: { category: item.category.id, type: transactionType },
+                  query: {
+                    category: item.category.id,
+                    type: transactionType.en,
+                  },
                 }}
                 percentage={percentage.toString().concat("%")}
               />

@@ -39,7 +39,7 @@ model Transaction {
 model Category {
   id           String        @id @default(uuid())
   type         Type
-  name         String
+  name         Json
   color        String
   iconId       String
   userId       String
