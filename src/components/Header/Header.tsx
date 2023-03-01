@@ -32,12 +32,11 @@ export default function Header({ user }) {
 
   // setting `dir` and `lang` of the document in accordance to `locale`
   React.useEffect(() => {
+    console.log(router.asPath);
     const dir = router.locale === "en" ? "ltr" : "rtl";
     // set `html` direction whenever locale changes.
     window.document.documentElement.dir = dir;
     window.document.documentElement.lang = router.locale!;
-    // prefetching home page data. !!! only works in production !!!
-    router.prefetch('/')
   }, [router]);
 
   return (
@@ -59,10 +58,15 @@ export default function Header({ user }) {
           <select
             name="locale"
             defaultValue={router.locale}
-            onChange={(e) => {
-              router.push(router.pathname, router.asPath, {
-                locale: e.target.value,
-              });
+            onChange={async (e) => {
+              const boolean = await router.push(
+                router.pathname,
+                router.asPath,
+                {
+                  locale: e.target.value,
+                }
+              );
+              console.log({ boolean });
             }}
           >
             <option value="en">en</option>
