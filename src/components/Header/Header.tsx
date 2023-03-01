@@ -36,7 +36,9 @@ export default function Header({ user }) {
     // set `html` direction whenever locale changes.
     window.document.documentElement.dir = dir;
     window.document.documentElement.lang = router.locale!;
-  }, [router.locale]);
+    // prefetching home page data. !!! only works in production !!!
+    router.prefetch('/')
+  }, [router]);
 
   return (
     <nav id="nav" className={styles.nav}>
