@@ -74,7 +74,8 @@ const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
       {isLoading && <Spinner variants={{ width: "lg" }} />}
-      <Transaction user={{ ...user, categories }} />
+      {isSuccess && <Transaction user={{ ...user, categories }} />}
+      
     </main>
   );
 };
