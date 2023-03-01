@@ -7,6 +7,7 @@ import { useGetHeight } from "@lib/helpers/hooks";
 import { Spinner } from "@components/ui";
 import { request, gql } from "graphql-request";
 import { enviroment } from "@lib/enviroment";
+import { useGetUserQuery } from "@services";
 
 type HomeProps = {
   session: { id: string; email: string; [k: string]: any };
@@ -28,31 +29,43 @@ const Transaction = dynamic(
   () => import("@features/transaction").then(({ Transaction }) => Transaction),
   {
     ssr: false,
-    loading: () => <Spinner variants={{ width: "lg" }} />,
+    // loading: () => <Spinner variants={{ width: "lg" }} />,
   }
 );
 
+//ISSUE: for some reasons `getServerSideProps` doesn't run on client-side transition and on changing locales???
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
-  const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
+  // const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
 
-  const categories = { income: [], expenses: [] };
+  // const categories = { income: [], expenses: [] };
   // redirect to loginPage.
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
-  const cats = await request(url, query, { userId: user.id });
+  // const cats = await request(url, query, { userId: user.id });
 
-  // classify the categories by `type`, and map it to `categories` accordingly.
-  for (let c of cats.categories) {
-    categories[c.type].push(c);
-  }
-  return { props: { user: { ...user, categories } } };
+  // // classify the categories by `type`, and map it to `categories` accordingly.
+  // for (let c of cats.categories) {
+  //   categories[c.type].push(c);
+  // }
+
+  return {
+    props: { user },
+  };
 });
 
 // component
 const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
+  const { data, isLoading, isSuccess, isError, error } = useGetUserQuery({
+    email: user.email,
+  });
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
-
+  const categories = { income: [], expenses: [] };
+  if (isSuccess) {
+    for (let c of data.user.categories) {
+      categories[c.type].push(c);
+    }
+  }
   console.log({ user });
 
   return (
@@ -60,7 +73,9 @@ const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
       className="flex justify-center items-center min-h-full"
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
-      <Transaction user={user} />
+      {isLoading && <Spinner variants={{ width: "lg" }} />}
+      {isSuccess && <Transaction user={{ ...user, categories }} />}
+      
     </main>
   );
 };

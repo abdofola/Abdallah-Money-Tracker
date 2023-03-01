@@ -9,7 +9,7 @@ body {
   font-family: "Almarai", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   /* font-family: "Solway", serif; */
-  @apply bg-gray-50;
+  @apply w-full h-full bg-gray-50;
 }
 
 a {
