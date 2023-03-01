@@ -41,7 +41,7 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
   const cats = await request(url, query, { userId: user.id });
 
-  // classify the data by `type`, and map it to `categories` accordingly.
+  // classify the categories by `type`, and map it to `categories` accordingly.
   for (let c of cats.categories) {
     categories[c.type].push(c);
   }
