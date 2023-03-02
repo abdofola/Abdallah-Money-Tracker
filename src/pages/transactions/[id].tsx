@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { Layout } from "@components/Layout";
-import { useAuth, useGetHeight } from "@lib/helpers/hooks";
+import { useGetHeight } from "@lib/helpers/hooks";
 import { Modal, Spinner } from "@components/ui";
 import {
   useDeleteTransactionMutation,
@@ -34,8 +34,9 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
   const categories = { income: [], expenses: [] };
 
-  console.log("-----getServerSideProps---->", { session: user });
+  // console.log("-----getServerSideProps---->", { session: user });
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
+
   const cats = await request(url, query, { userId: user.id });
 
   // classify the data by `type`, and map it to `categories` accordingly.
@@ -60,7 +61,7 @@ const Transaction: NextPageWithLayout = ({ user }) => {
   const translation = locale === "en" ? en : ar;
   let content;
   if (fetchLoading) {
-    content = <Spinner variants={{ width: "md", margin: 4 }} />;
+    content = <Spinner variants={{ width: "md", margin: '4' }} />;
   } else {
     content = display ? (
       <DisplayDetails

@@ -7,17 +7,26 @@ export default withSessionRoute(async function signupRoute(req, res) {
   const { email } = req.body;
   try {
     if (email) {
-      const user = await prisma.user.create({
-        data: { email, categories: { create: categories } },
+      const user = await prisma.user.findUniqueOrThrow({
+        where: { email },
+        // data: { email, categories: { create: categories } },
       });
-      req.session.user = user;
+      // req.session.user = user;
       // save the session
-      await req.session.save();
-      console.log('----apiRoute---->',{session:req.session})
-      
-      return res.status(200).json(user);
+      // await req.session.save();
+      // console.log("----apiRoute---->", { session: req.session });
+
+      if (!(user.role === "ADMIN")) {
+        return res.status(401).json({
+          message: "you need to be an admin to add new user!",
+          success: false,
+        });
+      }
+      return res
+        .status(200)
+        .json({ message: "logged in as an admin user", success: true });
     } else {
-      return res.status(305).json({ message: `field 'email' is required!` });
+      return res.status(400).json({ message: `field 'email' is required!` });
     }
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -27,7 +36,7 @@ export default withSessionRoute(async function signupRoute(req, res) {
         );
       }
     }
-    throw e
+    throw e;
     // return res.status(500).json({message:e.message});
   }
 });

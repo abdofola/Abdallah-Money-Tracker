@@ -90,10 +90,12 @@ const Display: React.FC<DisplayProps> = ({
     if (filteredData.length < 2) return filteredData;
 
     for (let i = 0; i < filteredData.length; i++) {
-      const trans = filteredData[i];
-      const { category: elem } = trans;
+      const trx = filteredData[i];
+      const { category: elem } = trx;
 
+      // initialize `duplicates`
       if (!(elem.id in duplicates)) duplicates[elem.id] = [];
+
       //don't check the same element against duplication twice.
       if (duplicates[elem.id].length > 1) continue;
 
@@ -104,9 +106,10 @@ const Display: React.FC<DisplayProps> = ({
         }
       }
 
-      duplicates[elem.id].push(trans);
+      duplicates[elem.id].push(trx);
     }
 
+    // calculate the total `amount` for each duplicate and push the `transaction` to `merge`
     for (let key in duplicates) {
       const amountSum = duplicates[key].reduce(
         (acc, curr) => acc + curr.amount,

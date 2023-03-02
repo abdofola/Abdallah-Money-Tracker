@@ -3,7 +3,6 @@ import prisma from "@lib/prisma";
 
 export default withSessionRoute(async (req, res) => {
   const { email } = req.body;
-  const categories = { income: [], expenses: [] };
   //400 -> bad request
   if (!email) return res.status(400).send({ message: `email is required!` });
 
