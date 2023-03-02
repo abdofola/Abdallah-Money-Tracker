@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  compiler: {
-    styledComponents: true,
-  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -19,6 +16,7 @@ const nextConfig = {
   i18n: {
     locales: ["en", "ar"],
     defaultLocale: "ar",
+    // localeDetection:false,
   },
   async headers() {
     return [

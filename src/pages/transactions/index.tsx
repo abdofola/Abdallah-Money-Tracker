@@ -13,9 +13,9 @@ import { useRouter } from "next/router";
 import { en, ar } from "@locales";
 import styles from "./transactions.module.css";
 
-export const getServerSideProps = withSessionSsr(async ({ req }) => {
+ export const getServerSideProps = withSessionSsr(({ req }) => {
   const { user } = req.session;
-
+  
   console.log("-----getServerSideProps---->", { session: user });
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
   return { props: { session: user } };
@@ -23,6 +23,7 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
 // component
 const AccountStatement: NextPageWithLayout = ({ session }) => {
+  console.log({ session });
   const { query, locale } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
@@ -146,5 +147,6 @@ AccountStatement.Layout = function getLayout(page) {
     </Layout>
   );
 };
+
 
 export default AccountStatement;

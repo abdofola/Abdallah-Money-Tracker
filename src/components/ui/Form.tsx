@@ -1,7 +1,7 @@
 import React from "react";
 import { getStyle } from "@lib/utils";
 
-type Variants = ["layout", "padding", "margin"];
+type Variants = ["layout", "padding", "margin", "width"];
 
 const style = getStyle<Variants>({
   defaultStyle: "mx-auto bg-white border border-gray-100 rounded-lg",
@@ -18,6 +18,12 @@ const style = getStyle<Variants>({
     margin: {
       0: "m-0",
       "t-4": "mt-4",
+    },
+    width: {
+      sm: "max-w-sm w-full",
+      md: "max-w-md w-full",
+      lg: "max-w-lg w-full",
+      full: "full",
     },
   },
   defaultVariants: {

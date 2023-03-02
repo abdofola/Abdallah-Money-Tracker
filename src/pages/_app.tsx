@@ -3,6 +3,7 @@ import { NextPage } from "next";
 import { Provider } from "react-redux";
 import { store } from "../app/store";
 import { AppProps } from "next/app";
+import ErrorBoundary from "@components/ErrorBoundary";
 import "../styles/globals.css";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
@@ -15,7 +16,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const Layout = Component.Layout ?? ((page) => page);
 
   return (
-    <Provider store={store}>{Layout(<Component {...pageProps} />)}</Provider>
+    <Provider store={store}>
+      <ErrorBoundary>{Layout(<Component {...pageProps} />)}</ErrorBoundary>
+    </Provider>
   );
 }
 

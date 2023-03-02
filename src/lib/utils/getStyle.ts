@@ -11,7 +11,7 @@ type Style<V extends Array<string>> = {
 };
 
 type Variants<V extends Array<string>> = {
-  [k in keyof Style<V>["variants"]]?: Style<V>['variants'][''];
+  [k in keyof Style<V>["variants"]]?: Style<V>["variants"][""];
 };
 
 export function getStyle<V extends Array<string>>(style: Style<V>) {
@@ -40,7 +40,10 @@ export function getStyle<V extends Array<string>>(style: Style<V>) {
       //check if variants is valid, against the predefined.
       //if it's empty object, no error is thrown, defaultVariants will be used.
       //if it has wrong props, then error will be thrown.
-      isValidVariants(variants, style["variants"]);
+      const result = isValidVariants(variants, style["variants"]);
+      if (result instanceof Error) {
+        throw result;
+      }
 
       const vrsEntry = Object.entries({
         ...style["defaultVariants"],
@@ -60,6 +63,7 @@ export function getStyle<V extends Array<string>>(style: Style<V>) {
 
 function isValidVariants(target: any, source: any) {
   for (let k in target) {
-    if (!source[k]) throw new Error(`variant '${k}' is not valid!`);
+    if (!source[k]) return new Error(`variant '${k}' is not valid!`);
   }
+  return true;
 }

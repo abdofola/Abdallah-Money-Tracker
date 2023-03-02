@@ -6,18 +6,18 @@ import { Home, Document, Icon } from "@components/icons";
 import { en, ar } from "@locales";
 import styles from "./Header.module.css";
 
-const getLinks = (props) => ({
-  home: { path: "/", Icon: <Home {...props} /> },
-  statement: { path: "/transactions", Icon: <Document {...props} /> },
-});
+const pages = {
+  home: { path: "/", Icon: <Home /> },
+  statement: { path: "/transactions", Icon: <Document /> },
+};
 
 // the user comes from cookie instead of state
 // because when refreshing a page, the state gets destroyed
 export default function Header({ user }) {
   const router = useRouter();
-  const isActive = (path: string) => router.pathname === path;
-  const translation = router.locale === "en" ? en : ar;
-  const renderedListItems = Object.entries(getLinks({})).map(
+  const { locale, pathname, query, asPath } = router;
+  const translation = locale === "en" ? en : ar;
+  const renderedListItems = Object.entries(pages).map(
     ([label, { path, Icon }]) => (
       <li key={label} className={styles.item}>
         <Link href={path}>
@@ -29,14 +29,17 @@ export default function Header({ user }) {
       </li>
     )
   );
+  function isActive(path: string) {
+    return pathname === path;
+  }
 
   // setting `dir` and `lang` of the document in accordance to `locale`
   React.useEffect(() => {
-    const dir = router.locale === "en" ? "ltr" : "rtl";
+    const dir = locale === "en" ? "ltr" : "rtl";
     // set `html` direction whenever locale changes.
     window.document.documentElement.dir = dir;
-    window.document.documentElement.lang = router.locale!;
-  }, [router]);
+    window.document.documentElement.lang = locale!;
+  }, [locale]);
 
   return (
     <nav id="nav" className={styles.nav}>
@@ -56,10 +59,11 @@ export default function Header({ user }) {
         >
           <select
             name="locale"
-            defaultValue={router.locale}
+            defaultValue={locale}
             onChange={async (e) => {
-              router.push(router.pathname, router.asPath, {
+              router.push({ pathname, query }, asPath, {
                 locale: e.target.value,
+                shallow: true,
               });
             }}
           >

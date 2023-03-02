@@ -36,7 +36,7 @@ const Login: NextPageWithLayout = () => {
         <span className="">
           <Icon href="/sprite.svg#logo" />
         </span>
-        <h1 className="text-md font-semibold uppercase">Welcome to money flow application</h1>
+        <h1 className="text-md font-semibold capitalize">Welcome to money flow application</h1>
       </div>
       <Form onSubmit={handleSubmit} variants={{ margin: 0, padding: "2" }}>
         <div className="flex items-center gap-2">

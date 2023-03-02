@@ -1,3 +1,4 @@
+import { enviroment } from "@lib/enviroment";
 import { fetchJson } from "@lib/utils";
 import { User } from "@prisma/client";
 import { builder } from "../builder";
@@ -43,11 +44,14 @@ builder.mutationField("addUser", (t) =>
        * session cookies does not get safed when making the request from the resolver?
        */
       try {
-        const user = await fetchJson<User>("http://localhost:3000/api/signup", {
-          method: "POST",
-          body: args,
-          referrer: "http://localhost:3000/api/graphql",
-        });
+        const user = await fetchJson<User>(
+          enviroment[process.env.NODE_ENV] + "/api/addUser",
+          {
+            method: "POST",
+            body: args,
+            referrer: "http://localhost:3000/api/graphql",
+          }
+        );
 
         return user;
       } catch (error) {
