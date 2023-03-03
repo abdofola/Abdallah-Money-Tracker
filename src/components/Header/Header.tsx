@@ -20,7 +20,7 @@ export default function Header({ user }) {
   const renderedListItems = Object.entries(pages).map(
     ([label, { path, Icon }]) => (
       <li key={label} className={styles.item}>
-        <Link href={path}>
+        <Link href={path} shallow>
           <a className={styles.pageLink} data-active={isActive(path)}>
             <span>{Icon}</span>
             <span>{translation.nav[label]}</span>
@@ -44,7 +44,7 @@ export default function Header({ user }) {
   return (
     <nav id="nav" className={styles.nav}>
       {/*  logo  */}
-      <Link href="/">
+      <Link href="/" shallow>
         <a className="fixed ltr:top-2 rtl:top-1 z-10 sm:static">
           <Icon href="/sprite.svg#logo" className="w-7 h-7 sm:w-10 sm:h-10" />
         </a>

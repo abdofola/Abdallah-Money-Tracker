@@ -40,7 +40,8 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
   const categories = { income: [], expenses: [] };
   // redirect to loginPage.
-  // if (!user) return { redirect: { permanent: false, destination: "/login" } };
+  if (!user) return { redirect: { permanent: false, destination: "/login" } };
+  
   const cats = await request(url, query, { userId: user.id });
 
   // classify the categories by `type`, and map it to `categories` accordingly.
