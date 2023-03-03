@@ -1,64 +1,31 @@
 import React from "react";
 import { NextPageWithLayout } from "./_app";
-import { useAppDispatch } from "@app/hooks";
 import { Layout } from "@components/Layout";
 import { setCredentials } from "@features/auth";
-import { useRouter } from "next/router";
-import { Form, Spinner } from "@components/ui";
-import { useAsync } from "@lib/helpers/hooks";
-import { User } from "@prisma/client";
 import { Icon } from "@components/icons";
-import { enviroment } from "@lib/enviroment";
+import { loginOrAddUser } from "@components/HOC";
 
-const URL = enviroment[process.env["NODE_ENV"]] + "/api/login";
+const UserLogin = loginOrAddUser({
+  api: "login",
+  handler({ payload, router, dispatch }) {
+    dispatch(setCredentials(payload));
+    router.push("/");
+  },
+});
 
 //COMPONENT
 const Login: NextPageWithLayout = () => {
-  const [email, setEmail] = React.useState("");
-  const [execute, { error, status }] = useAsync<{ data: User }>(URL);
-  const dispatch = useAppDispatch();
-  const router = useRouter();
-  const handleChange = (e) => setEmail(e.target.value);
-
-  const handleSubmit = (formData) => {
-    execute({ body: formData })
-      .then(({ data }) => {
-        // console.log({ data });
-        dispatch(setCredentials(data));
-        router.push("/");
-      })
-      .catch(() => {});
-  };
-
   return (
     <div className="space-y-2 basis-1/3">
       <div className="flex flex-col items-center gap-4 -translate-y-6">
         <span className="">
           <Icon href="/sprite.svg#logo" />
         </span>
-        <h1 className="text-md font-semibold capitalize">Welcome to money flow application</h1>
+        <h1 className="text-md font-semibold capitalize">
+          Welcome to money flow application
+        </h1>
       </div>
-      <Form onSubmit={handleSubmit} variants={{ margin: 0, padding: "2" }}>
-        <div className="flex items-center gap-2">
-          <label htmlFor="email">
-            <Icon href="/sprite.svg#mail" className="w-5 h-5 fill-gray-400" />
-          </label>
-          <input
-            required
-            className="basis-auto grow shrink bg-transparent ring-offset-4 focus:outline-none"
-            id="email"
-            type="email"
-            name="email"
-            placeholder="someone@example.com"
-            value={email}
-            onChange={handleChange}
-          />
-          <button className="flex justify-start items-center border border-gray-700 capitalize ml-auto px-6 py-1 rounded-md">
-            {status === "pending" ? <Spinner /> : "login"}
-          </button>
-        </div>
-      </Form>
-      {status === "error" && <p>{error}</p>}
+      <UserLogin />
     </div>
   );
 };

@@ -13,9 +13,9 @@ import { useRouter } from "next/router";
 import { en, ar } from "@locales";
 import styles from "./transactions.module.css";
 
- export const getServerSideProps = withSessionSsr(({ req }) => {
+export const getServerSideProps = withSessionSsr(({ req }) => {
   const { user } = req.session;
-  
+
   console.log("-----getServerSideProps---->", { session: user });
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
   return { props: { session: user } };
@@ -60,6 +60,7 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
               <p className="text-gray-400 text-center text-sm">
                 {translation.messages.emptyState.p3}
                 <Link
+                  shallow
                   href={{
                     pathname: "/transactions",
                   }}
@@ -147,6 +148,5 @@ AccountStatement.Layout = function getLayout(page) {
     </Layout>
   );
 };
-
 
 export default AccountStatement;

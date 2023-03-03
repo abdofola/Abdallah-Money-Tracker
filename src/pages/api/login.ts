@@ -2,7 +2,7 @@ import { withSessionRoute } from "@lib/session";
 import prisma from "@lib/prisma";
 
 export default withSessionRoute(async (req, res) => {
-  const { email } = req.body;
+  const { email, isAdmin } = req.body;
   //400 -> bad request
   if (!email) return res.status(400).send({ message: `email is required!` });
 
@@ -11,9 +11,17 @@ export default withSessionRoute(async (req, res) => {
       where: { email },
     });
 
+    // the request to login as an admin
+    if (isAdmin && !(user.role === "ADMIN")) {
+      // forbidden due to permissions
+      return res.status(403).json({
+        message: "you need to be an admin to add new user!",
+        success: false,
+      });
+    }
     const data = user;
     req.session.user = data;
-    
+
     await req.session.save();
 
     return res.status(200).json({ data });
