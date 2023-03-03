@@ -11,7 +11,9 @@ Second, run the following commands to generate `prisma` client and seed your `db
 ```
 npx prisma generate && npx migrate dev && npx prisma seed db
 ```
-after seeding your `db` you can run the project:
+after seeding your `db`, you'll have a default user to log into the app.
+
+Last, start the project:
 ```
 npm run dev
 ```
