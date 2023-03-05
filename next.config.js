@@ -16,9 +16,10 @@ const nextConfig = {
   i18n: {
     locales: ["en", "ar"],
     defaultLocale: "ar",
-    // localeDetection:false,
+    // localeDetection: false,
   },
-  async headers() {
+  // trailingSlash: false,
+  headers: async () => {
     return [
       {
         // matching all API routes

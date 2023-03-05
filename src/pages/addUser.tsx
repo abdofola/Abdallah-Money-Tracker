@@ -17,7 +17,8 @@ const AddUserForm = loginOrAddUser({
     router.push("/");
   },
 });
-//COMPONENT
+
+// page component
 const AddUser: NextPageWithLayout = () => {
   const [isSuccess, setIsSuccess] = React.useState(false);
 

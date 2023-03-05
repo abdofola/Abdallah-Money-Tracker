@@ -13,7 +13,7 @@ export default withSessionRoute(async (req, res) => {
 
     // the request to login as an admin
     if (isAdmin && !(user.role === "ADMIN")) {
-      // forbidden due to permissions
+      // -> 403 forbidden; due to permissions
       return res.status(403).json({
         message: "you need to be an admin to add new user!",
         success: false,
@@ -22,7 +22,8 @@ export default withSessionRoute(async (req, res) => {
     const data = user;
     req.session.user = data;
 
-    await req.session.save();
+    // don't save cookie when the request to login as an admin to add new user.
+    !isAdmin && (await req.session.save());
 
     return res.status(200).json({ data });
   } catch (e) {
