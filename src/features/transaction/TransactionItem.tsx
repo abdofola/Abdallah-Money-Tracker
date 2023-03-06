@@ -19,7 +19,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
       className="border border-gray-100 rounded-lg overflow-clip"
     >
       <Link href={href}>
-        <a className="flex justify-between bg-white p-2 ">
+        <a className="flex justify-between bg-white p-2">
           <div className="flex gap-2">
             <span>
               <Icon

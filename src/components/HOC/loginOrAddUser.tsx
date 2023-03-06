@@ -6,7 +6,13 @@ import { useAppDispatch } from "@app/hooks";
 import { useAsync } from "@lib/helpers/hooks";
 import { enviroment } from "@lib/enviroment";
 
-function loginOrAddUser<P = {}>({
+
+type Props = {
+  isAdmin?: Boolean,
+  setIsSuccess?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function loginOrAddUser<P = Props>({
   api,
   handler,
 }: {

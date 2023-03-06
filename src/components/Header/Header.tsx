@@ -17,17 +17,20 @@ export default function Header({ user }) {
   const router = useRouter();
   const { locale, pathname, query, asPath } = router;
   const translation = locale === "en" ? en : ar;
+  console.log({locale})
   const renderedListItems = Object.entries(pages).map(
-    ([label, { path, Icon }]) => (
-      <li key={label} className={styles.item}>
-        <Link href={path} shallow>
-          <a className={styles.pageLink} data-active={isActive(path)}>
-            <span>{Icon}</span>
-            <span>{translation.nav[label]}</span>
-          </a>
-        </Link>
-      </li>
-    )
+    ([label, { path, Icon }]) => {
+      return (
+        <li key={label} className={styles.item}>
+          <Link href={path} locale={locale}>
+            <a className={styles.pageLink} data-active={isActive(path)}>
+              <span>{Icon}</span>
+              <span>{translation.nav[label]}</span>
+            </a>
+          </Link>
+        </li>
+      );
+    }
   );
   function isActive(path: string) {
     return pathname === path;
@@ -35,10 +38,10 @@ export default function Header({ user }) {
 
   // setting `dir` and `lang` of the document in accordance to `locale`
   React.useEffect(() => {
+    const html = window.document.querySelector("html")!;
     const dir = locale === "en" ? "ltr" : "rtl";
-    // set `html` direction whenever locale changes.
-    window.document.documentElement.dir = dir;
-    window.document.documentElement.lang = locale!;
+    html.dir = dir;
+    html.lang = locale!;
   }, [locale]);
 
   return (
@@ -60,7 +63,7 @@ export default function Header({ user }) {
           <select
             name="locale"
             defaultValue={locale}
-            onChange={async (e) => {
+            onChange={(e) => {
               router.push({ pathname, query }, asPath, {
                 locale: e.target.value,
                 shallow: true,

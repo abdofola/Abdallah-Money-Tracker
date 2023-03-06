@@ -12,6 +12,9 @@ export default withSessionRoute(async function signupRoute(req, res) {
       data: { email, categories: { create: categories } },
     });
 
+    req.session.user = user;
+    await req.session.save();
+    
     return res.status(200).json(user);
   } catch (e) {
     const response = { message: (e as Error).message };
