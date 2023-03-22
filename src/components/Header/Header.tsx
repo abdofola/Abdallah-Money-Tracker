@@ -17,7 +17,6 @@ export default function Header({ user }) {
   const router = useRouter();
   const { locale, pathname, query, asPath } = router;
   const translation = locale === "en" ? en : ar;
-  console.log({locale})
   const renderedListItems = Object.entries(pages).map(
     ([label, { path, Icon }]) => {
       return (

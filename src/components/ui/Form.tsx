@@ -23,7 +23,7 @@ const style = getStyle<Variants>({
       sm: "max-w-sm w-full",
       md: "max-w-md w-full",
       lg: "max-w-lg w-full",
-      full: "full",
+      full: "w-full",
     },
   },
   defaultVariants: {
@@ -38,6 +38,7 @@ export default function Form({
   className,
   onSubmit,
   variants = null,
+  ...props
 }) {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -50,6 +51,7 @@ export default function Form({
     <form
       onSubmit={handleSubmit}
       className={style(variants).concat(className ? " " + className : "")}
+      {...props}
     >
       {children}
     </form>

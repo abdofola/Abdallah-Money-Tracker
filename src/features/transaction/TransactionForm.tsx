@@ -82,7 +82,9 @@ function TransactionForm({
       </div>
       {/* categories */}
       <div className="flex flex-col gap-1">
-        <span className="text-gray-400">{translation.transactionDetails.category}</span>
+        <span className="text-gray-400">
+          {translation.transactionDetails.category}
+        </span>
         <div className="grid grid-cols-4 gap-4">
           {user.categories[selectedTransaction].map(
             ({ iconId, id, color, name }) => (
@@ -136,9 +138,10 @@ function TransactionForm({
           {translation.transactionDetails.date}
         </label>
         <DateSelection
-          date={date}
-          setDate={setDate}
           className="transition w-full px-2 py-1 text-start bg-gray-100 shadow-inner rounded-md ring-offset-4 focus:outline-none  focus:ring-1 focus:ring-gray-300"
+          period="day"
+          startDate={date}
+          onChange={(date) => setDate(date)}
         />
       </div>
       {/* comment */}

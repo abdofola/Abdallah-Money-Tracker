@@ -1,5 +1,4 @@
 import React, { SetStateAction } from "react";
-import { ReactDatePickerProps } from "react-datepicker";
 import type { Url } from "url";
 
 type Transform<T> = {
@@ -14,14 +13,14 @@ type Category = {
   name: string;
   color: string;
   iconId: string;
-  [key: string]: any
+  [key: string]: any;
 };
 type TransactionElement = {
   id: string;
   category: Category;
   amount: number;
   comment: string | undefined;
-  date: Date | string
+  date: Date | string;
   [key: string]: any;
 };
 type FilterTransactions = ({
@@ -37,12 +36,12 @@ type FilterTransactions = ({
 // COMPONENTS
 type TransactionProps = {
   user: {
-    transactions: Transform<TransactionElement>;
+    id: string;
     categories: Transform<Category>;
   };
 };
 type DisplayProps = {
-  transactionType: TransactionType;
+  transactionType: { en: TransactionType; ar: string };
   setPeriod: React.Dispatch<React.SetStateAction<number>>;
   periodIndex: number;
   displayOff: () => void;
@@ -50,11 +49,14 @@ type DisplayProps = {
 
 type DateSelectionProps = {
   className?: string;
-  selection?: PeriodType;
-  filter?: ({ start, end }: { start: Date; end: Date | null }) => void;
   periodRef?: React.MutableRefObject<HTMLButtonElement | null>;
-  date?: Date;
-  setDate?: ReactDatePickerProps["onChange"] | React.Dispatch<SetStateAction<Date>>;
+  showMonthYearPicker?: boolean;
+  showYearPicker?: boolean;
+  selectsRange?: boolean;
+  startDate: Date;
+  endDate?: null | Date;
+  onChange: (date: Date | [Date | null, Date | null] | null) => void;
+  period: PeriodType;
 };
 
 type DateButtonProps = {
@@ -73,16 +75,16 @@ type AddTransactionProps = {
 };
 
 type TransactionItemProps = {
-  item: TransactionElement,
-  percentage?:string,
-  href: Partial<Url>,
-  withComment?:boolean
-}
-type TransactionListProps<T=TransactionElement> = {
-  data: T[],
-  renderItem: (item:T)=> JSX.Element,
-  className?:string
-}
+  item: TransactionElement;
+  percentage?: string;
+  href: Partial<Url>;
+  withComment?: boolean;
+};
+type TransactionListProps<T = TransactionElement> = {
+  data: T[];
+  renderItem: (item: T) => JSX.Element;
+  className?: string;
+};
 
 export type {
   TransactionProps,
@@ -97,5 +99,5 @@ export type {
   Category,
   TransactionItemProps,
   TransactionListProps,
-  Transform
+  Transform,
 };

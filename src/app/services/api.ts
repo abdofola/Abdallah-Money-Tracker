@@ -20,7 +20,7 @@ export const api = createApi({
   tagTypes: ["transactions", "transaction"],
   endpoints: (builder) => ({
     getTransactions: builder.query<
-      { transactions: Transaction[] },
+      { transactions: TransactionElement[] },
       { userId: string; category?: string }
     >({
       query: ({ userId, category }) => ({

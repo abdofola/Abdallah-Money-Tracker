@@ -16,36 +16,16 @@ import { Transaction } from "@prisma/client";
 import { request, gql } from "graphql-request";
 import { enviroment } from "@lib/enviroment";
 import { en, ar } from "@locales";
-
-const query = gql`
-  query GetCategories($userId: String!) {
-    categories(userId: $userId) {
-      id
-      name
-      type
-      iconId
-      color
-    }
-  }
-`;
+import { getUserWithCategories } from "..";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
-  const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
-  const categories = { income: [], expenses: [] };
+  const userWithCategories = await getUserWithCategories(user);
 
-  // console.log("-----getServerSideProps---->", { session: user });
-  if (!user) return { redirect: { permanent: false, destination: "/login" } };
-
-  const cats = await request(url, query, { userId: user.id });
-
-  // classify the data by `type`, and map it to `categories` accordingly.
-  for (let c of cats.categories) {
-    categories[c.type].push(c);
-  }
-  return { props: { user: { ...user, categories } } };
+  return { props: { user: userWithCategories } };
 });
 
+// page component
 const Transaction: NextPageWithLayout = ({ user }) => {
   const { query, locale } = useRouter();
   const [display, setDisplay] = React.useState(true);
@@ -61,7 +41,7 @@ const Transaction: NextPageWithLayout = ({ user }) => {
   const translation = locale === "en" ? en : ar;
   let content;
   if (fetchLoading) {
-    content = <Spinner variants={{ width: "md", margin: '4' }} />;
+    content = <Spinner variants={{ width: "md", margin: "4" }} />;
   } else {
     content = display ? (
       <DisplayDetails
