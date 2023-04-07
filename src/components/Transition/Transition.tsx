@@ -4,9 +4,9 @@ import { useDelayMountUnmount } from "@lib/helpers/hooks";
 type P = {
   children: React.ReactNode;
   isMounted: boolean;
-  isAnimated?: boolean;
   from?: string;
   to?: string;
+  delay?: number;
 };
 
 export default function Transition({
@@ -14,15 +14,13 @@ export default function Transition({
   isMounted,
   from,
   to,
-  isAnimated = false,
+  delay = 100,
 }: P) {
-  const shouldRender = useDelayMountUnmount(isMounted);
+  const shouldRender = useDelayMountUnmount(isMounted, delay);
 
   const className = isMounted && shouldRender ? to : from;
 
   if (!isMounted && !shouldRender) return null;
-
-  if (isMounted && !isAnimated) return children;
 
   return <div className={`transition-all ${className}`}>{children}</div>;
 }
