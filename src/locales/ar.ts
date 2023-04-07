@@ -19,6 +19,8 @@ export default {
     summary: "ملخص المعاملات",
     details: "تفاصيل المعاملة",
     delete: "حذف المعاملة",
+    addCategory:'إضافة صنف جديد'
+
 
   },
   messages: {
@@ -38,6 +40,7 @@ export default {
     update: "تعديل",
     delete: "حذف",
     cancel: "إلغاء",
+    more:'مزيد'
 
   },
 };

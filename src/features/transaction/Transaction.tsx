@@ -1,8 +1,13 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
-import { DisplayAmount, Display, TransactionForm } from "@features/transaction";
-import { TransactionElement, TransactionProps, Transform } from "@features/transaction/types";
+import { DisplayAmount } from "@features/transaction";
+import {
+  TransactionElement,
+  TransactionProps,
+  Transform,
+} from "@features/transaction/types";
 import { DataProvider } from "@components/contexts";
 import { transactionTypes, periods } from "@features/transaction/constants";
 import {
@@ -11,6 +16,17 @@ import {
 } from "@app/services/api";
 import { useRouter } from "next/router";
 import { ar, en } from "@locales";
+import { Spinner } from "@components/ui";
+
+// dynamic imports,
+// to defer loading component until it's first rendered,
+// then subsequent renders will be cached.
+const Display = dynamic(() =>
+  import("@features/transaction").then(({ Display }) => Display)
+);
+const TransactionForm = dynamic(() =>
+  import("@features/transaction").then(({ TransactionForm }) => TransactionForm)
+);
 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
@@ -21,7 +37,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
     userId: user.id,
   });
   const transactions = React.useMemo(() => {
-    const trans:Transform<TransactionElement> = { income: [], expenses: [] };
+    const trans: Transform<TransactionElement> = { income: [], expenses: [] };
     for (let t of data.transactions) {
       trans[t.category.type].push({
         ...t,
@@ -54,27 +70,29 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
         dispatch={dispatch}
         {...dates}
       >
-        {display ? (
-          <Display
-            transactionType={t.txt}
-            periodIndex={periodIdx}
-            setPeriod={setPeriod}
-            displayOff={() => setDisplay(false)}
-          />
-        ) : (
-          <TransactionForm
-            user={user}
-            transactionType={t.txt.en}
-            displayOn={() => setDisplay(true)}
-            mutation={(data:any) => {
-              return addTransaction({
-                ...data,
-                userId: user.id,
-              }).unwrap();
-            }}
-            status={{ isLoading }}
-          />
-        )}
+        <React.Suspense fallback={<Spinner variants={{ width: "md" }} />}>
+          {display ? (
+            <Display
+              transactionType={t.txt}
+              periodIndex={periodIdx}
+              setPeriod={setPeriod}
+              displayOff={() => setDisplay(false)}
+            />
+          ) : (
+            <TransactionForm
+              user={user}
+              transactionType={t.txt.en}
+              displayOn={() => setDisplay(true)}
+              mutation={(data: any) => {
+                return addTransaction({
+                  ...data,
+                  userId: user.id,
+                }).unwrap();
+              }}
+              status={{ isLoading }}
+            />
+          )}
+        </React.Suspense>
       </DataProvider>
     </Tab.Panel>
   ));

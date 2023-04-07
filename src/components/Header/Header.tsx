@@ -31,6 +31,12 @@ export default function Header({ user }) {
       );
     }
   );
+  const langLogo =
+    locale === "en" ? (
+      <Icon href="/sprite.svg#canada" className="w-4 h-4" />
+    ) : (
+      <Icon href="/sprite.svg#sudan" className="w-4 h-4" />
+    );
   function isActive(path: string) {
     return pathname === path;
   }
@@ -59,22 +65,28 @@ export default function Header({ user }) {
           id="navLogin"
           className="fixed flex gap-4 justify-end bg-white border-b top-0 left-0 right-0 p-2 sm:static sm:border-none sm:p-0"
         >
-          <select
-            name="locale"
-            defaultValue={locale}
-            onChange={(e) => {
-              router.push({ pathname, query }, asPath, {
-                locale: e.target.value,
-                shallow: true,
-              });
-            }}
-          >
-            <option value="en">en</option>
-            <option value="ar">ar</option>
-          </select>
-
+          <div className={styles.lang}>
+            <span >{langLogo}</span>
+            <select
+              className="appearance-none"
+              name="locale"
+              defaultValue={locale}
+              onChange={(e) => {
+                router.push({ pathname, query }, asPath, {
+                  locale: e.target.value,
+                  shallow: true,
+                });
+              }}
+            >
+              <option value="en">English</option>
+              <option value="ar">عربي</option>
+            </select>
+            <span>
+              <Icon href="/sprite.svg#arrows" className="w-4 h-4" />
+            </span>
+          </div>
           <Link href={user ? "/api/logout" : "/login"}>
-            <a className="px-2 py-px rtl:text-sm text-gray-500 bg-gray-50 rounded-sm">
+            <a className="px-2 py-px text-gray-500 bg-gray-50 rounded-lg">
               {user ? translation.nav["logout"] : translation.nav["login"]}
             </a>
           </Link>

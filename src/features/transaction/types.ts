@@ -10,7 +10,7 @@ type TransactionType = "income" | "expenses";
 type Category = {
   id: string;
   type: TransactionType;
-  name: string;
+  name: { ar: string; en: string };
   color: string;
   iconId: string;
   [key: string]: any;
@@ -86,6 +86,28 @@ type TransactionListProps<T = TransactionElement> = {
   className?: string;
 };
 
+type RenderCategoryFnInput = {
+  cat: Category;
+  isSelected: boolean;
+  onClick: () => void;
+  icon: React.ReactElement;
+};
+type CategoriesProps = {
+  categories: Category[];
+  trxType?: TransactionType;
+  canAddCategory?: boolean;
+  selectedId?: string | null;
+  renderCategory: ({
+    cat,
+    isSelected,
+    onClick,
+    icon,
+  }: RenderCategoryFnInput) => JSX.Element;
+  open?: () => void;
+  setSelectedId?: React.Dispatch<React.SetStateAction<string | null>>;
+};
+type CategoryProps = RenderCategoryFnInput;
+
 export type {
   TransactionProps,
   DisplayProps,
@@ -100,4 +122,6 @@ export type {
   TransactionItemProps,
   TransactionListProps,
   Transform,
+  CategoriesProps,
+  CategoryProps,
 };

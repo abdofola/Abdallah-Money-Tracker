@@ -1,7 +1,7 @@
 .nav {
   position: fixed;
   display: grid;
-  grid-template-columns: repeat(12,1fr);
+  grid-template-columns: repeat(12, 1fr);
   grid-auto-flow: column;
   align-items: center;
   padding: 1rem;
@@ -11,12 +11,30 @@
 .list {
   @apply col-span-12 flex justify-center gap-4;
 }
+.list >:last-child {
+  font-family: serif;
+}
+
+.lang {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: serif;
+  @apply text-gray-600 bg-gray-50 rounded-lg;
+}
+.lang > select {
+  background-color: transparent;
+  text-align: center;
+  cursor: pointer;
+  @apply transition-shadow rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500;
+}
 /* center the pages' links regardless the direction
 ------------------------------------*/
 .item:first-child {
   @apply sm:ltr:ml-auto sm:rtl:mr-auto;
 }
-.item:nth-last-child(2){
+.item:nth-last-child(2) {
   @apply sm:ltr:mr-auto sm:rtl:ml-auto;
 }
 /*----------------------------------------*/
@@ -45,6 +63,6 @@
 .pageLink[data-active="true"] > span:first-child {
   @apply bg-gray-200 bg-opacity-60 rounded-2xl sm:p-0 sm:bg-none;
 }
-.pageLink[data-active="true"] > span:first-child >svg {
+.pageLink[data-active="true"] > span:first-child > svg {
   stroke: black;
 }

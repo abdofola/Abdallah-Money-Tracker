@@ -1,35 +1,40 @@
 import React from "react";
-import { Check, Icon } from "@components/icons";
 import DateSelection from "./DateSelection";
-import { AddTransactionProps } from "./types";
-import { Form, Spinner } from "@components/ui";
+import { Form, Modal, Spinner } from "@components/ui";
 import { useRouter } from "next/router";
 import { en, ar } from "@locales";
+import { CategoryList, Category } from "./index";
+import { otherCategories } from "./constants";
+import { useAddCategoryMutation } from "@app/services/api";
+import { Category as TCategory } from "./types";
+import { Transition } from "@components/Transition";
 
 function TransactionForm({
   user,
   displayOn = () => {},
   transactionType,
-  mutation,
+  mutation = (value: any) => Promise.resolve(value),
   status = { isLoading: false },
   transactionComment,
   transactionDate,
   categoryId,
   transactionAmount,
+  canAddCategory = true,
 }) {
   const amountRef = React.useRef<HTMLInputElement | null>(null);
-  const { locale } = useRouter();
+  const [isOpen, setIsOpen] = React.useState(false);
   const [date, setDate] = React.useState(transactionDate ?? new Date());
   const [selectedId, setSelectedId] = React.useState<string | null>(
     categoryId ?? null
   );
   const [amountValue, setAmountValue] = React.useState(transactionAmount ?? "");
   const [comment, setComment] = React.useState(transactionComment ?? "");
-  const [selectedTransaction, setSelectedTransaction] =
-    React.useState(transactionType); // `transactionType` is mirrored in a state; in order to know when `transactionType` changes. Note:useRef doesn't do the job.
+  const { locale } = useRouter();
+  const [addCategory, { isLoading }] = useAddCategoryMutation();
 
   const canAdd = !status.isLoading && selectedId && amountValue;
   const translation = locale === "en" ? en : ar;
+
   const reset = () => {
     setSelectedId(null);
     setAmountValue("");
@@ -37,27 +42,32 @@ function TransactionForm({
     setComment("");
   };
   const handleSubmit = (formData) => {
+    console.log({ formData });
+    if (formData.categoryId == null) return;
+
     mutation({ ...formData, date, amount: Number(amountValue) })
-      .then((payload) => {
-        console.log({ payload });
+      .then((payload) => console.log({ payload }))
+      .catch((error) => console.log({ error }))
+      .finally(() => {
+        // after promise is settled
         reset();
         displayOn();
-      })
-      .catch((error) => console.log({ error }));
+      });
   };
 
-  // resetting the `selectedId` when switching between tabs.
-  if (selectedTransaction !== transactionType) {
+  // to disconnect `selectedId` in the form, from the one in `Modal` component.
+  if (isOpen && selectedId) {
     setSelectedId(null);
-    setSelectedTransaction(transactionType);
   }
 
+  // focus input on component first mount
   React.useEffect(() => {
     amountRef.current?.focus();
   }, []);
 
   return (
     <Form
+      id="add-trx"
       variants={{ padding: 4 }}
       className="max-w-[29rem]"
       onSubmit={handleSubmit}
@@ -73,6 +83,7 @@ function TransactionForm({
             ref={amountRef}
             id="amount"
             type="number"
+            min={0}
             name="amount"
             value={amountValue}
             onChange={(e) => setAmountValue(e.target.value)}
@@ -85,52 +96,47 @@ function TransactionForm({
         <span className="text-gray-400">
           {translation.transactionDetails.category}
         </span>
-        <div className="grid grid-cols-4 gap-4">
-          {user.categories[selectedTransaction].map(
-            ({ iconId, id, color, name }) => (
-              <label
-                key={iconId}
-                htmlFor={iconId}
-                onClick={() => setSelectedId(id)}
-                className={`relative flex flex-col items-center -mx-2 rounded-md cursor-pointer ${
-                  selectedId === id ? "bg-gray-100 shadow-inner" : ""
-                }`}
-              >
-                <span
-                  style={{
-                    borderBottom: `4px solid ${
-                      selectedId !== id ? color : "transparent"
-                    }`,
-                  }}
-                  className={`p-2 ${
-                    selectedId !== id ? `rounded-full shadow-sm` : ""
-                  }`}
-                >
-                  <Icon
-                    href={`/${selectedTransaction}/sprite.svg#${iconId}`}
-                    className="w-10 h-10 "
-                  />
-                </span>
-                <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
-                  {name[locale]}
-                </span>
-                <input
-                  className="appearance-none"
-                  id={iconId}
-                  type="radio"
-                  name="categoryId"
-                  value={id}
-                  defaultChecked={selectedId === id}
-                />
-                {selectedId === id && (
-                  <span className="absolute right-1 top-1 p-px border border-green-400 bg-green-100 rounded-full">
-                    <Check className="w-3 h-3 fill-green-600" />
-                  </span>
-                )}
-              </label>
-            )
-          )}
-        </div>
+        <CategoryList
+          canAddCategory={canAddCategory}
+          categories={user.categories[transactionType]}
+          setSelectedId={setSelectedId}
+          selectedId={selectedId}
+          open={() => setIsOpen(true)}
+          renderCategory={(props) => <Category key={props.cat.id} {...props} />}
+        />
+        <Transition isMounted={isOpen}>
+          <Modal
+            isMounted={isOpen}
+            headerTxt={translation.headings.addCategory}
+            close={() => setIsOpen(false)}
+            onConfirm={(data) => {
+              const selectedCategory = otherCategories[transactionType].find(
+                (c) => c.id === data.categoryId
+              ) as TCategory | undefined;
+
+              if (selectedCategory) {
+                const { id, ...newCategory } = selectedCategory;
+                addCategory({ ...newCategory, userId: user.id })
+                  .unwrap()
+                  .then((payload) => console.log({ payload }))
+                  .catch((error) => console.log({ error }))
+                  .finally(() => setIsOpen(false));
+              }
+            }}
+            confirmationButton={
+              <button className="flex justify-center basis-1/3 bg-black text-white py-1 rounded-md">
+                {isLoading ? <Spinner /> : translation.buttons.add}
+              </button>
+            }
+          >
+            <CategoryList
+              categories={otherCategories[transactionType]}
+              renderCategory={(props) => {
+                return <Category key={props.cat.id} {...props} />;
+              }}
+            />
+          </Modal>
+        </Transition>
       </div>
       {/* date */}
       <div className="flex flex-col gap-1">
@@ -168,8 +174,10 @@ function TransactionForm({
         />
       </div>
       {/* buttons */}
-      <div className="flex gap-2">
+      <menu className="flex gap-2">
+        {/* TODO: this propably should be refactored, to receive the submit button as prop */}
         <button
+          id="add-trx"
           className={`flex justify-center items-center capitalize py-1 basis-1/3 rounded-lg shadow ${
             !canAdd ? "text-gray-300" : ""
           }`}
@@ -189,7 +197,7 @@ function TransactionForm({
         >
           {translation.buttons.back}
         </button>
-      </div>
+      </menu>
     </Form>
   );
 }

@@ -18,6 +18,7 @@ export default {
     summary: "transaction summary",
     details: "transaction details",
     delete: "delete transaction",
+    addCategory:'add new category'
   },
   messages: {
     emptyState: {
@@ -35,5 +36,6 @@ export default {
     update: "update",
     delete: "delete",
     cancel: "cancel",
+    more:'more'
   },
 };
