@@ -16,36 +16,18 @@ import { Transaction } from "@prisma/client";
 import { request, gql } from "graphql-request";
 import { enviroment } from "@lib/enviroment";
 import { en, ar } from "@locales";
-
-const query = gql`
-  query GetCategories($userId: String!) {
-    categories(userId: $userId) {
-      id
-      name
-      type
-      iconId
-      color
-    }
-  }
-`;
+import { getUserWithCategories } from "..";
+import { Category } from "@features/transaction/types";
+import { Transition } from "@components/Transition";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
-  const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
-  const categories = { income: [], expenses: [] };
+  const userWithCategories = await getUserWithCategories(user);
 
-  // console.log("-----getServerSideProps---->", { session: user });
-  if (!user) return { redirect: { permanent: false, destination: "/login" } };
-
-  const cats = await request(url, query, { userId: user.id });
-
-  // classify the data by `type`, and map it to `categories` accordingly.
-  for (let c of cats.categories) {
-    categories[c.type].push(c);
-  }
-  return { props: { user: { ...user, categories } } };
+  return { props: { user: userWithCategories } };
 });
 
+// page component
 const Transaction: NextPageWithLayout = ({ user }) => {
   const { query, locale } = useRouter();
   const [display, setDisplay] = React.useState(true);
@@ -57,11 +39,12 @@ const Transaction: NextPageWithLayout = ({ user }) => {
   const [updateTransaction, { isLoading }] = useUpdateTransactionMutation();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
-  const { amount, date, category, comment } = data.transaction as Transaction;
+  const { amount, date, category, comment } =
+    data.transaction as Transaction & { category: Category };
   const translation = locale === "en" ? en : ar;
   let content;
   if (fetchLoading) {
-    content = <Spinner variants={{ width: "md", margin: '4' }} />;
+    content = <Spinner variants={{ width: "md", margin: "4" }} />;
   } else {
     content = display ? (
       <DisplayDetails
@@ -72,6 +55,7 @@ const Transaction: NextPageWithLayout = ({ user }) => {
       <DataProvider>
         <TransactionForm
           user={user}
+          canAddCategory={false}
           displayOn={() => setDisplay(true)}
           transactionType={category.type}
           transactionAmount={amount}
@@ -126,6 +110,7 @@ function DisplayDetails({ details, displayOff }) {
   const { locale } = router;
   const { amount, category, date, comment, transactionId } = details;
   const translation = locale === "en" ? en : ar;
+  const btnText = locale === "en" ? "delete" : "حذف";
 
   return (
     <div className="grid gap-4 px-2">
@@ -172,26 +157,38 @@ function DisplayDetails({ details, displayOff }) {
         >
           {translation.buttons.delete}
         </button>
-        {isOpen && (
+        <Transition isMounted={isOpen}>
           <Modal
             headerTxt={translation.headings.delete}
-            confirmationStatus={{ isLoading }}
-            onConfirm={() => {
-              deleteTranaction({ id: transactionId })
-                .unwrap()
-                .then((payload) => {
-                  const url = `/transactions?category=${category.id}&type=${category.type}`;
-                  // console.log({ payload,url });
-                  router.push(url);
-                })
-                .catch((err) => console.error({ err }))
-                .finally(() => setIsOpen(false));
-            }}
+            isMounted={isOpen}
             close={() => setIsOpen(false)}
+            confirmationButton={
+              <button
+                type="button"
+                className="flex justify-center basis-1/3 py-1 text-center bg-red-500 text-white rounded-md"
+                onClick={() => {
+                  deleteTranaction({ id: transactionId })
+                    .unwrap()
+                    .then((_payload) => {
+                      const url = `/transactions?category=${category.id}&type=${category.type}`;
+                      // console.log({ payload,url });
+                      router.push(url);
+                    })
+                    .catch((err) => console.error({ err }))
+                    .finally(() => setIsOpen(false));
+                }}
+              >
+                {isLoading ? (
+                  <Spinner variants={{ intent: "secondary", width: "xs" }} />
+                ) : (
+                  btnText
+                )}
+              </button>
+            }
           >
             <p>{translation.messages.delete}</p>
           </Modal>
-        )}
+        </Transition>
       </div>
     </div>
   );

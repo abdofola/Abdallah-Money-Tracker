@@ -11,7 +11,7 @@ import {
   DateSelection,
 } from "@features/transaction";
 import { Donut } from "@components/Chart";
-import { Icon, Plus } from "@components/icons";
+import { Plus } from "@components/icons";
 import { useDate } from "@components/contexts";
 import { myDate } from "@lib/utils";
 import { periods } from "./constants";
@@ -76,7 +76,7 @@ const Display: React.FC<DisplayProps> = ({
 }) => {
   const periodRef = React.useRef<HTMLButtonElement | null>(null);
   const { locale } = useRouter();
-  const { data, startDate: start, endDate: end } = useDate();
+  const { data, startDate: start, endDate: end, dispatch } = useDate();
   const mergedDuplicateData = React.useMemo(() => {
     const filteredData = filterTransactions({
       data,
@@ -133,7 +133,7 @@ const Display: React.FC<DisplayProps> = ({
           data={mergedDuplicateData}
           donutInnerLabel={donutInnerText(
             periods[periodIndex]["txt"],
-            transactionType[locale],
+            transactionType[locale as "en" | "ar"],
             total,
             locale
           )}
@@ -153,22 +153,37 @@ const Display: React.FC<DisplayProps> = ({
         <Tab.List
           tabs={periods}
           className="flex justify-center gap-4 font-medium overflow-hidden before:bg-gray-600"
-          renderTab={({ tab, isSelected }) => (
-            <Tab
-              key={tab.id}
-              tab={{ id: tab.id, txt: tab.txt[locale] }}
-              cb={() => tab.txt.en === "period" && periodRef.current?.click()}
-              className={`capitalize ${
-                isSelected ? "text-gray-700" : " text-gray-300"
-              }`}
-            />
-          )}
+          renderTab={({ tab, isSelected }) => {
+            return (
+              <Tab
+                key={tab.id}
+                tab={{ id: tab.id, txt: tab.txt[locale as "ar" | "en"] }}
+                cb={() => tab.txt.en === "period" && periodRef.current?.click()}
+                className={`capitalize ${
+                  isSelected ? "text-gray-700" : " text-gray-300"
+                }`}
+              />
+            );
+          }}
         />
         <Tab.Panels className="relative p-4">
           <DateSelection
-            periodRef={periodRef}
             className="flex mx-auto mb-8 text-sm font-medium border-b border-dashed border-gray-400"
-            selection={selectedPeriod}
+            periodRef={periodRef}
+            period={selectedPeriod}
+            startDate={start}
+            endDate={end}
+            selectsRange={selectedPeriod === "period"}
+            showMonthYearPicker={selectedPeriod === "month"}
+            showYearPicker={selectedPeriod === "year"}
+            onChange={(dates) => {
+              let startDate = dates as Date | null,
+                endDate: Date | null = null;
+              if (Array.isArray(dates)) {
+                [startDate, endDate] = dates;
+              }
+              dispatch({ startDate, endDate });
+            }}
           />
           {Panels}
           <button

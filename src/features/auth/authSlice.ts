@@ -12,13 +12,13 @@ const slice = createSlice({
   name: "auth",
   initialState: { user: null } as AuthState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
+    setCredentials: (state, action: PayloadAction<{ data: User }>) => {
+      state.user = action.payload.data;
     },
   },
   extraReducers: (builder) => {
     // in case the client refresh, set the `user` state to the currently logged-in.
-    // this is why you have a flash of 'login' when refresh. 
+    // this is why you have a flash of 'login' when refresh.
     builder.addMatcher(
       api.endpoints.getUser.matchFulfilled,
       (state, { payload }) => {

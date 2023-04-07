@@ -7,6 +7,7 @@ import { useGetHeight } from "@lib/helpers/hooks";
 import { Spinner } from "@components/ui";
 import { request, gql } from "graphql-request";
 import { enviroment } from "@lib/enviroment";
+import { User } from "@prisma/client";
 // import { Transaction } from "@features/transaction";
 
 type HomeProps = {
@@ -33,15 +34,10 @@ const Transaction = dynamic(
   }
 );
 
-//ISSUE: for some reasons `getServerSideProps` doesn't run on client-side transition and on changing locales???
-export const getServerSideProps = withSessionSsr(async ({ req }) => {
-  const { user } = req.session;
+// util
+export const getUserWithCategories = async (user: User) => {
   const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
-
   const categories = { income: [], expenses: [] };
-  // redirect to loginPage.
-  if (!user) return { redirect: { permanent: false, destination: "/login" } };
-  
   const cats = await request(url, query, { userId: user.id });
 
   // classify the categories by `type`, and map it to `categories` accordingly.
@@ -49,8 +45,18 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
     categories[c.type].push(c);
   }
 
+  return { ...user, categories };
+};
+
+export const getServerSideProps = withSessionSsr(async ({ req }) => {
+  const { user } = req.session;
+
+  // redirect to loginPage.
+  if (!user) return { redirect: { permanent: false, destination: "/login" } };
+  const userWithCategories = await getUserWithCategories(user);
+  
   return {
-    props: { user: { ...user, categories } },
+    props: { user: userWithCategories },
   };
 });
 
@@ -59,7 +65,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
 
-  console.log({ user });
+  // console.log({ user });
 
   return (
     <main

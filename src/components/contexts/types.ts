@@ -4,8 +4,9 @@ type TDateContex = {
   data: TransactionElement[];
   startDate: Date;
   endDate: Date | null;
-  setStartDate: React.Dispatch<React.SetStateAction<Date>>;
-  setEndDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  dispatch: React.Dispatch<{
+    [k in keyof Pick<TDateContex, "startDate" | "endDate">]: Date | null;
+  }>;
 };
 
 type TDataContext<T = TransactionElement> = [

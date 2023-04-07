@@ -20,7 +20,7 @@ export const api = createApi({
   tagTypes: ["transactions", "transaction"],
   endpoints: (builder) => ({
     getTransactions: builder.query<
-      { transactions: Transaction[] },
+      { transactions: TransactionElement[] },
       { userId: string; category?: string }
     >({
       query: ({ userId, category }) => ({
@@ -144,6 +144,33 @@ export const api = createApi({
       }),
       invalidatesTags: ["transactions"],
     }),
+    addCategory: builder.mutation<Category, Partial<Category>>({
+      query: (args) => ({
+        document: gql`
+          mutation (
+            $userId: String!
+            $type: Type!
+            $color: String!
+            $iconId: String!
+            $name: Json!
+          ) {
+            addCategory(
+              userId: $userId
+              type: $type
+              color: $color
+              iconId: $iconId
+              name: $name
+            ) {
+              name
+              type
+              color
+              iconId
+            }
+          }
+        `,
+        variables: args,
+      }),
+    }),
     getUser: builder.query<NestedUserResponse, { email: string }>({
       query: ({ email }) => ({
         document: gql`
@@ -203,4 +230,5 @@ export const {
   useGetTransactionQuery,
   useGetUserQuery,
   useAddUserMutation,
+  useAddCategoryMutation,
 } = api;

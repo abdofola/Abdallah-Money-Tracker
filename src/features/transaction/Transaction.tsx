@@ -1,8 +1,13 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
-import { DisplayAmount, Display, TransactionForm } from "@features/transaction";
-import { TransactionProps } from "@features/transaction/types";
+import { DisplayAmount } from "@features/transaction";
+import {
+  TransactionElement,
+  TransactionProps,
+  Transform,
+} from "@features/transaction/types";
 import { DataProvider } from "@components/contexts";
 import { transactionTypes, periods } from "@features/transaction/constants";
 import {
@@ -11,6 +16,17 @@ import {
 } from "@app/services/api";
 import { useRouter } from "next/router";
 import { ar, en } from "@locales";
+import { Spinner } from "@components/ui";
+
+// dynamic imports,
+// to defer loading component until it's first rendered,
+// then subsequent renders will be cached.
+const Display = dynamic(() =>
+  import("@features/transaction").then(({ Display }) => Display)
+);
+const TransactionForm = dynamic(() =>
+  import("@features/transaction").then(({ TransactionForm }) => TransactionForm)
+);
 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
@@ -21,7 +37,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
     userId: user.id,
   });
   const transactions = React.useMemo(() => {
-    const trans = { income: [], expenses: [] };
+    const trans: Transform<TransactionElement> = { income: [], expenses: [] };
     for (let t of data.transactions) {
       trans[t.category.type].push({
         ...t,
@@ -33,40 +49,50 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
     return trans;
   }, [data.transactions]);
   const [display, setDisplay] = React.useState(true);
-  const [startDate, setStartDate] = React.useState(new Date());
-  const [endDate, setEndDate] = React.useState<Date | null>(null);
+  const [dates, dispatch] = React.useReducer(
+    (state, newState) => {
+      return { ...state, ...newState };
+    },
+    { startDate: new Date(), endDate: null }
+  );
   const [addTransaction, { isLoading }] = useAddTransactionMutation();
-  const selectedTransaction = transactionTypes[transactionIdx]["txt"].en;
-  const selectedPeriod = periods[periodIdx]["txt"][locale];
+  const selectedTransaction = transactionTypes[transactionIdx].txt.en;
+  const selectedPeriod = periods[periodIdx].txt.en;
   const total = transactions[selectedTransaction].reduce(
     (acc, curr) => acc + curr.amount,
     0
   );
-  const dates = { startDate, endDate, setStartDate, setEndDate };
+  const { startDate, endDate } = dates;
   const Panels = transactionTypes.map((t) => (
     <Tab.Panel key={t.id}>
-      <DataProvider data={transactions[t.txt.en]} {...dates}>
-        {display ? (
-          <Display
-            transactionType={t.txt}
-            periodIndex={periodIdx}
-            setPeriod={setPeriod}
-            displayOff={() => setDisplay(false)}
-          />
-        ) : (
-          <TransactionForm
-            user={user}
-            transactionType={t.txt.en}
-            displayOn={() => setDisplay(true)}
-            mutation={(data) => {
-              return addTransaction({
-                ...data,
-                userId: user.id,
-              }).unwrap();
-            }}
-            status={{ isLoading }}
-          />
-        )}
+      <DataProvider
+        data={transactions[t.txt.en]}
+        dispatch={dispatch}
+        {...dates}
+      >
+        <React.Suspense fallback={<Spinner variants={{ width: "md" }} />}>
+          {display ? (
+            <Display
+              transactionType={t.txt}
+              periodIndex={periodIdx}
+              setPeriod={setPeriod}
+              displayOff={() => setDisplay(false)}
+            />
+          ) : (
+            <TransactionForm
+              user={user}
+              transactionType={t.txt.en}
+              displayOn={() => setDisplay(true)}
+              mutation={(data: any) => {
+                return addTransaction({
+                  ...data,
+                  userId: user.id,
+                }).unwrap();
+              }}
+              status={{ isLoading }}
+            />
+          )}
+        </React.Suspense>
       </DataProvider>
     </Tab.Panel>
   ));
@@ -74,7 +100,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
 
   //prevent selecting multiple dates from date-picker when `period` tab not selected.
   if (selectedPeriod !== "period" && endDate) {
-    setEndDate(null);
+    dispatch({ startDate, endDate: null });
   }
 
   return (

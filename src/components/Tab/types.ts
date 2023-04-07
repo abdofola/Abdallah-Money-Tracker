@@ -4,7 +4,7 @@ type TypeItemsContext = {
   setItems: React.Dispatch<SetStateAction<Map<number, HTMLButtonElement>>>;
 };
 type RenderTabParam = {
-  tab: { id: number; txt: string };
+  tab: { id: number; txt: { [k in "ar" | "en"]: string } };
   isSelected: boolean;
 };
 type Props = {
@@ -17,7 +17,7 @@ type TabGroupProps = {
   children: React.ReactNode;
   defaultTab?: number;
   className?: string;
-  onChange?: React.Dispatch<SetStateAction<number>> | ((idx:number)=>void);
+  onChange?: React.Dispatch<SetStateAction<number>> | ((idx: number) => void);
 };
 type TabItemsProps = {
   tabs: RenderTabParam["tab"][];
@@ -25,9 +25,9 @@ type TabItemsProps = {
   className?: string;
 };
 type TabProps = {
-  tab: RenderTabParam["tab"];
+  tab: { id: number; txt: string };
   className?: string;
-  cb?: ()=>void;
+  cb?: () => void;
 };
 
 type TypeTabContext = {
@@ -36,9 +36,9 @@ type TypeTabContext = {
   onChange: TabGroupProps["onChange"];
 };
 type PanelsProps = {
-  children: React.ReactNode,
-  className?: string
-}
+  children: React.ReactNode;
+  className?: string;
+};
 
 export type {
   TabGroupProps,
@@ -47,5 +47,5 @@ export type {
   TypeTabContext,
   TabProps,
   TypeItemsContext,
-  PanelsProps
+  PanelsProps,
 };

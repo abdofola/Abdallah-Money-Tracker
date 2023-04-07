@@ -1,11 +1,11 @@
 .overlay {
   display: flex;
   justify-content: center;
-  align-items: center;
-  @apply fixed inset-0 z-50 px-4 bg-gray-400 bg-opacity-30;
+  @apply fixed inset-0 z-50 bg-gray-500 bg-opacity-30;
 }
 .modal {
-  @apply bg-white shadow-2xl overflow-x-clip rounded-md;
+  width: min(100vw, 25rem);
+  @apply bg-white shadow-2xl overflow-x-clip rounded-md sm:mx-auto;
 }
 .header {
   @apply px-5 py-4 text-gray-700 capitalize font-semibold;
@@ -27,4 +27,26 @@
 }
 .footer > [name="confirm"] > * {
   @apply mx-auto;
+}
+
+/* ditched style
+----------------------------*/
+.dialog {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  /* max-inline-size: min(90vw, 60ch);
+    max-block-size: min(80vh, 100%);
+    max-block-size: min(80dvb, 100%); */
+  margin: auto;
+  z-index: 999;
+  /* backdrop-filter: blur(25px); */
+  @apply bg-gray-400 bg-opacity-30;
+}
+.dialog > form {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  max-block-size: 80vh;
+  max-block-size: 80dvb;
 }

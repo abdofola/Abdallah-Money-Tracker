@@ -6,11 +6,12 @@ import { useAppDispatch } from "@app/hooks";
 import { useAsync } from "@lib/helpers/hooks";
 import { enviroment } from "@lib/enviroment";
 
+//TODO: it shouldn't be HOC component, this just isn't the right usage!
 
 type Props = {
-  isAdmin?: Boolean,
-  setIsSuccess?: React.Dispatch<React.SetStateAction<boolean>>
-}
+  isAdmin?: Boolean;
+  setIsSuccess?: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 function loginOrAddUser<P = Props>({
   api,
@@ -60,7 +61,7 @@ function loginOrAddUser<P = Props>({
               name="email"
               placeholder="someone@example.com"
             />
-            <button className="flex justify-start items-center border border-gray-700 capitalize ml-auto px-6 py-1 rounded-md">
+            <button className=" flex justify-center items-center border border-gray-700 capitalize ml-auto px-6 py-1 rounded-md">
               {status === "pending" ? <Spinner /> : "login"}
             </button>
           </div>
