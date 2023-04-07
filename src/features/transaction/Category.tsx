@@ -45,7 +45,7 @@ export default function CategoryList({
       <Transition isMounted={canAddCategory}>
         <button
           type="button"
-          className="flex flex-col justify-center items-center mx-auto"
+          className="flex flex-col justify-center items-center m-auto"
           onClick={open}
         >
           <span className="mt-auto bg-gray-200 rounded-full">
