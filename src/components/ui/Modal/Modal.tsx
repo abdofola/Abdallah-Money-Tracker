@@ -7,7 +7,7 @@ import Form from "../Form";
 import { Transition } from "@components/Transition";
 
 type ModalProps = {
-  children: React.ReactNode | (() => JSX.Element);
+  children: React.ReactNode;
   close: () => void;
   headerTxt: String;
   confirmationButton: React.ReactElement;
@@ -32,7 +32,6 @@ export default function Modal({
       onClick={close}
     >
       <Transition
-        isAnimated
         isMounted={isMounted}
         from="opacity-0 translate-y-full sm:translate-y-0 sm:scale-0"
         to="opacity-100 translate-y-0 sm:scale-100"
@@ -45,17 +44,15 @@ export default function Modal({
           onClick={(e) => e.stopPropagation()}
         >
           <Form
-            method="dialog"
-            className=" border-none"
+            id="dialog"
+            className="border-none"
             variants={{ padding: "0", margin: "0", gutter: "0" }}
             onSubmit={onConfirm}
           >
             <header className={styles.header}>
               <h4>{headerTxt ?? "dailog"}</h4>
             </header>
-            <article className={styles.body}>
-              {typeof children === "function" ? children() : children}
-            </article>
+            <article className={styles.body}>{children}</article>
             <footer>
               <menu className={styles.footer}>
                 <button name="cancel" type="button" onClick={close}>

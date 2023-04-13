@@ -5,27 +5,27 @@ import { useRouter } from "next/router";
 import { en, ar } from "@locales";
 import { Transition } from "@components/Transition";
 
-export default function CategoryList({
+function CategoryList({
   categories,
   canAddCategory,
   selectedId,
-  renderCategory,
   setSelectedId,
+  renderCategory,
   open,
 }: CategoriesProps) {
-  const [selected, setSelected] = React.useState(null);
+  const [selected, setSelected] = React.useState<string | null>(null);
   const { locale } = useRouter();
   const translation = locale === "en" ? en : ar;
-  const isControlled = selectedId !== undefined;
+  const isControlled =
+    selectedId !== undefined && setSelectedId instanceof Function;
 
-  // console.log({ selected, selectedId });
-
+    // console.log({selectedId, categories})
   return (
     <ul className="grid grid-cols-4 gap-4">
       {categories.map((cat) =>
         renderCategory({
           cat,
-          isSelected: (!isControlled ? selected : selectedId) === cat.id,
+          isSelected: (isControlled ? selectedId : selected) === cat.id,
           icon: (
             <Icon
               className="w-10 h-10"
@@ -33,16 +33,11 @@ export default function CategoryList({
             />
           ),
           onClick: () => {
-            if (isControlled) {
-              setSelectedId(cat.id);
-              return;
-            }
-
-            setSelected(cat.id);
+            isControlled ? setSelectedId(cat.id) : setSelected(cat.id);
           },
         })
       )}
-      <Transition isMounted={canAddCategory}>
+      <Transition isMounted={canAddCategory!}>
         <button
           type="button"
           className="flex flex-col justify-center items-center w-full h-full"
@@ -58,14 +53,14 @@ export default function CategoryList({
   );
 }
 
-export function Category({ cat, isSelected, icon, onClick }: CategoryProps) {
+export default function Category({ cat, isSelected, icon, onClick }: CategoryProps) {
   const { locale } = useRouter();
-  const { color, iconId, id, name } = cat;
+  const { color, id, name } = cat;
 
   return (
     <li>
       <label
-        htmlFor={iconId}
+        htmlFor={id}
         onClick={onClick}
         className={`relative flex flex-col items-center -mx-2 rounded-md cursor-pointer ${
           isSelected ? "bg-gray-100 shadow-inner" : ""
@@ -83,8 +78,8 @@ export function Category({ cat, isSelected, icon, onClick }: CategoryProps) {
           {name[locale as "en" | "ar"]}
         </span>
         <input
+          id={id}
           className="appearance-none"
-          id={iconId}
           type="radio"
           name="categoryId"
           value={id}
@@ -99,3 +94,6 @@ export function Category({ cat, isSelected, icon, onClick }: CategoryProps) {
     </li>
   );
 }
+
+
+Category.List = CategoryList;

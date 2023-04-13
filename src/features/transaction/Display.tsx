@@ -126,6 +126,7 @@ const Display: React.FC<DisplayProps> = ({
   }, [start, end, periodIndex, data]);
   const selectedPeriod = periods[periodIndex]["txt"].en;
   const total = mergedDuplicateData.reduce((acc, curr) => acc + curr.amount, 0);
+  const translation = locale === "en" ? en : ar;
   const Panels = periods.map((p) => {
     return (
       <Tab.Panel key={p.id}>
@@ -141,7 +142,6 @@ const Display: React.FC<DisplayProps> = ({
       </Tab.Panel>
     );
   });
-  const translation = locale === "en" ? en : ar;
 
   return (
     <div className="flex flex-col gap-4 mt-4 sm:mt-8 sm:flex-row">

@@ -94,7 +94,6 @@ type RenderCategoryFnInput = {
 };
 type CategoriesProps = {
   categories: Category[];
-  trxType?: TransactionType;
   canAddCategory?: boolean;
   selectedId?: string | null;
   renderCategory: ({

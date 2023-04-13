@@ -4,7 +4,7 @@ import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { useGetTransactionsQuery } from "@app/services/api";
 import { Layout } from "@components/Layout";
-import { useGetHeight, useLocalStorage } from "@lib/helpers/hooks";
+import { useGetHeight } from "@lib/helpers/hooks";
 import { TransactionItem, TransactionList } from "@features/transaction";
 import { EmptyState, Spinner } from "@components/ui";
 import { Tab } from "@components/Tab";
@@ -12,9 +12,8 @@ import { transactionTypes } from "@features/transaction/constants";
 import { useRouter } from "next/router";
 import { en, ar } from "@locales";
 import styles from "./transactions.module.css";
-import dynamic from "next/dynamic";
 
-export const getServerSideProps = withSessionSsr(async({ req }) => {
+export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
 
   console.log("-----getServerSideProps---->", { session: user });
@@ -27,10 +26,11 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
   const { query, locale } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
-  const { data, isSuccess, isLoading, error,endpointName } = useGetTransactionsQuery({
-    category: query.category as string,
-    userId: session.id,
-  });
+  const { data, isSuccess, isLoading, error, endpointName } =
+    useGetTransactionsQuery({
+      category: query.category as string,
+      userId: session.id,
+    });
   const tabIdx = transactionTypes.findIndex((t) => t.txt.en === query.type);
   let transactions = { income: new Map(), expenses: new Map() };
 
@@ -108,8 +108,7 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
     );
   });
 
-  console.log({ session });
-
+  // console.log({ session });
 
   return (
     <div

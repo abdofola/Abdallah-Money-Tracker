@@ -1,17 +1,17 @@
-import React from "react";
+import { createContext, useContext, FC } from "react";
 import { DataProviderProps, TDateContex } from "./types";
 
-const DateContext = React.createContext<TDateContex | null>(null);
+const DateContext = createContext<TDateContex | null>(null);
 
 const useDate = () => {
-  const dateContext = React.useContext(DateContext);
+  const dateContext = useContext(DateContext);
   if (!dateContext)
     throw new Error("dateContext must be used within `DataProvider` component");
 
   return dateContext;
 };
 
-const DataProvider: React.FC<DataProviderProps> = ({ children, ...rest }) => {
+const DataProvider: FC<DataProviderProps> = ({ children, ...rest }) => {
   return <DateContext.Provider value={rest}>{children}</DateContext.Provider>;
 };
 
