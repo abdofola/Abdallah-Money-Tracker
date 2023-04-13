@@ -17,7 +17,7 @@ export const api = createApi({
   baseQuery: graphqlRequestBaseQuery({
     url: enviroment[process.env.NODE_ENV] + "/api/graphql",
   }),
-  tagTypes: ["transactions", "transaction"],
+  tagTypes: ["transactions", "categories"],
   endpoints: (builder) => ({
     getTransactions: builder.query<
       { transactions: TransactionElement[] },
@@ -129,7 +129,7 @@ export const api = createApi({
         `,
         variables: transaction,
       }),
-      invalidatesTags: ["transactions", "transaction"],
+      invalidatesTags: ["transactions"],
     }),
     deleteTransaction: builder.mutation<Transaction, { id: string }>({
       query: ({ id }) => ({
@@ -144,33 +144,7 @@ export const api = createApi({
       }),
       invalidatesTags: ["transactions"],
     }),
-    addCategory: builder.mutation<Category, Partial<Category>>({
-      query: (args) => ({
-        document: gql`
-          mutation (
-            $userId: String!
-            $type: Type!
-            $color: String!
-            $iconId: String!
-            $name: Json!
-          ) {
-            addCategory(
-              userId: $userId
-              type: $type
-              color: $color
-              iconId: $iconId
-              name: $name
-            ) {
-              name
-              type
-              color
-              iconId
-            }
-          }
-        `,
-        variables: args,
-      }),
-    }),
+
     getUser: builder.query<NestedUserResponse, { email: string }>({
       query: ({ email }) => ({
         document: gql`
@@ -230,5 +204,4 @@ export const {
   useGetTransactionQuery,
   useGetUserQuery,
   useAddUserMutation,
-  useAddCategoryMutation,
 } = api;

@@ -3,7 +3,7 @@ import { builder } from "../builder";
 const Type = builder.enumType("Type", {
   values: ["income", "expenses"] as const,
 });
-
+//TODO: fix the issue with the `name` field type.
 builder.prismaObject("Category", {
   fields: (t) => ({
     id: t.exposeID("id"),

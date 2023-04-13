@@ -5,4 +5,4 @@ export { default as DisplayAmount } from "./Amount";
 export { default as DateSelection } from "./DateSelection";
 export { default as TransactionForm } from "./TransactionForm";
 export { default as Display, filterTransactions } from "./Display";
-export {default as CategoryList, Category} from './Category'
+export { default as Category } from "./Category";

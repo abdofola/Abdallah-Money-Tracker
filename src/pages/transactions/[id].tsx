@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { Layout } from "@components/Layout";
-import { useGetHeight } from "@lib/helpers/hooks";
+import { useGetHeight, useLocalStorage } from "@lib/helpers/hooks";
 import { Modal, Spinner } from "@components/ui";
 import {
   useDeleteTransactionMutation,
@@ -22,9 +22,9 @@ import { Transition } from "@components/Transition";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
-  const userWithCategories = await getUserWithCategories(user);
+  // const userWithCategories = await getUserWithCategories(user);
 
-  return { props: { user: userWithCategories } };
+  return { props: { user } };
 });
 
 // page component

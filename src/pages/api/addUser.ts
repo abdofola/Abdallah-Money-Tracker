@@ -1,6 +1,5 @@
 import prisma from "@lib/prisma";
 import { withSessionRoute } from "@lib/session";
-import { categories } from "prisma/seed";
 
 export default withSessionRoute(async function signupRoute(req, res) {
   const { email } = req.body;
@@ -9,12 +8,12 @@ export default withSessionRoute(async function signupRoute(req, res) {
     if (!email) return res.status(400).send({ message: `email is required!` });
 
     const user = await prisma.user.create({
-      data: { email, categories: { create: categories } },
+      data: { email },
     });
 
     req.session.user = user;
     await req.session.save();
-    
+
     return res.status(200).json(user);
   } catch (e) {
     const response = { message: (e as Error).message };

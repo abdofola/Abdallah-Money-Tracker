@@ -3,11 +3,14 @@ import DateSelection from "./DateSelection";
 import { Form, Modal, Spinner } from "@components/ui";
 import { useRouter } from "next/router";
 import { en, ar } from "@locales";
-import { CategoryList, Category } from "./index";
+import { Category } from "./index";
 import { otherCategories } from "./constants";
-import { useAddCategoryMutation } from "@app/services/api";
+import { useAddCategoryMutation, useGetCategoriesQuery } from "@app/services";
 import { Category as TCategory } from "./types";
 import { Transition } from "@components/Transition";
+import { FormProps } from "@components/ui/Form";
+import { useLocalStorage } from "@lib/helpers/hooks";
+import { categories as defaultCategories } from "./constants";
 
 function TransactionForm({
   user,
@@ -29,10 +32,17 @@ function TransactionForm({
   );
   const [amountValue, setAmountValue] = React.useState(transactionAmount ?? "");
   const [comment, setComment] = React.useState(transactionComment ?? "");
-  const { locale } = useRouter();
+  const { data, isFetching } = useGetCategoriesQuery({ userId: user.id });
   const [addCategory, { isLoading }] = useAddCategoryMutation();
-
-  const canAdd = !status.isLoading && selectedId && amountValue;
+  const [categories, setCategories] = useLocalStorage(
+    "categories",
+    defaultCategories
+  );
+  const { locale } = useRouter();
+  const categoryToUpdate = data?.[transactionType].find(
+    (c) => c.id === selectedId
+  );
+  const canAdd = !status.isLoading && !isLoading && selectedId && amountValue;
   const translation = locale === "en" ? en : ar;
 
   const reset = () => {
@@ -41,24 +51,56 @@ function TransactionForm({
     setDate(new Date());
     setComment("");
   };
-  const handleSubmit = (formData) => {
-    console.log({ formData });
-    if (formData.categoryId == null) return;
+  const handleSubmit: FormProps["onSubmit"] = async (formData) => {
+    console.log({ amountValue, selectedId, date });
 
-    mutation({ ...formData, date, amount: Number(amountValue) })
-      .then((payload) => console.log({ payload }))
-      .catch((error) => console.log({ error }))
-      .finally(() => {
-        // after promise is settled
-        reset();
-        displayOn();
+    if (amountValue <= 0 || !selectedId || !(date instanceof Date)) {
+      return;
+    }
+    const selectedCategory = categories[transactionType].find((c) => {
+      return c.id === selectedId;
+    });
+    const matchedSelection = data[transactionType].find(
+      (c) => c.iconId === selectedCategory.iconId
+    );
+    const { id, ...payload } = selectedCategory;
+
+    try {
+      let catId: string;
+      // check to see if user has the selected the category or not,
+      // to decide whether to add it or not(i.e perform POST request).
+      if (!matchedSelection) {
+        const newCategory = await addCategory({
+          userId: user.id,
+          ...payload,
+        }).unwrap();
+        catId = newCategory.addCategory.id;
+      } else {
+        catId = matchedSelection.id;
+      }
+      const newTrx = await mutation({
+        ...formData,
+        categoryId: catId,
+        date,
+        amount: Number(amountValue),
       });
+      console.log({ newTrx });
+    } catch (err) {
+      console.log({ err });
+    } finally {
+      reset();
+      displayOn();
+    }
   };
 
-  // to disconnect `selectedId` in the form, from the one in `Modal` component.
-  if (isOpen && selectedId) {
-    setSelectedId(null);
+  // when it's update operation, update `selectedId` to match the one in localStorage
+  if (categoryId && categoryToUpdate && selectedId === categoryToUpdate.id) {
+    const selectedCategory = categories[transactionType].find(
+      (c) => c.iconId === categoryToUpdate.iconId
+    );
+    setSelectedId(selectedCategory.id)
   }
+  // console.log({selectedCategory})
 
   // focus input on component first mount
   React.useEffect(() => {
@@ -67,9 +109,9 @@ function TransactionForm({
 
   return (
     <Form
-      id="add-trx"
-      variants={{ padding: 4 }}
-      className="max-w-[29rem]"
+      id="add_trx"
+      variants={{ padding: "4" }}
+      className="max-w-md"
       onSubmit={handleSubmit}
     >
       {/* amount */}
@@ -96,9 +138,9 @@ function TransactionForm({
         <span className="text-gray-400">
           {translation.transactionDetails.category}
         </span>
-        <CategoryList
+        <Category.List
           canAddCategory={canAddCategory}
-          categories={user.categories[transactionType]}
+          categories={categories[transactionType]}
           setSelectedId={setSelectedId}
           selectedId={selectedId}
           open={() => setIsOpen(true)}
@@ -114,22 +156,49 @@ function TransactionForm({
                 (c) => c.id === data.categoryId
               ) as TCategory | undefined;
 
+              console.log({ selectedCategory, data });
+
+              //ISSUE:
+              //if you select new item,
+              // and then swiched to already existed one, then
+              // data will hold the stale value.
               if (selectedCategory) {
-                const { id, ...newCategory } = selectedCategory;
-                addCategory({ ...newCategory, userId: user.id })
-                  .unwrap()
-                  .then((payload) => console.log({ payload }))
-                  .catch((error) => console.log({ error }))
-                  .finally(() => setIsOpen(false));
+                setCategories((prev) => {
+                  const prevCategories = prev[transactionType];
+                  const isDuplicate = prevCategories.includes(selectedCategory);
+                  // if element already exists, skip appending,
+                  // and return the previous state.
+                  if (isDuplicate) {
+                    return prev;
+                  }
+                  return {
+                    ...prev,
+                    [transactionType]: [...prevCategories, selectedCategory],
+                  };
+                });
+                setSelectedId(data.categoryId!);
+                setIsOpen(false);
+              } else {
+                console.log("selected is duplicate!");
+                setIsOpen(false);
               }
             }}
             confirmationButton={
-              <button className="flex justify-center basis-1/3 bg-black text-white py-1 rounded-md">
-                {isLoading ? <Spinner /> : translation.buttons.add}
+              <button
+                type="submit"
+                form="dialog"
+                className="flex justify-center basis-1/3 bg-black text-white py-1 rounded-md"
+                // onClick={(e) => e.stopPropagation()}
+              >
+                {isLoading ? (
+                  <Spinner variants={{ intent: "secondary" }} />
+                ) : (
+                  translation.buttons.add
+                )}
               </button>
             }
           >
-            <CategoryList
+            <Category.List
               categories={otherCategories[transactionType]}
               renderCategory={(props) => {
                 return <Category key={props.cat.id} {...props} />;
@@ -175,16 +244,19 @@ function TransactionForm({
       </div>
       {/* buttons */}
       <menu className="flex gap-2">
-        {/* TODO: this propably should be refactored, to receive the submit button as prop */}
         <button
-          id="add-trx"
+          form="add_trx"
           className={`flex justify-center items-center capitalize py-1 basis-1/3 rounded-lg shadow ${
             !canAdd ? "text-gray-300" : ""
           }`}
           type="submit"
           disabled={!canAdd}
         >
-          {!status.isLoading ? translation.buttons.add : <Spinner />}
+          {!status.isLoading && !isLoading ? (
+            translation.buttons.add
+          ) : (
+            <Spinner />
+          )}
         </button>
         <button type="reset" className="text-gray-400" onClick={reset}>
           {translation.buttons.reset}

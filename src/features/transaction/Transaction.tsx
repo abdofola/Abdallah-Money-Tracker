@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/router";
 import { ar, en } from "@locales";
 import { Spinner } from "@components/ui";
+import { Transition } from "@components/Transition";
 
 // dynamic imports,
 // to defer loading component until it's first rendered,
@@ -71,14 +72,24 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
         {...dates}
       >
         <React.Suspense fallback={<Spinner variants={{ width: "md" }} />}>
-          {display ? (
+          <Transition
+            isMounted={display}
+            //ISSUE: `translate-x` causes date-picker becomes off(fixed element) !!
+            from="overflow-hidden opacity-0 ltr:-translate-x-full rtl:translate-x-full sm:ltr:transform-none sm:rtl:transform-none"
+            to="overflow-hidden opacity-100 ltr:translate-x-0 rtl:translate-x-0 ltr:transform-none rtl:transform-none"
+          >
             <Display
               transactionType={t.txt}
               periodIndex={periodIdx}
               setPeriod={setPeriod}
               displayOff={() => setDisplay(false)}
             />
-          ) : (
+          </Transition>
+          <Transition
+            isMounted={!display}
+            from="opacity-0 ltr:mr-[100%] rtl:ml-[100%] sm:ltr:ml-auto sm:rtl:mr-auto"
+            to="opacity-100 ltr:mr-0 rtl:ml-0 sm:ltr:mr-auto sm:rtl:ml-auto"
+          >
             <TransactionForm
               user={user}
               transactionType={t.txt.en}
@@ -91,7 +102,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
               }}
               status={{ isLoading }}
             />
-          )}
+          </Transition>
         </React.Suspense>
       </DataProvider>
     </Tab.Panel>

@@ -53,10 +53,10 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
   // redirect to loginPage.
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
-  const userWithCategories = await getUserWithCategories(user);
+  // const userWithCategories = await getUserWithCategories(user);
   
   return {
-    props: { user: userWithCategories },
+    props: { user},
   };
 });
 
