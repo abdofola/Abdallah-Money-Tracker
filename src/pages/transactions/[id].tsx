@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { Layout } from "@components/Layout";
-import { useGetHeight, useLocalStorage } from "@lib/helpers/hooks";
+import { useGetHeight } from "@lib/helpers/hooks";
 import { Modal, Spinner } from "@components/ui";
 import {
   useDeleteTransactionMutation,
@@ -13,16 +13,12 @@ import {
 import { TransactionForm } from "@features/transaction";
 import { DataProvider } from "@components/contexts";
 import { Transaction } from "@prisma/client";
-import { request, gql } from "graphql-request";
-import { enviroment } from "@lib/enviroment";
 import { en, ar } from "@locales";
-import { getUserWithCategories } from "..";
 import { Category } from "@features/transaction/types";
 import { Transition } from "@components/Transition";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
-  // const userWithCategories = await getUserWithCategories(user);
 
   return { props: { user } };
 });
@@ -31,19 +27,19 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 const Transaction: NextPageWithLayout = ({ user }) => {
   const { query, locale } = useRouter();
   const [display, setDisplay] = React.useState(true);
-  const { data = { transaction: {} }, isLoading: fetchLoading } =
+  const { data = { transaction: {} }, isLoading: trxQueryLoading } =
     useGetTransactionQuery({
       id: query.id,
       userId: user.id,
     });
-  const [updateTransaction, { isLoading }] = useUpdateTransactionMutation();
+  const [updateTransaction, { isLoading: trxMutationLoading }] = useUpdateTransactionMutation();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
   const { amount, date, category, comment } =
     data.transaction as Transaction & { category: Category };
   const translation = locale === "en" ? en : ar;
   let content;
-  if (fetchLoading) {
+  if (trxQueryLoading) {
     content = <Spinner variants={{ width: "md", margin: "4" }} />;
   } else {
     content = display ? (
@@ -65,7 +61,8 @@ const Transaction: NextPageWithLayout = ({ user }) => {
           mutation={(data) => {
             return updateTransaction({ ...data, id: query.id }).unwrap();
           }}
-          status={{ isLoading }}
+          //TODO: instead of passing status, pass a button component
+          status={{ isLoading: trxMutationLoading }}
         />
       </DataProvider>
     );
