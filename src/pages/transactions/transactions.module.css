@@ -2,5 +2,6 @@
   box-shadow: 0 0 0 100vmax rgb(243 244 246 / var(--tw-bg-opacity));
   clip-path: inset(0 -100vmax);
   position: sticky;
+  z-index: 1;
   @apply w-full p-2 text-gray-600 bg-gray-100 sm:top-[-1px] sm:shadow-none sm:text-center !important;
 }
