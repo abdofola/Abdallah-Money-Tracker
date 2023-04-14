@@ -12,11 +12,12 @@ import { transactionTypes } from "@features/transaction/constants";
 import { useRouter } from "next/router";
 import { en, ar } from "@locales";
 import styles from "./transactions.module.css";
+import { Transition } from "@components/Transition";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
 
-  console.log("-----getServerSideProps---->", { session: user });
+  // console.log("-----getServerSideProps---->", { session: user });
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
   return { props: { session: user } };
 });
@@ -26,11 +27,10 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
   const { query, locale } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
-  const { data, isSuccess, isLoading, error, endpointName } =
-    useGetTransactionsQuery({
-      category: query.category as string,
-      userId: session.id,
-    });
+  const { data, isSuccess, isLoading, error } = useGetTransactionsQuery({
+    category: query.category as string,
+    userId: session.id,
+  });
   const tabIdx = transactionTypes.findIndex((t) => t.txt.en === query.type);
   let transactions = { income: new Map(), expenses: new Map() };
 
@@ -88,15 +88,21 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
                   data={trans}
                   renderItem={(t) => {
                     return (
-                      <TransactionItem
-                        withComment
+                      <Transition
                         key={t.id}
-                        href={{
-                          pathname: "/transactions/[id]",
-                          query: { id: t.id },
-                        }}
-                        item={t}
-                      />
+                        isMounted
+                        from="opacity-0 -translate-y-10"
+                        to="opacity-100 translate-y-0"
+                      >
+                        <TransactionItem
+                          withComment
+                          href={{
+                            pathname: "/transactions/[id]",
+                            query: { id: t.id },
+                          }}
+                          item={t}
+                        />
+                      </Transition>
                     );
                   }}
                 />

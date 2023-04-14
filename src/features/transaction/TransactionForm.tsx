@@ -98,13 +98,15 @@ function TransactionForm({
     const selectedCategory = categories[transactionType].find(
       (c) => c.iconId === categoryToUpdate.iconId
     );
-    setSelectedId(selectedCategory.id)
+    setSelectedId(selectedCategory.id);
   }
   // console.log({selectedCategory})
 
   // focus input on component first mount
   React.useEffect(() => {
-    amountRef.current?.focus();
+    // the desired behavior to trigger the focus,
+    // with showing device's keyboard, it's annoying
+    // amountRef.current?.focus();
   }, []);
 
   return (
