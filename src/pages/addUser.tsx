@@ -7,14 +7,14 @@ import { loginOrAddUser } from "@components/HOC";
 const AddminLogin = loginOrAddUser({
   api: "login",
   handler({ payload }) {
-    console.log({ payload });
+    // console.log({ payload });
   },
 });
 const AddUserForm = loginOrAddUser({
   api: "addUser",
   handler({ payload, router, dispatch }) {
     dispatch(setCredentials(payload));
-    router.push("/");
+    // router.push("/");
   },
 });
 
