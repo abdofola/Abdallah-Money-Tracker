@@ -79,7 +79,7 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
               <div key={date} className="w-full">
                 <h4
                   className={styles.fullBleed}
-                  style={{ top: loginHeight + "px" }}
+                  style={{ top: loginHeight + "px", zIndex:99 }}
                 >
                   {date}
                 </h4>
