@@ -4,22 +4,12 @@
 
 html,
 body {
-  padding: 0;
-  margin: 0;
   font-family: "Almarai", "Solway", -apple-system, BlinkMacSystemFont, Segoe UI,
     Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
     sans-serif;
   @apply w-full h-full bg-gray-50;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-* {
-  box-sizing: border-box;
-}
 .hideScrollBar::-webkit-scrollbar {
   width: 0;
 }

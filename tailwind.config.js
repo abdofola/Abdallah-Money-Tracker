@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       boxShadow: {
@@ -11,6 +9,7 @@ module.exports = {
       animation: {
         foldDown: "foldDown 0.5s linear forwards",
         foldUp: "foldUp 0.5s linear forwards",
+        progress: "progress 0.5s linear forwards",
       },
       keyframes: {
         foldDown: {
@@ -54,6 +53,13 @@ module.exports = {
             height: "0",
             transform: "translateY(-100%)",
           },
+        },
+        progress: {
+          "0%": { width: "0" },
+          "25%": { width: "25%" },
+          "50%": { width: "50%" },
+          "75%": { width: "75%" },
+          "100%": { width: "90%" },
         },
       },
     },
