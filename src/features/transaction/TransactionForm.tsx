@@ -104,7 +104,7 @@ function TransactionForm({
 
   // focus input on component first mount
   React.useEffect(() => {
-    // the desired behavior to trigger the focus,
+    //TODO; the desired behavior to trigger the focus,
     // with showing device's keyboard, it's annoying
     // amountRef.current?.focus();
   }, []);
