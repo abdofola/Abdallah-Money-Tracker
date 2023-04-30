@@ -2,10 +2,12 @@ import React from "react";
 import { useDelayMountUnmount } from "@lib/helpers/hooks";
 
 type P = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   isMounted: boolean;
   from?: string;
   to?: string;
+  as?: React.ElementType;
+  className?: string;
   delay?: number;
 };
 
@@ -14,13 +16,17 @@ export default function Transition({
   isMounted,
   from,
   to,
+  as = "div",
+  className = "",
   delay = 100,
 }: P) {
   const shouldRender = useDelayMountUnmount(isMounted, delay);
-
-  const className = isMounted && shouldRender ? to : from;
-
+  const Element = as;
+  const transitionSwitcher = isMounted && shouldRender ? to : from;
+  const style = `${className} ${
+    transitionSwitcher ? "transition-all " + transitionSwitcher : ""
+  }`;
   if (!isMounted && !shouldRender) return null;
 
-  return <div className={`transition-all ${className}`}>{children}</div>;
+  return <Element className={style}>{children}</Element>;
 }
