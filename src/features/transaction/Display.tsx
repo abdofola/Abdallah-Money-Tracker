@@ -9,6 +9,7 @@ import {
   TransactionList,
   TransactionItem,
   DateSelection,
+  DisplayAmount,
 } from "@features/transaction";
 import { Donut } from "@components/Chart";
 import { Plus } from "@components/icons";
@@ -54,14 +55,18 @@ const donutInnerText = (
 ) => {
   const arabicTrx = locale === "ar" && transaction.replace("ال", "");
   const currency = locale === "en" ? "SDG" : "ج";
-  const pronoun = ["السنة", "المدة"].includes(period[locale]) ? "هذه" : "هذا";
+  const pronoun = ["السنة", "الفترة"].includes(period[locale]) ? "هذه" : "هذا";
   let text = locale === "en" ? "There were no " : `لا يوجد ${arabicTrx}`;
-  if (total) return total.toFixed(2).toString().concat(` ${currency}`);
-  else
+  if (total) {
+    return Intl.NumberFormat(undefined, { minimumFractionDigits: 2 })
+      .format(Number(total))
+      .concat(` ${currency}`);
+  } else {
     text +=
       locale === "en"
         ? `${transaction} in this ${period[locale]}`
         : ` في ${pronoun} ${period[locale]}`;
+  }
   return text;
 };
 const calculatePercentage = (amount: number, total: number) =>

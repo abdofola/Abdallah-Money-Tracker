@@ -43,10 +43,13 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <Provider store={store}>
       <ErrorBoundary>
-        {isLoading && (
-          <span className="animate-progress absolute top-0 z-50  h-1 bg-black" />
-        )}
-        <div className={` ${isLoading ? "opacity-30" : ""} `}>{Page}</div>
+        <Transition
+          as="span"
+          className="animate-progress absolute top-0 z-50  h-1 bg-black"
+          isMounted={isLoading}
+          delay={0}
+        />
+        <div className={` ${isLoading ? "opacity-25" : ""} `}>{Page}</div>
       </ErrorBoundary>
     </Provider>
   );

@@ -1,14 +1,17 @@
 import { useRouter } from "next/router";
 
-const DisplayAmount: React.FC<{
+type P = {
   amount: number;
   [k: string]: any;
-}> = ({ amount, ...style }) => {
+};
+
+const DisplayAmount: React.FC<P> = ({ amount, ...style }) => {
   const { locale } = useRouter();
   const currency = locale === "en" ? "SDG" : "ج";
-  const renderedAmount = Number(amount)
-    .toFixed(2)
-    .toString()
+  const renderedAmount = Intl.NumberFormat(undefined, {
+    minimumFractionDigits: 2,
+  })
+    .format(Number(amount))
     .concat(` ${currency}`);
 
   return <span {...style}>{renderedAmount}</span>;
