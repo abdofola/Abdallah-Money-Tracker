@@ -10,7 +10,7 @@ import {
   useGetTransactionQuery,
   useUpdateTransactionMutation,
 } from "@app/services/api";
-import { TransactionForm } from "@features/transaction";
+import { DisplayAmount, TransactionForm } from "@features/transaction";
 import { DataProvider } from "@components/contexts";
 import { Transaction } from "@prisma/client";
 import { en, ar } from "@locales";
@@ -116,7 +116,9 @@ function DisplayDetails({ details, displayOff }) {
           <dt className="text-gray-400">
             {translation.transactionDetails.amount}
           </dt>
-          <dd>{amount} </dd>
+          <dd>
+          <DisplayAmount amount={amount} />
+          </dd>
         </div>
         <div>
           <dt className="text-gray-400">

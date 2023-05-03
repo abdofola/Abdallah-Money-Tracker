@@ -4,9 +4,9 @@ import { Provider } from "react-redux";
 import { store } from "../app/store";
 import { AppProps } from "next/app";
 import ErrorBoundary from "@components/ErrorBoundary";
-import "../styles/globals.css";
 import { useRouter } from "next/router";
 import { Transition } from "@components/Transition";
+import "../styles/globals.css";
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   Layout?: (page: React.ReactElement) => React.ReactNode;
@@ -22,13 +22,8 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   // page's loading effect when navigating between pages.
   React.useEffect(() => {
-    const onStart = (_url: string) => {
-      setIsLoading(true);
-    };
-    const onComplete = (_url: string) => {
-      // console.log("change complete!");
-      setIsLoading(false);
-    };
+    const onStart = (_url: string) => setIsLoading(true);
+    const onComplete = (_url: string) => setIsLoading(false);
 
     router.events.on("routeChangeStart", onStart);
     router.events.on("routeChangeComplete", onComplete);

@@ -17,7 +17,7 @@ const periods: Config<PeriodType>["arr"] = [
   { id: 4, txt: { en: "period", ar: "الفترة" } },
 ];
 
-const categories = {
+const categories:{income:Category[], expenses:Category[]} = {
   income: [
     {
       id: "0_lS",
@@ -93,7 +93,7 @@ const categories = {
     },
   ],
 };
-const otherCategories = {
+const otherCategories:{income:Category[], expenses:Category[]} = {
   income: [
     {
       id: "0_income_others",

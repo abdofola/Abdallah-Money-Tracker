@@ -19,7 +19,7 @@ function CategoryList({
   const isControlled =
     selectedId !== undefined && setSelectedId instanceof Function;
 
-    // console.log({selectedId, categories})
+  // console.log({selectedId, categories})
   return (
     <ul className="grid grid-cols-4 gap-4">
       {categories.map((cat) =>
@@ -40,7 +40,7 @@ function CategoryList({
       <Transition isMounted={canAddCategory!}>
         <button
           type="button"
-          className="flex flex-col justify-center items-center w-full h-full"
+          className="flex flex-col justify-center items-center"
           onClick={open}
         >
           <span className="mt-auto bg-gray-200 rounded-full">
@@ -53,7 +53,12 @@ function CategoryList({
   );
 }
 
-export default function Category({ cat, isSelected, icon, onClick }: CategoryProps) {
+export default function Category({
+  cat,
+  isSelected,
+  icon,
+  onClick,
+}: CategoryProps) {
   const { locale } = useRouter();
   const { color, id, name } = cat;
 
@@ -94,6 +99,5 @@ export default function Category({ cat, isSelected, icon, onClick }: CategoryPro
     </li>
   );
 }
-
 
 Category.List = CategoryList;
