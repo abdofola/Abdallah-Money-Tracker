@@ -1,5 +1,6 @@
-import React, { SetStateAction } from "react";
+import React from "react";
 import type { Url } from "url";
+import { Role } from "@prisma/client";
 
 type Transform<T> = {
   income: T[];
@@ -107,6 +108,17 @@ type CategoriesProps = {
 };
 type CategoryProps = RenderCategoryFnInput;
 
+type TransactionFormProps = {
+  user: { id: string; email: string; name?: string; role: Role };
+  displayOn: () => void;
+  transactionType: "income" | "expenses";
+  mutation: (input: any) => Promise<typeof input>;
+  transactionComment?: string;
+  transactionDate?: Date;
+  categoryId?: string;
+  transactionAmount?: string;
+  canAddCategory?: boolean;
+};
 export type {
   TransactionProps,
   DisplayProps,
@@ -123,4 +135,5 @@ export type {
   Transform,
   CategoriesProps,
   CategoryProps,
+  TransactionFormProps
 };

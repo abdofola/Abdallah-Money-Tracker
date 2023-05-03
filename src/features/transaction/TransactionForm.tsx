@@ -6,24 +6,24 @@ import { en, ar } from "@locales";
 import { Category } from "./index";
 import { otherCategories } from "./constants";
 import { useAddCategoryMutation, useGetCategoriesQuery } from "@app/services";
-import { Category as TCategory } from "./types";
 import { Transition } from "@components/Transition";
 import { FormProps } from "@components/ui/Form";
 import { useLocalStorage } from "@lib/helpers/hooks";
 import { categories as defaultCategories } from "./constants";
+import { TransactionFormProps } from "./types";
 
 function TransactionForm({
   user,
-  displayOn = () => {},
+  displayOn,
   transactionType,
-  mutation = (value: any) => Promise.resolve(value),
+  mutation,
   status = { isLoading: false },
   transactionComment,
   transactionDate,
   categoryId,
   transactionAmount,
   canAddCategory = true,
-}) {
+}:TransactionFormProps) {
   const amountRef = React.useRef<HTMLInputElement | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const [date, setDate] = React.useState(transactionDate ?? new Date());
@@ -32,7 +32,7 @@ function TransactionForm({
   );
   const [amountValue, setAmountValue] = React.useState(transactionAmount ?? "");
   const [comment, setComment] = React.useState(transactionComment ?? "");
-  const { data, isFetching } = useGetCategoriesQuery({ userId: user.id });
+  const { data } = useGetCategoriesQuery({ userId: user.id });
   const [addCategory, { isLoading }] = useAddCategoryMutation();
   const [categories, setCategories] = useLocalStorage(
     "categories",
@@ -94,18 +94,34 @@ function TransactionForm({
   };
 
   // when it's update operation, update `selectedId` to match the one in localStorage
-  if (categoryId && categoryToUpdate && selectedId === categoryToUpdate.id) {
-    const selectedCategory = categories[transactionType].find(
+  if (categoryToUpdate && selectedId === categoryToUpdate.id) {
+    let selectedCategory = categories[transactionType].find(
       (c) => c.iconId === categoryToUpdate.iconId
-    );
-    setSelectedId(selectedCategory.id);
+    ) ;
+
+    if (!selectedCategory) {
+      selectedCategory = otherCategories[transactionType].find(
+        (c) => c.iconId === categoryToUpdate.iconId
+      );
+
+      setCategories((prev) => {
+        const prevCategories = prev[transactionType];
+        // if element already exists, skip appending,
+        // and return the previous state.
+        return {
+          ...prev,
+          [transactionType]: [...prevCategories, selectedCategory],
+        };
+      });
+    }
+    setSelectedId(selectedCategory!.id);
   }
   // console.log({selectedCategory})
 
   // focus input on component first mount
   React.useEffect(() => {
-    //TODO; the desired behavior to trigger the focus,
-    // with showing device's keyboard, it's annoying!
+    //TODO: the desired behavior to trigger the focus,
+    // without showing device's keyboard, it's annoying!
     // amountRef.current?.focus();
   }, []);
 
@@ -156,14 +172,10 @@ function TransactionForm({
             onConfirm={(data) => {
               const selectedCategory = otherCategories[transactionType].find(
                 (c) => c.id === data.categoryId
-              ) as TCategory | undefined;
+              );
 
-              console.log({ selectedCategory, data });
+              // console.log({ selectedCategory, data });
 
-              //ISSUE:
-              //if you select new item,
-              // and then swiched to already existed one, then
-              // data will hold the stale value.
               if (selectedCategory) {
                 setCategories((prev) => {
                   const prevCategories = prev[transactionType];
@@ -190,13 +202,8 @@ function TransactionForm({
                 type="submit"
                 form="dialog"
                 className="flex justify-center basis-1/3 bg-black text-white py-1 rounded-md"
-                // onClick={(e) => e.stopPropagation()}
               >
-                {isLoading ? (
-                  <Spinner variants={{ intent: "secondary" }} />
-                ) : (
-                  translation.buttons.add
-                )}
+                {translation.buttons.add}
               </button>
             }
           >

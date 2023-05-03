@@ -17,9 +17,9 @@ import { useDate } from "@components/contexts";
 import { myDate } from "@lib/utils";
 import { periods } from "./constants";
 import { TransactionElement } from "@features/transaction/types";
+import { EmptyState } from "@components/ui";
 import { useRouter } from "next/router";
 import { en, ar } from "@locales";
-import { EmptyState } from "@components/ui";
 
 const isInselectedTime = (
   selectedTime: PeriodType,
@@ -50,27 +50,21 @@ const filterTransactions: FilterTransactions = ({
 const donutInnerText = (
   period: { ar: string; en: string },
   transaction: string,
-  total = 0,
   locale = "ar"
 ) => {
-  const arabicTrx = locale === "ar" && transaction.replace("ال", "");
-  const currency = locale === "en" ? "SDG" : "ج";
   const pronoun = ["السنة", "الفترة"].includes(period[locale]) ? "هذه" : "هذا";
-  let text = locale === "en" ? "There were no " : `لا يوجد ${arabicTrx}`;
-  if (total) {
-    return Intl.NumberFormat(undefined, { minimumFractionDigits: 2 })
-      .format(Number(total))
-      .concat(` ${currency}`);
-  } else {
-    text +=
-      locale === "en"
-        ? `${transaction} in this ${period[locale]}`
-        : ` في ${pronoun} ${period[locale]}`;
-  }
+  const text =
+    locale === "en"
+      ? `There wre no ${transaction} in this ${period[locale]}`
+      : ` لا يوجد ${transaction.replace("ال", "")} في ${pronoun} ${
+          period[locale]
+        }`;
+
   return text;
 };
-const calculatePercentage = (amount: number, total: number) =>
-  Math.round((amount / total) * 100);
+const calculatePercentage = (amount: number, total: number) => {
+  return Math.round((amount / total) * 100);
+};
 
 //COMPONENT
 const Display: React.FC<DisplayProps> = ({
@@ -137,12 +131,17 @@ const Display: React.FC<DisplayProps> = ({
       <Tab.Panel key={p.id}>
         <Donut
           data={mergedDuplicateData}
-          donutInnerLabel={donutInnerText(
-            periods[periodIndex]["txt"],
-            transactionType[locale as "en" | "ar"],
-            total,
-            locale
-          )}
+          donutInnerLabel={
+            total > 0 ? (
+              <DisplayAmount amount={total} />
+            ) : (
+              donutInnerText(
+                periods[periodIndex]["txt"],
+                transactionType[locale as "en" | "ar"],
+                locale
+              )
+            )
+          }
         />
       </Tab.Panel>
     );
