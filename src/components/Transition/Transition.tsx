@@ -29,7 +29,7 @@ export default function Transition({
   if (!isMounted && !shouldRender) return null;
 
   // if no transition style provided; then no need for wrapper element.
-  if (!transitionSwitcher) return <React.Fragment>{children}</React.Fragment>;
+  if (!transitionSwitcher && !className) return <React.Fragment>{children}</React.Fragment>;
 
   return <Element className={style}>{children}</Element>;
 }
