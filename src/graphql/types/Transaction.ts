@@ -68,9 +68,8 @@ builder.mutationField("addTransaction", (t) =>
     resolve: async (query, _root, args, ctx, _info) => {
       //Due to `iron-session` not working properly with `graphql`
       // no way to add the userSession to the context!
-      // if (!ctx.user)
-      //   throw new Error(`you need to signin to create your transaction!`);
-
+      if (!ctx.session)
+        throw new Error(`you need to signin to create your transaction!`);
       return await ctx.prisma.transaction.create({
         data: {
           amount: args.amount,
