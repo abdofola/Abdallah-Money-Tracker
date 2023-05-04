@@ -26,6 +26,7 @@ export default function Transition({
   const style = `${className} ${
     transitionSwitcher ? "transition-all " + transitionSwitcher : ""
   }`;
+  
   if (!isMounted && !shouldRender) return null;
 
   // if no transition style provided; then no need for wrapper element.

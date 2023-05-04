@@ -3,7 +3,7 @@ import { DateResolver, JSONResolver } from "graphql-scalars";
 import PrismaPlugin from "@pothos/plugin-prisma";
 import prisma from "@lib/prisma";
 import type PrismaTypes from "@pothos/plugin-prisma/generated";
-import { PrismaClient } from "@prisma/client";
+import { Context } from "./context";
 
 type Translation = { ar: string; en: string };
 type TSchemaBuilder = {
@@ -11,9 +11,7 @@ type TSchemaBuilder = {
     Date: { Input: Date; Output: Date };
     Json: { Input: Translation; Output: Translation };
   };
-  Context: {
-    prisma: PrismaClient;
-  };
+  Context: Context;
   PrismaTypes: PrismaTypes;
 };
 

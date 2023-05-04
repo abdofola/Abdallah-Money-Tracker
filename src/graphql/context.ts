@@ -1,10 +1,12 @@
 import prisma from "@lib/prisma";
-import { PrismaClient } from "@prisma/client";
+import { sessionOptions } from "@lib/session";
+import { PrismaClient, User } from "@prisma/client";
+import { IronSession, getIronSession } from "iron-session";
 import { NextApiRequest, NextApiResponse } from "next";
-
 
 export type Context = {
   prisma: PrismaClient;
+  session: IronSession["user"];
 };
 
 export async function createContext({
@@ -14,6 +16,8 @@ export async function createContext({
   req: NextApiRequest;
   res: NextApiResponse;
 }): Promise<Context> {
+  const session = await getIronSession(req, res, sessionOptions);
 
-  return { prisma };
+  console.log({ session });
+  return { prisma, session };
 }

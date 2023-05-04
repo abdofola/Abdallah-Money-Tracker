@@ -38,15 +38,11 @@ function CategoryList({
         })
       )}
       <Transition isMounted={canAddCategory!}>
-        <button
-          type="button"
-          className="flex flex-col justify-center items-center"
-          onClick={open}
-        >
-          <span className="mt-auto bg-gray-200 rounded-full">
+        <button type="button" className="grid items-end" onClick={open}>
+          <span className=" mx-auto bg-gray-200 rounded-full">
             <Plus className="w-8 h-8" />
           </span>
-          <span className="text-sm mt-auto">{translation.buttons.more}</span>
+          <span className="text-sm">{translation.buttons.more}</span>
         </button>
       </Transition>
     </ul>
@@ -63,11 +59,11 @@ export default function Category({
   const { color, id, name } = cat;
 
   return (
-    <li>
+    <li className="grid">
       <label
         htmlFor={id}
         onClick={onClick}
-        className={`relative flex flex-col items-center -mx-2 rounded-md cursor-pointer ${
+        className={`relative grid items-end -mx-2 rounded-md cursor-pointer ${
           isSelected ? "bg-gray-100 shadow-inner" : ""
         }`}
       >
@@ -75,12 +71,11 @@ export default function Category({
           style={{
             borderBottom: `4px solid ${!isSelected ? color : "transparent"}`,
           }}
-          className={`p-2 ${!isSelected ? `rounded-full` : ""}`}
+          className={`justify-self-center p-2 ${
+            !isSelected ? `rounded-full` : ""
+          }`}
         >
           {icon}
-        </span>
-        <span className="w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
-          {name[locale as "en" | "ar"]}
         </span>
         <input
           id={id}
@@ -90,11 +85,19 @@ export default function Category({
           value={id}
           defaultChecked={isSelected}
         />
-        {isSelected && (
-          <span className="absolute right-1 top-1 p-px border border-green-400 bg-green-100 rounded-full">
-            <Check className="w-3 h-3 fill-green-600" />
-          </span>
-        )}
+        <span className=" w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
+          {name[locale as "en" | "ar"]}
+        </span>
+        <Transition
+          isMounted={isSelected}
+          as="span"
+          className="absolute -right-1 -top-1 p-1 border border-green-400 bg-green-100 ring ring-white rounded-full"
+          from="opacity-0 scale-0"
+          to="opacity-100 scale-100"
+          delay={0}
+        >
+          <Check className="w-3 h-3 fill-green-600" />
+        </Transition>
       </label>
     </li>
   );
