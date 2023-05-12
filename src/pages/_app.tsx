@@ -39,10 +39,11 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     <Provider store={store}>
       <ErrorBoundary>
         <Transition
-          as="span"
-          className="animate-progress absolute top-0 z-50  h-1 bg-black"
           isMounted={isLoading}
           delay={0}
+          as={() => (
+            <span className="animate-progress fixed top-0 z-50 h-1 bg-black" />
+          )}
         />
         <div className={` ${isLoading ? "opacity-25" : ""} `}>{Page}</div>
       </ErrorBoundary>

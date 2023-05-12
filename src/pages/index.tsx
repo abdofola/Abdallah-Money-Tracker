@@ -5,10 +5,11 @@ import { Layout } from "@components/Layout";
 import { withSessionSsr } from "@lib/session";
 import { useGetHeight } from "@lib/helpers/hooks";
 import { Spinner } from "@components/ui";
+import { User } from "@prisma/client";
 // import { Transaction } from "@features/transaction";
 
 type HomeProps = {
-  session: { id: string; email: string; [k: string]: any };
+  user: User;
 };
 
 // dynamically import the component to reduce `js` loaded by browser.
@@ -38,8 +39,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
 
   return (
     <main
-      className={`flex justify-center items-center min-h-full
-      `}
+      className="flex justify-center items-center min-h-full"
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
       <Transaction user={user} />

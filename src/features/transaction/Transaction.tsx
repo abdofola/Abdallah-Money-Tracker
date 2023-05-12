@@ -34,9 +34,10 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const { locale } = useRouter();
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
-  const { data = { transactions: [] } } = useGetTransactionsQuery({
-    userId: user.id,
-  });
+  const { data = { transactions: [] }, isLoading: isLoadingTrxs } =
+    useGetTransactionsQuery({
+      userId: user.id,
+    });
   const transactions = React.useMemo(() => {
     const trans: Transform<TransactionElement> = { income: [], expenses: [] };
     for (let t of data.transactions) {
@@ -64,11 +65,11 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
     0
   );
   const { startDate, endDate } = dates;
+  const translation = locale === "en" ? en : ar;
   const from =
     "overflow-hidden opacity-0 ltr:-translate-x-full rtl:translate-x-full sm:ltr:transform-none sm:rtl:transform-none";
   const to =
     "overflow-hidden opacity-100 ltr:translate-x-0 rtl:translate-x-0 ltr:transform-none rtl:transform-none";
-
   const Panels = transactionTypes.map((t) => (
     <Tab.Panel key={t.id}>
       <DataProvider
@@ -79,6 +80,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
         <React.Suspense fallback={<Spinner variants={{ width: "md" }} />}>
           <Transition isMounted={display} from={from} to={to}>
             <Display
+              isLoading={isLoadingTrxs}
               transactionType={t.txt}
               periodIndex={periodIdx}
               setPeriod={setPeriod}
@@ -103,7 +105,6 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
       </DataProvider>
     </Tab.Panel>
   ));
-  const translation = locale === "en" ? en : ar;
 
   //prevent selecting multiple dates from date-picker when `period` tab not selected.
   if (selectedPeriod !== "period" && endDate) {
@@ -113,11 +114,20 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   return (
     <div className="flex flex-col items-center gap-4 max-w-[95%] w-[50rem] mx-auto">
       <div className="flex items-end">
-        <Money className="w-5 h-5 stroke-gray-400" />
+        <Money className="w-5 h-5 self-center stroke-gray-400" />
+        <Transition
+          isMounted={isLoadingTrxs}
+          delay={0}
+          as={() => (
+            <Spinner
+              variants={{ width: "xs" }}
+              className="self-center ltr:mr-3 rtl:ml-3"
+            />
+          )}
+        />
         <DisplayAmount
           amount={total}
-          className=" font-medium text-gray-700"
-          style={{ marginInlineEnd: "12px" }}
+          className=" font-medium text-gray-700 ltr:mr-3 rtl:ml-3"
         />
         <span className="text-gray-400">{translation.total}</span>
       </div>
@@ -133,7 +143,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
           renderTab={({ tab, isSelected }) => (
             <Tab
               key={tab.id}
-              tab={{ id: tab.id, txt: tab.txt[locale] }}
+              tab={{ id: tab.id, txt: tab.txt[locale as "en" | "ar"] }}
               className={`uppercase font-medium ${
                 isSelected ? "text-gray-700" : " text-gray-300"
               }`}
