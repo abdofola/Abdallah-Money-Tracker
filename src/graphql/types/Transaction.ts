@@ -29,10 +29,8 @@ builder.queryField("transactions", (t) =>
         orderBy: {
           date: "desc",
         },
-        // if there's a query param of `categoryId` 
-        where: !category
-          ? { userId }
-          : { category: { is: { id: category } } },
+        // if there's a query param of `categoryId`
+        where: !category ? { userId } : { category: { is: { id: category } } },
       });
     },
   })
@@ -66,10 +64,10 @@ builder.mutationField("addTransaction", (t) =>
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
-      //Due to `iron-session` not working properly with `graphql`
-      // no way to add the userSession to the context!
-      if (!ctx.session)
+      if (!ctx.user) {
         throw new Error(`you need to signin to create your transaction!`);
+      }
+
       return await ctx.prisma.transaction.create({
         data: {
           amount: args.amount,

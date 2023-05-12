@@ -17,9 +17,10 @@ import { useDate } from "@components/contexts";
 import { myDate } from "@lib/utils";
 import { periods } from "./constants";
 import { TransactionElement } from "@features/transaction/types";
-import { EmptyState } from "@components/ui";
+import { EmptyState, Spinner } from "@components/ui";
 import { useRouter } from "next/router";
 import { en, ar } from "@locales";
+import { Transition } from "@components/Transition";
 
 const isInselectedTime = (
   selectedTime: PeriodType,
@@ -69,9 +70,10 @@ const calculatePercentage = (amount: number, total: number) => {
 //COMPONENT
 const Display: React.FC<DisplayProps> = ({
   periodIndex,
-  setPeriod,
   transactionType,
+  setPeriod,
   displayOff,
+  isLoading,
 }) => {
   const periodRef = React.useRef<HTMLButtonElement | null>(null);
   const { locale } = useRouter();
@@ -205,25 +207,34 @@ const Display: React.FC<DisplayProps> = ({
           </strong>
         </h3>
         {/* ----------empty state--------- */}
-        {mergedDuplicateData.length === 0 && (
-          <EmptyState
-            className="flex flex-col items-center self-center max-w-[90%]"
-            icon="/sprite.svg#search"
-            renderParagraph={() => (
-              <p className="text-gray-400 text-center">
-                <span style={{ float: locale === "en" ? "left" : "right" }}>
-                  {translation.messages.emptyState.p1}
-                </span>
-                <span className="flex px-2">
-                  &quot;
-                  <Plus className="w-5 h-5" />
-                  &quot;
-                </span>
-                <span>{translation.messages.emptyState.p2}</span>
-              </p>
-            )}
-          />
-        )}
+        <Transition
+          isMounted={isLoading}
+          delay={0}
+          as={() => <Spinner variants={{ width: "md" }} />}
+        />
+        <Transition
+          isMounted={mergedDuplicateData.length === 0}
+          delay={0}
+          as={() => (
+            <EmptyState
+              className="flex flex-col items-center self-center max-w-[90%]"
+              icon="/sprite.svg#search"
+              renderParagraph={() => (
+                <p className="text-gray-400 text-center">
+                  <span style={{ float: locale === "en" ? "left" : "right" }}>
+                    {translation.messages.emptyState.p1}
+                  </span>
+                  <span className="flex px-2">
+                    &quot;
+                    <Plus className="w-5 h-5" />
+                    &quot;
+                  </span>
+                  <span>{translation.messages.emptyState.p2}</span>
+                </p>
+              )}
+            />
+          )}
+        />
         <TransactionList
           className="hideScrollBar relative space-y-2 max-h-72 rounded-lg overflow-y-auto"
           data={mergedDuplicateData}
