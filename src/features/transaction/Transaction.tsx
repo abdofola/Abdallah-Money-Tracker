@@ -115,20 +115,18 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
     <div className="flex flex-col items-center gap-4 max-w-[95%] w-[50rem] mx-auto">
       <div className="flex items-end">
         <Money className="w-5 h-5 self-center stroke-gray-400" />
-        <Transition
-          isMounted={isLoadingTrxs}
-          delay={0}
-          as={() => (
-            <Spinner
-              variants={{ width: "xs" }}
-              className="self-center ltr:mr-3 rtl:ml-3"
-            />
-          )}
-        />
-        <DisplayAmount
-          amount={total}
-          className=" font-medium text-gray-700 ltr:mr-3 rtl:ml-3"
-        />
+        {isLoadingTrxs ? (
+          <Spinner
+            variants={{ width: "xs" }}
+            className="self-center ltr:mr-3 rtl:ml-3"
+          />
+        ) : (
+          <DisplayAmount
+            amount={total}
+            className=" font-medium text-gray-700 ltr:mr-3 rtl:ml-3"
+          />
+        )}
+
         <span className="text-gray-400">{translation.total}</span>
       </div>
 

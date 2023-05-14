@@ -206,14 +206,13 @@ const Display: React.FC<DisplayProps> = ({
             {translation.headings.summary}
           </strong>
         </h3>
-        {/* ----------empty state--------- */}
         <Transition
           isMounted={isLoading}
           delay={0}
           as={() => <Spinner variants={{ width: "md" }} />}
         />
         <Transition
-          isMounted={mergedDuplicateData.length === 0}
+          isMounted={!isLoading && mergedDuplicateData.length === 0}
           delay={0}
           as={() => (
             <EmptyState
