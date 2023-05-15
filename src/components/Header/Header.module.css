@@ -21,7 +21,7 @@
   align-items: center;
   gap: 0.25rem;
   font-family: serif;
-  @apply text-gray-600 bg-gray-50 rounded-lg;
+  @apply px-1 text-gray-600 bg-gray-50 border rounded-2xl;
 }
 .lang > select {
   background-color: transparent;

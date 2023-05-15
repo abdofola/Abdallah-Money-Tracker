@@ -101,7 +101,7 @@ export default function Header({ user }: P) {
             </span>
           </div>
           <Link href={user ? "/api/logout" : "/login"}>
-            <a className="px-2 py-px text-gray-500 bg-gray-50 rounded-lg">
+            <a className="self-center px-2 py-px text-gray-500 bg-gray-50 border rounded-xl">
               {user ? translation.nav["logout"] : translation.nav["login"]}
             </a>
           </Link>
