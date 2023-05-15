@@ -53,6 +53,10 @@ export default function Header({ user }: P) {
     const dir = locale === "en" ? "ltr" : "rtl";
     html.dir = dir;
     html.lang = locale!;
+
+    //TODO:
+    //1- display the menu only on small screens.
+    console.log(window.innerWidth)
   }, [locale]);
 
   return (

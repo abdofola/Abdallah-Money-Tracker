@@ -41,12 +41,12 @@ function MenuButton() {
 
   return (
     <button
-      className={`fixed top-5 z-50 flex flex-col justify-between w-5 h-4
+      className={`fixed top-6 z-50 flex flex-col justify-between w-5 h-4
         before:w-full before:h-[2px] 
         after:w-3/4 after:h-[2px]
         ${
           isOpen
-            ? "justify-self-end w-8 inset-0 my-auto ltr:ml-auto ltr:mr-8 rtl:mr-auto rtl:ml-8 before:rotate-45 before:bg-white after:absolute after:w-10 after:h-10 after:-translate-y-1/2 after:ltr:-translate-x-1 after:rtl:translate-x-1 after:rounded-full after:border"
+            ? "justify-self-end w-8 inset-0 my-auto ltr:ml-auto ltr:mr-8 rtl:mr-auto rtl:ml-8 before:rotate-45 before:bg-white after:absolute after:w-12 after:h-12 after:-translate-y-1/2 after:ltr:-translate-x-2 after:rtl:translate-x-2 after:rounded-full after:border"
             : "justify-self-start before:bg-gray-500 after:bg-gray-500"
         }`}
       onClick={() => setIsOpen(!isOpen)}
