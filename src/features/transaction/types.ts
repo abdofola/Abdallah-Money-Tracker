@@ -42,6 +42,7 @@ type DisplayProps = {
   periodIndex: number;
   transactionType: { en: TransactionType; ar: string };
   isLoading: boolean;
+  isFetching:boolean;
   setPeriod: React.Dispatch<React.SetStateAction<number>>;
   displayOff: () => void;
 };

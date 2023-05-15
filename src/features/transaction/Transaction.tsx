@@ -29,15 +29,21 @@ const TransactionForm = dynamic(() =>
   import("@features/transaction").then(({ TransactionForm }) => TransactionForm)
 );
 
+//TODO: 
+//1- Add user profile, to change currency, and generate sort of avatar from it's email.
+//2- 
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const { locale } = useRouter();
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
-  const { data = { transactions: [] }, isLoading: isLoadingTrxs } =
-    useGetTransactionsQuery({
-      userId: user.id,
-    });
+  const {
+    data = { transactions: [] },
+    isLoading: isLoadingTrxs,
+    isFetching,
+  } = useGetTransactionsQuery({
+    userId: user.id,
+  });
   const transactions = React.useMemo(() => {
     const trans: Transform<TransactionElement> = { income: [], expenses: [] };
     for (let t of data.transactions) {
@@ -81,6 +87,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
           <Transition isMounted={display} from={from} to={to}>
             <Display
               isLoading={isLoadingTrxs}
+              isFetching={isFetching}
               transactionType={t.txt}
               periodIndex={periodIdx}
               setPeriod={setPeriod}

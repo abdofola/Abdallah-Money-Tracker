@@ -1,7 +1,7 @@
 .overlay {
   display: flex;
   justify-content: center;
-  @apply fixed inset-0 z-50 bg-gray-500 bg-opacity-50;
+  @apply fixed inset-0 z-50 items-end sm:items-center bg-gray-500 bg-opacity-50;
 }
 .modal {
   width: min(100vw, 25rem);

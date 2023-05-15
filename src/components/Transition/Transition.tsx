@@ -9,6 +9,7 @@ type P = {
   as?: React.ElementType | (() => JSX.Element);
   className?: string;
   delay?: number;
+  [k:string]:any
 };
 
 export default function Transition({
@@ -19,6 +20,7 @@ export default function Transition({
   as = "div",
   className = "",
   delay = 100,
+  ...rest
 }: P) {
   const shouldRender = useDelayMountUnmount(isMounted, delay);
   const Element = as;
@@ -30,9 +32,9 @@ export default function Transition({
   if (!isMounted && !shouldRender) return null;
 
   // if no transition style provided and `as` doesn't return JSX; then no need for wrapper element.
-  if (!transitionSwitcher && !(as instanceof Function)) {
+  if (!className && !transitionSwitcher && !(as instanceof Function)) {
     return <React.Fragment>{children}</React.Fragment>;
   }
 
-  return <Element className={style}>{children}</Element>;
+  return <Element className={style} {...rest}>{children}</Element>;
 }

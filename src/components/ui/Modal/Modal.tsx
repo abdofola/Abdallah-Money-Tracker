@@ -27,10 +27,7 @@ export default function Modal({
   const { locale } = useRouter();
   const translation = locale === "en" ? en : ar;
   const child = (
-    <div
-      className={styles.overlay.concat(" items-end sm:items-center")}
-      onClick={close}
-    >
+    <div className={styles.overlay} onClick={close}>
       <Transition
         isMounted={isMounted}
         from="opacity-0 translate-y-full sm:translate-y-0 sm:scale-0"
