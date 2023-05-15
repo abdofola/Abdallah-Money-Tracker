@@ -71,9 +71,10 @@ const calculatePercentage = (amount: number, total: number) => {
 const Display: React.FC<DisplayProps> = ({
   periodIndex,
   transactionType,
+  isLoading,
+  isFetching,
   setPeriod,
   displayOff,
-  isLoading,
 }) => {
   const periodRef = React.useRef<HTMLButtonElement | null>(null);
   const { locale } = useRouter();
@@ -202,7 +203,8 @@ const Display: React.FC<DisplayProps> = ({
       </Tab.Group>
       <div className="flex flex-col w-full gap-3">
         <h3 className="text-lg sm:self-center">
-          <strong className="relative z-10 w-max capitalize text-lg text-gray-700 font-medium before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100 ">
+          <strong className={`relative z-[1] w-max capitalize text-lg text-gray-700 font-medium
+           before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100`}>
             {translation.headings.summary}
           </strong>
         </h3>
@@ -235,7 +237,9 @@ const Display: React.FC<DisplayProps> = ({
           )}
         />
         <TransactionList
-          className="hideScrollBar relative space-y-2 max-h-72 rounded-lg overflow-y-auto"
+          className={`hideScrollBar relative space-y-2 max-h-72 rounded-lg overflow-y-auto ${
+            isFetching ? "opacity-20 animate-pulse" : ""
+          }`}
           data={mergedDuplicateData}
           renderItem={(item) => {
             const percentage = calculatePercentage(item.amount, total);

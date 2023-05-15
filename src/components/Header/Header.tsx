@@ -5,6 +5,12 @@ import { Home, Document, Icon } from "@components/icons";
 // import { useAuth } from "@lib/helpers/hooks";
 import { en, ar } from "@locales";
 import styles from "./Header.module.css";
+import { Menu } from "@components/Menu";
+import { User } from "@prisma/client";
+
+type P = {
+  user: User;
+};
 
 const pages = {
   home: { path: "/", Icon: <Home /> },
@@ -13,7 +19,7 @@ const pages = {
 
 // the user comes from cookie instead of state
 // because when refreshing a page, the state gets destroyed
-export default function Header({ user }) {
+export default function Header({ user }: P) {
   const router = useRouter();
   const { locale, pathname, query, asPath } = router;
   const translation = locale === "en" ? en : ar;
@@ -51,9 +57,18 @@ export default function Header({ user }) {
 
   return (
     <nav id="nav" className={styles.nav}>
+      <Menu>
+        <Menu.Button />
+        <Menu.Screen>
+          <h1>user: {user.email}</h1>
+          <h2>account: regular</h2>
+          <h3>currency: SDG</h3>
+        </Menu.Screen>
+      </Menu>
+
       {/*  logo  */}
       <Link href="/" shallow>
-        <a className="fixed ltr:top-2 rtl:top-1 z-10 sm:static">
+        <a className="fixed top-4 ltr:ml-10 rtl:mr-10 z-10  sm:static">
           <Icon href="/sprite.svg#logo" className="w-7 h-7 sm:w-10 sm:h-10" />
         </a>
       </Link>
@@ -63,10 +78,10 @@ export default function Header({ user }) {
         {/* login/logout */}
         <li
           id="navLogin"
-          className="fixed flex gap-4 justify-end bg-white border-b top-0 left-0 right-0 p-2 sm:static sm:border-none sm:p-0"
+          className="fixed flex gap-4 justify-end bg-white border-b top-0 left-0 right-0 px-2 py-4 sm:static sm:border-none sm:p-0"
         >
           <div className={styles.lang}>
-            <span >{langLogo}</span>
+            <span>{langLogo}</span>
             <select
               className="appearance-none"
               name="locale"
