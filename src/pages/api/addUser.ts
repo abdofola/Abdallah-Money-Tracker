@@ -14,7 +14,9 @@ export default withSessionRoute(async function signupRoute(req, res) {
     req.session.user = user;
     await req.session.save();
 
-    return res.status(200).json(user);
+    return res
+      .status(200)
+      .json({ user, message: "user is successfully added!" });
   } catch (e) {
     const response = { message: (e as Error).message };
 

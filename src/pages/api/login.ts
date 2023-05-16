@@ -22,7 +22,7 @@ export default withSessionRoute(async (req, res) => {
     const data = user;
     req.session.user = data;
 
-    // don't save cookie when the request to login as an admin to add new user.
+    // don't save cookie; when the request to login as an admin is to add new user.
     !isAdmin && (await req.session.save());
 
     return res.status(200).json({ data });

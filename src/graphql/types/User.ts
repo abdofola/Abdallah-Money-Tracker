@@ -1,6 +1,3 @@
-import { enviroment } from "@lib/enviroment";
-import { fetchJson } from "@lib/utils";
-import { User } from "@prisma/client";
 import { builder } from "../builder";
 
 builder.prismaObject("User", {
@@ -16,6 +13,7 @@ builder.prismaObject("User", {
   }),
 });
 
+// GET USER
 builder.queryField("user", (t) =>
   t.prismaField({
     type: "User",
@@ -31,32 +29,3 @@ builder.queryField("user", (t) =>
   })
 );
 
-builder.mutationField("addUser", (t) =>
-  t.prismaField({
-    type: "User",
-    args: { email: t.arg.string({ required: true }) },
-    // @ts-ignore
-    resolve: async (_query, _root, args, _ctx, _info) => {
-      /**
-       * this resolver represents a wrapper around
-       * the endpoint /api/signup
-       * TODO:
-       * session cookies does not get safed when making the request from the resolver?
-       */
-      try {
-        const user = await fetchJson<User>(
-          enviroment[process.env.NODE_ENV] + "/api/addUser",
-          {
-            method: "POST",
-            body: args,
-            referrer: "http://localhost:3000/api/graphql",
-          }
-        );
-
-        return user;
-      } catch (error) {
-        throw error;
-      }
-    },
-  })
-);

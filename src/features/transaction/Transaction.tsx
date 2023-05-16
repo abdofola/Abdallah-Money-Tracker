@@ -29,9 +29,9 @@ const TransactionForm = dynamic(() =>
   import("@features/transaction").then(({ TransactionForm }) => TransactionForm)
 );
 
-//TODO: 
+//TODO:
 //1- Add user profile, to change currency, and generate sort of avatar from it's email.
-//2- 
+//2-
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const { locale } = useRouter();

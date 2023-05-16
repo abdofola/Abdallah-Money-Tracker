@@ -6,6 +6,7 @@ import { withSessionSsr } from "@lib/session";
 import { useGetHeight } from "@lib/helpers/hooks";
 import { Spinner } from "@components/ui";
 import { User } from "@prisma/client";
+import { CURRENCIES } from "src/currencies";
 // import { Transaction } from "@features/transaction";
 
 type HomeProps = {
@@ -32,17 +33,40 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
   };
 });
 
+/**
+ * TODO:
+ * 1- make welcoming component
+ * 2- display user email, and ask them to select a currency for their account;
+ * if it's there first signin.
+ * 3- if not,  display the transaction component immdiately.
+ * 
+ *  
+ */
 // component
 const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
+  const [currency, setCurrency] = React.useState("");
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
 
+  console.log({ currency });
   return (
     <main
       className="flex justify-center items-center min-h-full"
       style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
     >
-      <Transaction user={user} />
+      {/* <Transaction user={user} /> */}
+      <select
+        name="currency"
+        value={currency}
+        onChange={(e) => setCurrency(e.target.value)}
+      >
+        <option value="">--select currency--</option>
+        {Object.entries(CURRENCIES).map(([k, v]) => (
+          <option key={k} value={k}>
+            {v}
+          </option>
+        ))}
+      </select>
     </main>
   );
 };

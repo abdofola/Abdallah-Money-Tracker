@@ -1,14 +1,15 @@
-import { Transition } from "@components/Transition";
 import React from "react";
+import { Transition } from "@components/Transition";
 
-type TContext = [
-  isOpen: boolean,
-  setIsopen: React.Dispatch<React.SetStateAction<boolean>>
-];
+type TContext = {
+  isOpen: boolean;
+  setIsopen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+type MenuProps = { children: React.ReactNode };
 
 const MenuContext = React.createContext<TContext | null>(null);
 
-export default function Menu({ children }: { children: React.ReactNode }) {
+export default function Menu({ children }: MenuProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
     <MenuContext.Provider value={[isOpen, setIsOpen]}>

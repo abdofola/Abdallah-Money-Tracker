@@ -18,6 +18,6 @@ export async function createContext({
 }): Promise<Context> {
   const session = await getIronSession(req, res, sessionOptions);
 
-  console.log({ session });
+  // console.log({ session });
   return { prisma, user: session.user };
 }
