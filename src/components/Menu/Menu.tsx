@@ -46,17 +46,20 @@ function MenuButton() {
         after:w-3/4 after:h-[2px]
         ${
           isOpen
-            ? "justify-self-end w-8 inset-0 my-auto ltr:ml-auto ltr:mr-8 rtl:mr-auto rtl:ml-8 before:rotate-45 before:bg-white after:absolute after:w-12 after:h-12 after:-translate-y-1/2 after:ltr:-translate-x-2 after:rtl:translate-x-2 after:rounded-full after:border"
+            ? "justify-self-end w-8 inset-0 my-auto ltr:ml-auto ltr:mr-8 rtl:mr-auto rtl:ml-8 before:rotate-45 before:bg-white"
             : "justify-self-start before:bg-gray-500 after:bg-gray-500"
         }`}
       onClick={() => setIsOpen(!isOpen)}
     >
       <span
         className={`relative w-full h-[2px] 
+        before:absolute before:w-10 before:h-10  
+        before:-translate-y-1/2 before:rtl:translate-x-5 before:ltr:-translate-x-5
+        before:border before:rounded-full 
         ${
           isOpen
-            ? "-rotate-45 translate-y-[-14px] -translate-x-px bg-white"
-            : "bg-gray-500 before:absolute before:w-10 before:h-10 before:-translate-y-1/2 before:rtl:translate-x-5 before:ltr:-translate-x-5 before:border before:rounded-full before:bg-gray-50 before:z-[-1]"
+            ? "-rotate-45 -translate-y-2 bg-white"
+            : "bg-gray-500 before:bg-gray-50 before:z-[-1]"
         }`}
       />
     </button>
