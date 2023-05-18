@@ -7,8 +7,8 @@ generator pothos {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -16,6 +16,7 @@ model User {
   id           String        @id @default(uuid())
   name         String?
   email        String        @unique
+  currencies   Currency[]
   transactions Transaction[]
   categories   Category[]
   role         Role          @default(USER)
@@ -23,17 +24,27 @@ model User {
   updatedAt    DateTime      @updatedAt
 }
 
+model Currency {
+  id           String           @unique @default(uuid())
+  name         String
+  transactions Transaction[]
+  user         User?         @relation(fields: [userId], references: [id])
+  userId       String
+}
+
 model Transaction {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   userId     String
   amount     Int
   date       DateTime
   comment    String?
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category  @relation(fields: [categoryId], references: [id])
   categoryId String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  currency   Currency? @relation(fields: [currencyId], references: [id])
+  currencyId String
 }
 
 model Category {

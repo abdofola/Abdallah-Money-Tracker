@@ -1,4 +1,4 @@
-export const CURRENCIES = {
+export const CURRENCIES =Object.entries({
   AED: "United Arab Emirates Dirham",
   AFN: "Afghan Afghani",
   ALL: "Albanian Lek",
@@ -151,4 +151,4 @@ export const CURRENCIES = {
   YER: "Yemeni Rial",
   ZAR: "South African Rand",
   ZMW: "Zambian Kwacha",
-};
+});

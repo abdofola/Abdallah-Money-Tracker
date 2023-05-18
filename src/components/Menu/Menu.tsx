@@ -5,6 +5,7 @@ type TContext = [
   isOpen: boolean,
   setIsopen: React.Dispatch<React.SetStateAction<boolean>>
 ];
+type MScreenProps = {children:React.ReactNode};
 
 const MenuContext = React.createContext<TContext | null>(null);
 
@@ -18,7 +19,7 @@ export default function Menu({ children }: { children: React.ReactNode }) {
 }
 
 function MenuButton() {
-  const [isOpen, setIsOpen] = React.useContext(MenuContext) as TContext;
+  const [isOpen, setIsOpen] = React.useContext(MenuContext) !;
 
   // maintain screen scroll position, and prevent body from scrolling.
   React.useEffect(() => {
@@ -66,12 +67,12 @@ function MenuButton() {
   );
 }
 
-function MenuScreen({ children }) {
+function MenuScreen({ children }:MScreenProps) {
   //TODO:
   //4- menu screen should include
   // a- user avatar alongside the name
   // b- logout button
-  const [isOpen, setIsOpen] = React.useContext(MenuContext) as TContext;
+  const [isOpen, setIsOpen] = React.useContext(MenuContext) !;
 
   return (
     <Transition
@@ -85,7 +86,7 @@ function MenuScreen({ children }) {
         from="opacity-0 ltr:-translate-x-full rtl:translate-x-full"
         to="opacity-100 translate-x-0"
         className="w-3/4 h-full bg-white drop-shadow-lg"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e:React.MouseEvent) => e.stopPropagation()}
       >
         {children}
       </Transition>

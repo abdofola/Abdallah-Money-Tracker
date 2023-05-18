@@ -2,8 +2,8 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 let userData: Prisma.UserCreateInput = {
-  email: "someone@example.com",
-  role: "USER",
+  email: "fola@admin.com",
+  role: "ADMIN",
 };
 
 async function main() {
