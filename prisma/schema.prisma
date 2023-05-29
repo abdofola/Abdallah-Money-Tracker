@@ -25,7 +25,7 @@ model User {
 }
 
 model Currency {
-  id           String           @unique @default(uuid())
+  id           String           @id @default(uuid())
   name         String
   transactions Transaction[]
   user         User?         @relation(fields: [userId], references: [id])

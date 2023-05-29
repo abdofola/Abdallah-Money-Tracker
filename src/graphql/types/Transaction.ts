@@ -20,17 +20,18 @@ builder.queryField("transactions", (t) =>
     type: ["Transaction"],
     args: {
       userId: t.arg.string({ required: true }),
-      category: t.arg.string(),
+      currencyId: t.arg.string({ required: true }),
+      categoryId: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
-      const { userId, category } = args;
+      const { userId, categoryId, currencyId } = args;
       return await ctx.prisma.transaction.findMany({
         ...query,
         orderBy: {
           date: "desc",
         },
         // if there's a query param of `categoryId`
-        where: !category ? { userId } : { category: { is: { id: category } } },
+        where: !categoryId ? { userId, currencyId } : {userId, currencyId, categoryId },
       });
     },
   })
@@ -61,6 +62,7 @@ builder.mutationField("addTransaction", (t) =>
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
       userId: t.arg.string({ required: true }),
+      currencyId: t.arg.string({ required: true }),
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
@@ -69,13 +71,7 @@ builder.mutationField("addTransaction", (t) =>
       }
 
       return await ctx.prisma.transaction.create({
-        data: {
-          amount: args.amount,
-          date: args.date,
-          userId: args.userId,
-          categoryId: args.categoryId,
-          comment: args.comment,
-        },
+        data: args,
         ...query,
       });
     },

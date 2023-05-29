@@ -2,9 +2,9 @@ import React from "react";
 import Link from "next/link";
 import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
-import { useGetTransactionsQuery } from "@app/services/api";
+import { useGetTransactionsQuery } from "@app/services";
 import { Layout } from "@components/Layout";
-import { useGetHeight } from "@lib/helpers/hooks";
+import { useGetHeight, useLocalStorage } from "@lib/helpers/hooks";
 import { TransactionItem, TransactionList } from "@features/transaction";
 import { EmptyState, Spinner } from "@components/ui";
 import { Tab } from "@components/Tab";
@@ -27,8 +27,10 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
   const { query, locale } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
+  const [currency, _] = useLocalStorage('currency',{});
   const { data, isSuccess, isLoading, error } = useGetTransactionsQuery({
-    category: query.category as string,
+    categoryId: query.category as string,
+    currencyId: currency.id,
     userId: session.id,
   });
   const tabIdx = transactionTypes.findIndex((t) => t.txt.en === query.type);

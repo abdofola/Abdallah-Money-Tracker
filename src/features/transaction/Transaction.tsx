@@ -13,11 +13,12 @@ import { transactionTypes, periods } from "@features/transaction/constants";
 import {
   useAddTransactionMutation,
   useGetTransactionsQuery,
-} from "@app/services/api";
+} from "@app/services";
 import { useRouter } from "next/router";
 import { ar, en } from "@locales";
 import { Spinner } from "@components/ui";
 import { Transition } from "@components/Transition";
+import { useLocalStorage } from "@lib/helpers/hooks";
 
 // dynamic imports,
 // to defer loading component until it's first rendered,
@@ -29,19 +30,22 @@ const TransactionForm = dynamic(() =>
   import("@features/transaction").then(({ TransactionForm }) => TransactionForm)
 );
 
-//TODO: 
-//1- Add user profile, to change currency, and generate sort of avatar from it's email.
-//2- 
+type CurrLocalStorage = { [k in "id" | "short" | "long"]?: string };
+
+//TODO: worst-case scenario when user clear the local storage,
+// how to get the selected the currency id ?
 // COMPONENT
 const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const { locale } = useRouter();
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
+  const [currency, _] = useLocalStorage<CurrLocalStorage>("currency", {});
   const {
     data = { transactions: [] },
     isLoading: isLoadingTrxs,
     isFetching,
   } = useGetTransactionsQuery({
+    currencyId: currency.id,
     userId: user.id,
   });
   const transactions = React.useMemo(() => {

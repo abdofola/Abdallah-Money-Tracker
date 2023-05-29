@@ -248,10 +248,10 @@ const Display: React.FC<DisplayProps> = ({
                 key={item.id}
                 item={item}
                 href={{
-                  /**  /transactions?category=`id`&type=`transactionType` */
+                  /**  /transactions?categoryId=`id`&type=`transactionType` */
                   pathname: "/transactions",
                   query: {
-                    category: item.category.id,
+                    categoryId: item.category.id,
                     type: transactionType.en,
                   },
                 }}

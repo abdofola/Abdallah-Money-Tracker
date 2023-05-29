@@ -1,4 +1,12 @@
 export default {
+  currency: {
+    title:'choose currency',
+    button: 'add currency',
+    sideMenu:{
+      available:'available currencies',
+      add:'add new currencies'
+    }
+  },
   nav: {
     home: "home",
     statement: "statement",

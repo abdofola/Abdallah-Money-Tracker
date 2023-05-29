@@ -20,7 +20,9 @@ CREATE TABLE "User" (
 CREATE TABLE "Currency" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "userId" TEXT NOT NULL
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Currency_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -54,9 +56,6 @@ CREATE TABLE "Category" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Currency_id_key" ON "Currency"("id");
 
 -- AddForeignKey
 ALTER TABLE "Currency" ADD CONSTRAINT "Currency_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
