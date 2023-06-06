@@ -11,6 +11,8 @@ import { FormProps } from "@components/ui/Form";
 import { useLocalStorage } from "@lib/helpers/hooks";
 import { categories as defaultCategories } from "./constants";
 import { TransactionFormProps } from "./types";
+import { useAppSelector } from "@app/hooks";
+import { CurrencyState, selectCurrentCurrency } from "@features/currency";
 
 function TransactionForm({
   user,
@@ -23,7 +25,7 @@ function TransactionForm({
   categoryId,
   transactionAmount,
   canAddCategory = true,
-}:TransactionFormProps) {
+}: TransactionFormProps) {
   const amountRef = React.useRef<HTMLInputElement | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const [date, setDate] = React.useState(transactionDate ?? new Date());
@@ -32,6 +34,12 @@ function TransactionForm({
   );
   const [amountValue, setAmountValue] = React.useState(transactionAmount ?? "");
   const [comment, setComment] = React.useState(transactionComment ?? "");
+  const currency = useAppSelector(selectCurrentCurrency);
+  const [crncLS, _] = useLocalStorage<CurrencyState>("currency", {
+    id: "",
+    short: "",
+    long: "",
+  });
   const { data } = useGetCategoriesQuery({ userId: user.id });
   const [addCategory, { isLoading }] = useAddCategoryMutation();
   const [categories, setCategories] = useLocalStorage(
@@ -52,9 +60,9 @@ function TransactionForm({
     setComment("");
   };
   const handleSubmit: FormProps["onSubmit"] = async (formData) => {
-    console.log({ amountValue, selectedId, date });
+    // console.log({ amountValue, selectedId, date });
 
-    if (amountValue <= 0 || !selectedId || !(date instanceof Date)) {
+    if (Number(amountValue) <= 0 || !selectedId || !(date instanceof Date)) {
       return;
     }
     const selectedCategory = categories[transactionType].find((c) => {
@@ -67,8 +75,8 @@ function TransactionForm({
 
     try {
       let catId: string;
-      // check to see if user has the selected the category or not,
-      // to decide whether to add it or not(i.e perform POST request).
+      // check to see if user has the selected category or not,
+      // to decide whether to add it(i.e perform POST request).
       if (!matchedSelection) {
         const newCategory = await addCategory({
           userId: user.id,
@@ -81,6 +89,7 @@ function TransactionForm({
       const newTrx = await mutation({
         ...formData,
         categoryId: catId,
+        currencyId: currency.id || crncLS.id,
         date,
         amount: Number(amountValue),
       });
@@ -97,7 +106,7 @@ function TransactionForm({
   if (categoryToUpdate && selectedId === categoryToUpdate.id) {
     let selectedCategory = categories[transactionType].find(
       (c) => c.iconId === categoryToUpdate.iconId
-    ) ;
+    );
 
     if (!selectedCategory) {
       selectedCategory = otherCategories[transactionType].find(
@@ -255,7 +264,7 @@ function TransactionForm({
       <menu className="flex gap-2">
         <button
           form="add_trx"
-          className={`flex justify-center items-center capitalize py-1 basis-1/3 rounded-lg shadow ${
+          className={`flex justify-center items-center basis-1/3 h-10 capitalize  rounded-lg shadow-3D ${
             !canAdd ? "text-gray-300" : ""
           }`}
           type="submit"

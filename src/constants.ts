@@ -1,4 +1,4 @@
-export const CURRENCIES =Object.entries({
+export const CURRENCIES = Object.entries({
   AED: "United Arab Emirates Dirham",
   AFN: "Afghan Afghani",
   ALL: "Albanian Lek",

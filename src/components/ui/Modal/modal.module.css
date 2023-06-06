@@ -1,11 +1,12 @@
 .overlay {
   display: flex;
   justify-content: center;
-  @apply fixed inset-0 z-50 items-end sm:items-center bg-gray-500 bg-opacity-50;
+  /* align-items: flex-end; */
+  @apply fixed inset-0 z-50 sm:items-center bg-gray-500 bg-opacity-50;
 }
 .modal {
   width: min(100vw, 25rem);
-  @apply bg-white shadow-2xl overflow-x-clip rounded-md sm:mx-auto;
+  @apply bg-white shadow-2xl rounded-md sm:mx-auto;
 }
 .header {
   @apply px-5 py-4 text-gray-700 capitalize font-semibold;

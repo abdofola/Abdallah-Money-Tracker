@@ -6,6 +6,7 @@ builder.prismaObject("Transaction", {
     id: t.exposeID("id"),
     amount: t.exposeInt("amount"),
     category: t.relation("category"),
+    currency: t.relation("currency"),
     date: t.expose("date", { type: "Date" }),
     comment: t.expose("comment", { type: "String", nullable: true }),
     createdAt: t.expose("createdAt", { type: "Date" }),
@@ -13,7 +14,8 @@ builder.prismaObject("Transaction", {
   }),
 });
 
-//Schema behavior
+//SCHEMA BEHAIVIOR
+
 // get all transactions
 builder.queryField("transactions", (t) =>
   t.prismaField({
@@ -31,7 +33,9 @@ builder.queryField("transactions", (t) =>
           date: "desc",
         },
         // if there's a query param of `categoryId`
-        where: !categoryId ? { userId, currencyId } : {userId, currencyId, categoryId },
+        where: !categoryId
+          ? { userId, currencyId }
+          : { userId, currencyId, categoryId },
       });
     },
   })
@@ -87,6 +91,7 @@ builder.mutationField("updateTransaction", (t) =>
       amount: t.arg.int({ required: true }),
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
+      currencyId: t.arg.string({ required: true }),
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {

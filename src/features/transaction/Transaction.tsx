@@ -19,6 +19,8 @@ import { ar, en } from "@locales";
 import { Spinner } from "@components/ui";
 import { Transition } from "@components/Transition";
 import { useLocalStorage } from "@lib/helpers/hooks";
+import { CurrencyState, selectCurrentCurrency } from "@features/currency";
+import { useAppSelector } from "@app/hooks";
 
 // dynamic imports,
 // to defer loading component until it's first rendered,
@@ -39,13 +41,18 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const { locale } = useRouter();
   const [transactionIdx, setTransaction] = React.useState(1);
   const [periodIdx, setPeriod] = React.useState(0);
-  const [currency, _] = useLocalStorage<CurrLocalStorage>("currency", {});
+  const currency = useAppSelector(selectCurrentCurrency);
+  const [crncLS, _] = useLocalStorage<CurrencyState>("currency", {
+    id: "",
+    short: "",
+    long: "",
+  });
   const {
     data = { transactions: [] },
     isLoading: isLoadingTrxs,
     isFetching,
   } = useGetTransactionsQuery({
-    currencyId: currency.id,
+    currencyId: currency.id || crncLS.id,
     userId: user.id,
   });
   const transactions = React.useMemo(() => {
@@ -87,32 +94,31 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
         dispatch={dispatch}
         {...dates}
       >
-        <React.Suspense fallback={<Spinner variants={{ width: "md" }} />}>
-          <Transition isMounted={display} from={from} to={to}>
-            <Display
-              isLoading={isLoadingTrxs}
-              isFetching={isFetching}
-              transactionType={t.txt}
-              periodIndex={periodIdx}
-              setPeriod={setPeriod}
-              displayOff={() => setDisplay(false)}
-            />
-          </Transition>
-          <Transition isMounted={!display} from={from} to={to}>
-            <TransactionForm
-              user={user}
-              transactionType={t.txt.en}
-              displayOn={() => setDisplay(true)}
-              mutation={(data: any) => {
-                return addTransaction({
-                  ...data,
-                  userId: user.id,
-                }).unwrap();
-              }}
-              status={{ isLoading }}
-            />
-          </Transition>
-        </React.Suspense>
+        <Transition isMounted={display} from={from} to={to}>
+          <Display
+            isLoading={isLoadingTrxs}
+            isFetching={isFetching}
+            transactionType={t.txt}
+            periodIndex={periodIdx}
+            setPeriod={setPeriod}
+            displayOff={() => setDisplay(false)}
+          />
+        </Transition>
+        <Transition isMounted={!display} from={from} to={to}>
+          <TransactionForm
+            user={user}
+            transactionType={t.txt.en}
+            displayOn={() => setDisplay(true)}
+            mutation={(data: any) => {
+              // console.log({data})
+              return addTransaction({
+                ...data,
+                userId: user.id,
+              }).unwrap();
+            }}
+            status={{ isLoading }}
+          />
+        </Transition>
       </DataProvider>
     </Tab.Panel>
   ));
@@ -123,7 +129,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 max-w-[95%] w-[50rem] mx-auto">
+    <div className="flex flex-col items-center gap-4 w-full p-4">
       <div className="flex items-end">
         <Money className="w-5 h-5 self-center stroke-gray-400" />
         {isLoadingTrxs ? (
@@ -140,7 +146,6 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
 
         <span className="text-gray-400">{translation.total}</span>
       </div>
-
       <Tab.Group
         className="self-stretch"
         defaultTab={transactionIdx}

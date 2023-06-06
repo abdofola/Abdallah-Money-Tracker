@@ -11,8 +11,10 @@ import { Tab } from "@components/Tab";
 import { transactionTypes } from "@features/transaction/constants";
 import { useRouter } from "next/router";
 import { en, ar } from "@locales";
-import styles from "./transactions.module.css";
 import { Transition } from "@components/Transition";
+import styles from "./transactions.module.css";
+import { CurrencyState, selectCurrentCurrency } from "@features/currency";
+import { useAppSelector } from "@app/hooks";
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
@@ -27,10 +29,11 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
   const { query, locale } = useRouter();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
-  const [currency, _] = useLocalStorage('currency',{});
+  const currency = useAppSelector(selectCurrentCurrency);
+  const [crncLS, _] = useLocalStorage<CurrencyState>('currency',{id:'', short:'', long:''});
   const { data, isSuccess, isLoading, error } = useGetTransactionsQuery({
     categoryId: query.category as string,
-    currencyId: currency.id,
+    currencyId: currency.id || crncLS.id,
     userId: session.id,
   });
   const tabIdx = transactionTypes.findIndex((t) => t.txt.en === query.type);

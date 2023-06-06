@@ -7,12 +7,20 @@ const extendedApi = api.injectEndpoints({
     return {
       getTransactions: builder.query<
         { transactions: Transaction & Partial<Category> },
-        { userId: string;currencyId:string, categoryId?: string }
+        { userId: string; currencyId: string; categoryId?: string }
       >({
         query: (args) => ({
           document: gql`
-            query GetTransactions($userId: String!, $category: String) {
-              transactions(userId: $userId, category: $category) {
+            query GetTransactions(
+              $userId: String!
+              $currencyId: String!
+              $categoryId: String
+            ) {
+              transactions(
+                userId: $userId
+                currencyId: $currencyId
+                categoryId: $categoryId
+              ) {
                 id
                 amount
                 date
@@ -59,13 +67,14 @@ const extendedApi = api.injectEndpoints({
         providesTags: ["transactions"],
       }),
       addTransaction: builder.mutation<Transaction, Partial<Transaction>>({
-        query: ({ amount, date, categoryId, comment, userId }) => ({
+        query: (args) => ({
           document: gql`
             mutation AddTransaction(
               $amount: Int!
               $date: String!
               $userId: String!
               $categoryId: String!
+              $currencyId: String!
               $comment: String
             ) {
               addTransaction(
@@ -73,17 +82,22 @@ const extendedApi = api.injectEndpoints({
                 date: $date
                 userId: $userId
                 categoryId: $categoryId
+                currencyId: $currencyId
                 comment: $comment
               ) {
                 amount
                 date
+                currency {
+                  id
+                  name
+                }
                 category {
                   id
                 }
               }
             }
           `,
-          variables: { amount, date, categoryId, userId, comment },
+          variables: args,
         }),
         invalidatesTags: ["transactions"],
       }),
@@ -95,6 +109,7 @@ const extendedApi = api.injectEndpoints({
               $amount: Int!
               $date: String!
               $categoryId: String!
+              $currencyId:String!
               $comment: String
             ) {
               updateTransaction(
@@ -102,11 +117,16 @@ const extendedApi = api.injectEndpoints({
                 amount: $amount
                 date: $date
                 categoryId: $categoryId
+                currencyId:$currencyId
                 comment: $comment
               ) {
                 amount
                 date
                 comment
+                currency {
+                  id
+                  name
+                }
                 category {
                   name
                   type

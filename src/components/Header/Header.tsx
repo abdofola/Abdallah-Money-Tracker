@@ -6,16 +6,24 @@ import { Home, Document, Icon, Plus } from "@components/icons";
 import { en, ar } from "@locales";
 import styles from "./Header.module.css";
 import { Menu } from "@components/Menu";
-import { Currency, User } from "@prisma/client";
+import { Currency as TCurrency, User } from "@prisma/client";
 import {
   Listbox,
   Transition as HLTransition,
   RadioGroup as HLRadioGroup,
 } from "@headlessui/react";
 import { Transition } from "@components/Transition";
-import { useGetCurrenciesQuery } from "@services";
-import { useLocalStorage } from "@lib/helpers/hooks";
+import { useAddCurrencyMutation, useGetCurrenciesQuery } from "@services";
+import { useLocalStorage, useWindowResize } from "@lib/helpers/hooks";
 import { CURRENCIES } from "src/constants";
+import { EmptyState, Modal, Spinner } from "@components/ui";
+import { Currency } from "@features/currency";
+import { useAppDispatch, useAppSelector } from "@app/hooks";
+import {
+  CurrencyState,
+  selectCurrentCurrency,
+  setCurrency,
+} from "@features/currency";
 
 type P = {
   user: User;
@@ -24,7 +32,7 @@ type Lang = { short: "en" | "ar"; long: string };
 type LanguageSelectionProps = {
   languages: Lang[];
 };
-type CurrenciesRadioProps = { currencies: Currency[] };
+type CurrenciesRadioProps = { currencies: TCurrency[] };
 type Crnc = { [k in "id" | "short" | "long"]: string };
 
 const pages = {
@@ -41,11 +49,19 @@ const isActive = (path: string, pathname: string) => pathname === path;
 // the user comes from cookie instead of state
 // because when refreshing a page, the state gets destroyed
 export default function Header({ user }: P) {
-  const [smScreen, setSmScreen] = React.useState(0);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const windowWidth = useWindowResize();
+  const [selected, setSelected] = React.useState<[string, string]>(["", ""]);
   const { locale, pathname } = useRouter();
-  const { data = { currencies: [] }, isLoading } = useGetCurrenciesQuery({
+  const {
+    data = { currencies: [] },
+    isLoading: isLoadingQ,
+    isFetching,
+  } = useGetCurrenciesQuery({
     userId: user.id,
   });
+  const [addCurrency, { isLoading: isLoadingM, error }] =
+    useAddCurrencyMutation();
   const translation = locale === "en" ? en : ar;
   const smScreenPx = 640;
   const renderedListItems = Object.entries(pages).map(
@@ -74,22 +90,9 @@ export default function Header({ user }: P) {
     html.lang = locale!;
   }, [locale]);
 
-  // keep tranck of view port width, to render components accoringly.
-  React.useEffect(() => {
-    const resize = () => setSmScreen(window.innerWidth);
-
-    setSmScreen(window.innerWidth);
-    window.addEventListener("resize", resize);
-
-    //cleanup
-    return () => {
-      window.removeEventListener("resize", resize);
-    };
-  }, [smScreen]);
-
   return (
     <nav id="nav" className={styles.nav}>
-      {/* <Transition isMounted={smScreen >= smScreenPx}>
+      {/* <Transition isMounted={windowWidth >= smScreenPx}>
         <Link href={user ? "/api/logout" : "/login"}>
           <a className="flex justify-center items-center w-max h-full px-2 text-gray-500 bg-gray-50 rounded-xl row-start-2">
             {user ? translation.nav["logout"] : translation.nav["login"]}
@@ -105,7 +108,7 @@ export default function Header({ user }: P) {
         >
           <div className="px-2 flex items-center gap-6">
             {/* menu on small screen */}
-            <Transition isMounted={smScreen <= smScreenPx}>
+            <Transition isMounted={windowWidth <= smScreenPx}>
               <div>
                 <Menu>
                   <Menu.Button />
@@ -120,18 +123,78 @@ export default function Header({ user }: P) {
                       <span className="text-lg">{user.email}</span>
                     </header>
                     <main className="space-y-2">
-                      <h3 className="capitalize text-gray-600">
+                      <h3 className="capitalize text-lg text-gray-600">
                         {translation.currency.sideMenu.available}
                       </h3>
-                      <CurrenciesRadio currencies={data.currencies} />
-                      <button className="flex items-end gap-2">
-                        <span className="p-1 rounded-lg shadow-3D ">
-                          <Plus />
-                        </span>
-                        <span className="text-gray-400">
-                          {translation.currency.sideMenu.add}
-                        </span>
-                      </button>
+                      {data.currencies.length > 0 ? (
+                        <CurrenciesRadio currencies={data.currencies} />
+                      ) : (
+                        <EmptyState
+                          iconJSX={
+                            <Icon
+                              href="/sprite.svg#person-currency"
+                              className=" aspect-square"
+                            />
+                          }
+                          renderParagraph={() => (
+                            <p className="first-letter:capitalize text-gray-500">
+                              {translation.currency.sideMenu.empty}
+                            </p>
+                          )}
+                        />
+                      )}
+
+                      <Transition isMounted={data.currencies.length > 0}>
+                        <button
+                          className="flex items-end gap-2"
+                          onClick={() => setIsOpen(true)}
+                        >
+                          <span className="p-1 rounded-lg shadow-3D ">
+                            <Plus />
+                          </span>
+                          <span className="text-gray-400">
+                            {translation.currency.sideMenu.add}
+                          </span>
+                        </button>
+                      </Transition>
+                      <Transition isMounted={isOpen}>
+                        <Modal
+                          className="items-center"
+                          from="opacity-0 scale-0"
+                          to="opacity-100 scale-100"
+                          isMounted={isOpen}
+                          headerTxt={translation.currency.sideMenu.add}
+                          close={() => setIsOpen(false)}
+                          confirmationButton={
+                            <button
+                              disabled={selected[0] === ""}
+                              onClick={() => {
+                                if (selected) {
+                                  addCurrency({
+                                    userId: user.id,
+                                    name: selected[0],
+                                  })
+                                    .unwrap()
+                                    .then(() => setIsOpen(false));
+                                }
+                              }}
+                              className="basis-1/3 h-10 grid place-items-center rounded-lg bg-white capitalize shadow-3D disabled:opacity-30"
+                            >
+                              {isLoadingM ? (
+                                <Spinner />
+                              ) : (
+                                translation.currency.button
+                              )}
+                            </button>
+                          }
+                        >
+                          <Currency
+                            selected={selected}
+                            setSelected={setSelected}
+                            className="capitalize text-lg"
+                          />
+                        </Modal>
+                      </Transition>
                     </main>
 
                     <footer>
@@ -168,12 +231,12 @@ export default function Header({ user }: P) {
           </div>
 
           {/* language selection on small screen */}
-          <Transition isMounted={smScreen <= smScreenPx}>
+          <Transition isMounted={windowWidth <= smScreenPx}>
             <LanguageSelection languages={languages} />
           </Transition>
         </li>
         {renderedListItems}
-        <Transition isMounted={smScreen >= smScreenPx}>
+        <Transition isMounted={windowWidth >= smScreenPx}>
           <li>
             <LanguageSelection languages={languages} />
           </li>
@@ -202,7 +265,7 @@ function LanguageSelection({ languages }: LanguageSelectionProps) {
       >
         <div className="relative">
           <Listbox.Button
-            className={`relative w-full cursor-default rounded-lg bg-white py-2 ${
+            className={`relative w-full cursor-pointer rounded-lg bg-white py-2 ${
               locale === "en" ? "pl-3 pr-10" : "pr-3 pl-10"
             }  border focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm`}
           >
@@ -267,16 +330,20 @@ function LanguageSelection({ languages }: LanguageSelectionProps) {
 }
 
 function CurrenciesRadio({ currencies }: CurrenciesRadioProps) {
-  const [currency, setCurrency] = useLocalStorage<Crnc>("currency", {
+  const dispatch = useAppDispatch();
+  const currency = useAppSelector(selectCurrentCurrency);
+  const [curcLS, _] = useLocalStorage<CurrencyState>("currency", {
     id: "",
     short: "",
     long: "",
   });
   const [selected, setSelected] = useState(() => {
-    return currencies.find((crnc) => crnc.name === currency.short);
+    return currencies.find(
+      (crnc) => crnc.name === (currency.short || curcLS.short)
+    );
   });
 
-  console.log({ selected, currency });
+  // console.log({ selected, currency });
   return (
     <div className="w-full">
       <div className="mx-auto w-full max-w-md">
@@ -284,11 +351,13 @@ function CurrenciesRadio({ currencies }: CurrenciesRadioProps) {
           value={selected}
           onChange={(c) => {
             setSelected(c);
-            setCurrency({
-              id: c.id,
-              short: c.name,
-              long: CURRENCIES.find(([k, v]) => k === c.name)![1],
-            });
+            dispatch(
+              setCurrency({
+                id: c.id,
+                short: c.name as CurrencyState["short"],
+                long: CURRENCIES.find(([k, _v]) => k === c.name)![1],
+              })
+            );
           }}
         >
           <HLRadioGroup.Label className="sr-only">
@@ -309,18 +378,23 @@ function CurrenciesRadio({ currencies }: CurrenciesRadioProps) {
                   relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none`
                 }
               >
-                {({ active, checked }) => (
+                {({ checked }) => (
                   <>
                     <div className="flex w-full items-center justify-between">
                       <div className="flex items-center">
                         <div className="text-sm">
                           <HLRadioGroup.Label
                             as="p"
-                            className={`font-medium  ${
+                            className={`flex flex-col font-medium  ${
                               checked ? "text-white" : "text-gray-900"
                             }`}
                           >
-                            {CURRENCIES.find(([k, v]) => k === c.name)![1]}
+                            <span>
+                              {CURRENCIES.find(([k, _]) => k === c.name)![1]}
+                            </span>
+                            <span>
+                              {CURRENCIES.find(([k, _]) => k === c.name)![0]}
+                            </span>
                           </HLRadioGroup.Label>
                           <HLRadioGroup.Description
                             as="span"
@@ -349,3 +423,13 @@ function CurrenciesRadio({ currencies }: CurrenciesRadioProps) {
     </div>
   );
 }
+
+/**
+ * SCENARIO:
+ * 1- when first use logged in, they should first select a currency.
+ * 2- this currency gets saved to localStorage with key of `currency`,
+ *  and value of {id, short, long}.
+ * 3- when the user wants to add new currency(depend on their role),
+ *  a popup will appear to make mutation request to add new currency.
+ *  The new added one should be reflected immdiately on the ui level.
+ */

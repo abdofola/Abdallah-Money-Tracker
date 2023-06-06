@@ -12,8 +12,9 @@ type ModalProps = {
   headerTxt: String;
   confirmationButton: React.ReactElement;
   onConfirm?: (data: { [k: string]: any; categoryId?: string }) => void;
+  className?: string;
   isMounted: boolean;
-};
+} & { [k in "to" | "from"]?: string };
 
 export default function Modal({
   children,
@@ -22,16 +23,19 @@ export default function Modal({
   close,
   onConfirm = () => {},
   isMounted,
+  className = "",
+  ...rest
 }: ModalProps) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const { locale } = useRouter();
   const translation = locale === "en" ? en : ar;
   const child = (
-    <div className={styles.overlay} onClick={close}>
+    <div className={styles.overlay.concat(" ", className)} onClick={close}>
       <Transition
         isMounted={isMounted}
         from="opacity-0 translate-y-full sm:translate-y-0 sm:scale-0"
         to="opacity-100 translate-y-0 sm:scale-100"
+        {...rest}
       >
         <div
           role="dialog"

@@ -21,7 +21,7 @@ builder.queryField("currencies", (t) => {
         ...query,
         where: args,
       });
-      console.log({ currencies });
+      // console.log({ currencies });
       return currencies;
     },
   });
@@ -57,9 +57,12 @@ builder.mutationField("addCurrency", (t) => {
         where: { id: args.userId },
       });
 
+      if (!args.name) throw new Error("please select currency!");
       // if the role is `USER`; they only authorized to create one currency account.
       if (currencies.length >= 1 && user?.role === "USER") {
-        throw new Error("you don't have permissions to add more than account");
+        throw new Error(
+          "you don't have permissions to add more than one currency!"
+        );
       }
       return await ctx.prisma.currency.create({ data: args, ...query });
     },

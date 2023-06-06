@@ -9,7 +9,7 @@ import {
   useDeleteTransactionMutation,
   useGetTransactionQuery,
   useUpdateTransactionMutation,
-} from "@app/services/api";
+} from "@app/services";
 import { DisplayAmount, TransactionForm } from "@features/transaction";
 import { DataProvider } from "@components/contexts";
 import { Transaction } from "@prisma/client";
@@ -29,10 +29,11 @@ const Transaction: NextPageWithLayout = ({ user }) => {
   const [display, setDisplay] = React.useState(true);
   const { data = { transaction: {} }, isLoading: trxQueryLoading } =
     useGetTransactionQuery({
-      id: query.id,
-      userId: user.id,
+      id: query.id as string,
+      // userId: user.id,
     });
-  const [updateTransaction, { isLoading: trxMutationLoading }] = useUpdateTransactionMutation();
+  const [updateTransaction, { isLoading: trxMutationLoading }] =
+    useUpdateTransactionMutation();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
   const { amount, date, category, comment } =
@@ -117,7 +118,7 @@ function DisplayDetails({ details, displayOff }) {
             {translation.transactionDetails.amount}
           </dt>
           <dd>
-          <DisplayAmount amount={amount} />
+            <DisplayAmount amount={amount} />
           </dd>
         </div>
         <div>
@@ -158,6 +159,7 @@ function DisplayDetails({ details, displayOff }) {
         </button>
         <Transition isMounted={isOpen}>
           <Modal
+          className="items-end sm:items-center"
             headerTxt={translation.headings.delete}
             isMounted={isOpen}
             close={() => setIsOpen(false)}

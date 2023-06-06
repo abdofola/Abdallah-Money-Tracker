@@ -61,7 +61,7 @@ function loginOrAddUser<P = Props>({
               name="email"
               placeholder="someone@example.com"
             />
-            <button className=" flex justify-center items-center border border-gray-700 capitalize ml-auto px-6 py-1 rounded-md">
+            <button className="grid place-items-center ml-auto w-24 h-10 capitalize shadow-3D rounded-lg">
               {status === "pending" ? <Spinner /> : "login"}
             </button>
           </div>
