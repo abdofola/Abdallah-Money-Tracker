@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { Layout } from "@components/Layout";
-import { useGetHeight } from "@lib/helpers/hooks";
+import { useGetHeight, useWindowResize } from "@lib/helpers/hooks";
 import { Modal, Spinner } from "@components/ui";
 import {
   useDeleteTransactionMutation,
@@ -34,11 +34,13 @@ const Transaction: NextPageWithLayout = ({ user }) => {
     });
   const [updateTransaction, { isLoading: trxMutationLoading }] =
     useUpdateTransactionMutation();
+    const windowWidth = useWindowResize();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
   const { amount, date, category, comment } =
     data.transaction as Transaction & { category: Category };
   const translation = locale === "en" ? en : ar;
+  const smScreen = 640;
   let content;
   if (trxQueryLoading) {
     content = <Spinner variants={{ width: "md", margin: "4" }} />;
@@ -72,7 +74,10 @@ const Transaction: NextPageWithLayout = ({ user }) => {
   return (
     <main
       className="max-w-md mx-auto"
-      style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
+      style={{
+        paddingTop: windowWidth >= smScreen ? navHeight : loginHeight,
+        paddingBottom: navHeight,
+      }}
     >
       <header className="flex px-2 mb-4 capitalize">
         <h1 className="text-lg">
@@ -94,7 +99,7 @@ Transaction.Layout = function getLayout(page) {
       withHeader
       session={page.props.user}
       title="transaction"
-      className="px-2 py-4"
+      className="px-2 py-8"
     >
       {page}
     </Layout>
@@ -145,28 +150,28 @@ function DisplayDetails({ details, displayOff }) {
       <div className="flex gap-4 py-4">
         <button
           type="button"
-          className="basis-1/3 py-1 capitalize shadow rounded-md"
+          className="basis-1/3 h-10 capitalize shadow-3D rounded-lg"
           onClick={displayOff}
         >
           {translation.buttons.update}
         </button>
         <button
           type="button"
-          className="basis-1/3 py-1 capitalize text-gray-500 bg-gray-100 bg-opacity-60 rounded-md"
+          className="capitalize"
           onClick={() => setIsOpen(true)}
         >
           {translation.buttons.delete}
         </button>
         <Transition isMounted={isOpen}>
           <Modal
-          className="items-end sm:items-center"
+            className="items-end sm:items-center"
             headerTxt={translation.headings.delete}
             isMounted={isOpen}
             close={() => setIsOpen(false)}
             confirmationButton={
               <button
                 type="button"
-                className="flex justify-center basis-1/3 py-1 text-center bg-red-500 text-white rounded-md"
+                className="grid items-center basis-1/3 h-10 text-center text-white bg-red-600 shadow-3D rounded-lg"
                 onClick={() => {
                   deleteTranaction({ id: transactionId })
                     .unwrap()

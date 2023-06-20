@@ -6,21 +6,17 @@ import { Icon } from "@components/icons";
 import { Spinner } from "@components/ui";
 import { useRouter } from "next/router";
 import { ar, en } from "@locales";
+import { CurrencyState } from "./currencySlice";
 
-type RenderProps = (
-  selectedLang: string,
-  jsx: string | JSX.Element
-) => JSX.Element;
+type RenderProps = (selectedLang: CurrencyState["short"]) => JSX.Element;
 type CurrencyProps = {
-  isLoading?: boolean;
   className?: string;
-  selected: [string, string];
+  selected: [CurrencyState["short"], string];
   setSelected: React.Dispatch<SetStateAction<CurrencyProps["selected"]>>;
   renderSubmitButton?: RenderProps;
 };
 
 export default function Currency({
-  isLoading,
   className,
   selected,
   setSelected,
@@ -122,10 +118,7 @@ export default function Currency({
             )}
           </Combobox.Options>
         </Transition>
-        {renderSubmitButton?.(
-          selected[0],
-          !isLoading ? translation.currency.button : <Spinner />
-        )}
+        {renderSubmitButton?.(selected[0])}
       </div>
     </Combobox>
   );

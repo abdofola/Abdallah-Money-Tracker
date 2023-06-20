@@ -28,7 +28,7 @@ const DisplayAmount: React.FC<P> = ({ amount, ...style }) => {
     .format(Number(amount))
     .concat(` ${renderedCurrency}`);
 
-  console.log({ currency });
+  // console.log({ currency });
 
   return <span {...style}>{renderedAmount}</span>;
 };

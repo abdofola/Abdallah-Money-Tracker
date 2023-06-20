@@ -1,6 +1,3 @@
-import { enviroment } from "@lib/enviroment";
-import { fetchJson } from "@lib/utils";
-import { User } from "@prisma/client";
 import { builder } from "../builder";
 
 builder.prismaObject("User", {
@@ -9,6 +6,7 @@ builder.prismaObject("User", {
     email: t.exposeString("email"),
     role: t.exposeString("role"),
     name: t.expose("name", { type: "String", nullable: true }),
+    last_login: t.expose("last_login", { type: "Date", nullable: true }),
     createdAt: t.expose("createdAt", { type: "Date" }),
     updatedAt: t.expose("createdAt", { type: "Date" }),
     categories: t.relation("categories"),
@@ -16,42 +14,57 @@ builder.prismaObject("User", {
   }),
 });
 
+// QUERY
+// get single user
 builder.queryField("user", (t) =>
   t.prismaField({
     type: "User",
     args: {
       email: t.arg.string({ required: true }),
     },
-    resolve: async (query, _root, args, ctx, _info) => {
-      return ctx.prisma.user.findUniqueOrThrow({
-        ...query,
-        where: { email: args.email },
+    resolve: async (_query, _root, args, ctx, _info) => {
+      const user = await ctx.prisma.user.findUniqueOrThrow({
+        where: args,
       });
+
+      return user;
     },
   })
 );
 
+// MUTATION
+// add new user
 builder.mutationField("addUser", (t) =>
   t.prismaField({
     type: "User",
     args: { email: t.arg.string({ required: true }) },
     // @ts-ignore
     resolve: async (_query, _root, args, _ctx, _info) => {
-      /**
-       * this resolver represents a wrapper around
-       * the endpoint /api/signup
-       * TODO:
-       * session cookies does not get safed when making the request from the resolver?
-       */
+      //TODO: adding new user is permitted for super user admin,
+      // and super **_ONLY_**.
       try {
-        const user = await fetchJson<User>(
-          enviroment[process.env.NODE_ENV] + "/api/addUser",
-          {
-            method: "POST",
-            body: args,
-            referrer: "http://localhost:3000/api/graphql",
-          }
-        );
+      } catch (error) {
+        throw error;
+      }
+    },
+  })
+);
+
+// updating user
+builder.mutationField("updateUser", (t) =>
+  t.prismaField({
+    type: "User",
+    args: {
+      id: t.arg.string({ required: true }),
+      last_login: t.arg.string({ required: true }),
+    },
+    resolve: async (query, _root, args, ctx, _info) => {
+      try {
+        const user = await ctx.prisma.user.update({
+          data: { last_login: args.last_login },
+          where: { id: args.id },
+          ...query,
+        });
 
         return user;
       } catch (error) {
@@ -60,3 +73,45 @@ builder.mutationField("addUser", (t) =>
     },
   })
 );
+
+//login user
+builder.mutationField("login", (t) =>
+  t.prismaField({
+    type: "User",
+    args: {
+      email: t.arg.string({ required: true }),
+      last_login: t.arg.string({ required: true }),
+    },
+    resolve: async (_query, _root, args, ctx, _info) => {
+      try {
+        const user = await ctx.prisma.user.findUniqueOrThrow({
+          where: { email: args.email },
+        });
+
+        //check whether the user has logged in before or not
+        // if not don't update the `last_login` field
+        if (!user.last_login) {
+          ctx.session.user = user;
+          await ctx.session.save();
+
+          return user;
+        }
+
+        const updatedUser = await ctx.prisma.user.update({
+          where: { email: user.email },
+          data: { last_login: args.last_login },
+        });
+
+        ctx.session.user = updatedUser;
+        await ctx.session.save();
+
+        return updatedUser;
+      } catch (err) {
+        throw err;
+      }
+    },
+  })
+);
+
+// logout user
+// TODO

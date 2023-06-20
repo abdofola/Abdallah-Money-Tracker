@@ -4,7 +4,11 @@ import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
 import { useGetTransactionsQuery } from "@app/services";
 import { Layout } from "@components/Layout";
-import { useGetHeight, useLocalStorage } from "@lib/helpers/hooks";
+import {
+  useGetHeight,
+  useLocalStorage,
+  useWindowResize,
+} from "@lib/helpers/hooks";
 import { TransactionItem, TransactionList } from "@features/transaction";
 import { EmptyState, Spinner } from "@components/ui";
 import { Tab } from "@components/Tab";
@@ -15,49 +19,61 @@ import { Transition } from "@components/Transition";
 import styles from "./transactions.module.css";
 import { CurrencyState, selectCurrentCurrency } from "@features/currency";
 import { useAppSelector } from "@app/hooks";
+import { TransactionElement } from "@features/transaction/types";
+import { User } from "@prisma/client";
+
+type TrxByDate = {
+  [k in "income" | "expenses"]: Map<Date, TransactionElement[]>;
+};
+type P = { session: User };
 
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
 
-  // console.log("-----getServerSideProps---->", { session: user });
   if (!user) return { redirect: { permanent: false, destination: "/login" } };
+
   return { props: { session: user } };
 });
 
 // component
-const AccountStatement: NextPageWithLayout = ({ session }) => {
+const AccountStatement: NextPageWithLayout<P> = ({ session }) => {
   const { query, locale } = useRouter();
+  const windowWidth = useWindowResize();
   const navHeight = useGetHeight("#nav");
   const loginHeight = useGetHeight("#navLogin");
   const currency = useAppSelector(selectCurrentCurrency);
-  const [crncLS, _] = useLocalStorage<CurrencyState>('currency',{id:'', short:'', long:''});
-  const { data, isSuccess, isLoading, error } = useGetTransactionsQuery({
-    categoryId: query.category as string,
+  const [crncLS, _] = useLocalStorage<CurrencyState>("currency", {
+    id: "",
+    short: "",
+    long: "",
+  });
+  const { data, isLoading } = useGetTransactionsQuery({
+    categoryId: query.categoryId as string,
     currencyId: currency.id || crncLS.id,
     userId: session.id,
   });
-  const tabIdx = transactionTypes.findIndex((t) => t.txt.en === query.type);
-  let transactions = { income: new Map(), expenses: new Map() };
-
-  if (error) {
-    console.error("fetching transactions error", error);
-  }
-  if (isSuccess) {
-    // map data into `date` as key, value as array of `transaciton` that corresponds to this date.
-    for (let t of data.transactions) {
-      const itemMap = transactions[t.category.type];
-      if (!itemMap.has(t.date)) itemMap.set(t.date, []);
-      itemMap.get(t.date).push(t);
+  const memoizedTrxsByDate = React.useMemo<TrxByDate>(() => {
+    const trxsByDate: TrxByDate = { income: new Map(), expenses: new Map() };
+    if (data) {
+      // map data into `date` as key, and value is array of `@type Transaciton` that corresponds to this date.
+      for (let t of data.transactions) {
+        const item = trxsByDate[t.category.type!];
+        if (!item.get(t.date)) item.set(t.date, []);
+        item.get(t.date).push(t);
+      }
     }
-  }
+    return trxsByDate;
+  }, [data]);
   const translation = locale === "en" ? en : ar;
-
+  const tabIdx = transactionTypes.findIndex((t) => t.txt.en === query.type);
+  const smScreen = 640;
   const Panels = transactionTypes.map((t) => {
     return (
       <Tab.Panel key={t.id} className="grid place-items-center">
-        {isLoading && <Spinner variants={{ width: "lg" }} />}
-        {transactions[t.txt.en].size === 0 && !isLoading ? (
-          /** -------empty state----- */
+        <Transition isMounted={isLoading}>
+          <Spinner variants={{ width: "lg" }} />
+        </Transition>
+        {memoizedTrxsByDate[t.txt.en].size === 0 && !isLoading ? (
           <EmptyState
             className="flex flex-col items-center self-center max-w-[90%]"
             icon="/sprite.svg#search"
@@ -78,15 +94,14 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
             )}
           />
         ) : (
-          /** -------transaction records grouped by date----- */
-          [...transactions[t.txt.en]].map(([date, trans]) => {
+          Array.from(memoizedTrxsByDate[t.txt.en]).map(([date, trans]) => {
             return (
-              <div key={date} className="w-full">
+              <div key={date.toString()} className="w-full">
                 <h4
                   className={styles.fullBleed}
                   style={{ top: loginHeight + "px" }}
                 >
-                  {date}
+                  {date.toString()}
                 </h4>
                 <TransactionList
                   className="flex flex-col gap-2"
@@ -119,15 +134,16 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
     );
   });
 
-  // console.log({ session });
-
   return (
     <div
-      style={{ paddingTop: loginHeight + 10, paddingBottom: navHeight + 20 }}
+      style={{
+        paddingTop: windowWidth >= smScreen ? navHeight : loginHeight,
+        paddingBottom: navHeight,
+      }}
     >
       <Tab.Group
-        className="w-[35rem] max-w-full mx-auto"
-        defaultTab={tabIdx < 0 ? 0 : tabIdx}
+        className=" w-[35rem] max-w-full mx-auto"
+        defaultTab={tabIdx < 0 ? 1 : tabIdx}
       >
         <Tab.List
           tabs={transactionTypes}
@@ -135,7 +151,7 @@ const AccountStatement: NextPageWithLayout = ({ session }) => {
           renderTab={({ tab, isSelected }) => (
             <Tab
               key={tab.id}
-              tab={{ id: tab.id, txt: tab.txt[locale] }}
+              tab={{ id: tab.id, txt: tab.txt[locale as "ar" | "en"] }}
               className={`uppercase font-medium ${
                 isSelected ? "text-gray-700" : " text-gray-300"
               }`}
@@ -154,7 +170,7 @@ AccountStatement.Layout = function getLayout(page) {
     <Layout
       withHeader
       title="transactions"
-      className="px-2 py-4"
+      className="px-2 py-8"
       session={page.props.session}
     >
       {page}

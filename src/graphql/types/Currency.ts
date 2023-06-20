@@ -54,10 +54,18 @@ builder.mutationField("addCurrency", (t) => {
         where: { id: args.userId },
       });
       const currencies = await ctx.prisma.currency.findMany({
-        where: { id: args.userId },
+        where: { userId: args.userId },
       });
+      const index = currencies.findIndex((c) => c.name === args.name);
 
+      // no currency provided
       if (!args.name) throw new Error("please select currency!");
+      
+      // check if it already exists
+      if (currencies[index]) {
+        throw new Error("currency already exist!");
+      }
+
       // if the role is `USER`; they only authorized to create one currency account.
       if (currencies.length >= 1 && user?.role === "USER") {
         throw new Error(

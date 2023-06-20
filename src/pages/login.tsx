@@ -1,7 +1,7 @@
 import React from "react";
 import { NextPageWithLayout } from "./_app";
 import { Layout } from "@components/Layout";
-import { setCredentials } from "@features/auth";
+import { setCredentials, Login } from "@features/auth";
 import { Icon } from "@components/icons";
 import { loginOrAddUser } from "@components/HOC";
 
@@ -14,32 +14,32 @@ const UserLogin = loginOrAddUser({
 });
 
 //COMPONENT
-const Login: NextPageWithLayout = () => {
+const LoginPage: NextPageWithLayout = () => {
   return (
-    <div className="space-y-2 basis-1/3">
+    <div className="max-w-full max-h-full">
       <div className="flex flex-col items-center gap-4 -translate-y-6">
-        <span className="">
+        <span>
           <Icon href="/sprite.svg#logo" />
         </span>
-        <h1 className="text-md font-semibold capitalize">
+        <h1 className="text-xl text-center tracking-wider font-semibold capitalize sm:text-3xl">
           Welcome to money flow application
         </h1>
       </div>
-      <UserLogin />
+      <Login />
     </div>
   );
 };
 
 // page layout
-Login.Layout = function getLayout(page) {
+LoginPage.Layout = function getLayout(page) {
   return (
     <Layout
       title="login"
-      className="flex justify-center items-center min-w-screen min-h-screen bg-gradient-to-tr from-pink-100 to-blue-200"
+      className="grid grid-cols-1 place-items-center w-full h-full p-1 bg-gradient-to-tr from-pink-100 to-sky-200"
     >
       {page}
     </Layout>
   );
 };
 
-export default Login;
+export default LoginPage;

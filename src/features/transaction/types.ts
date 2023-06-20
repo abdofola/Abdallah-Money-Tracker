@@ -1,6 +1,6 @@
 import React from "react";
 import type { Url } from "url";
-import { Role, User } from "@prisma/client";
+import { Role, Transaction, User } from "@prisma/client";
 
 type Transform<T> = {
   income: T[];
@@ -17,13 +17,8 @@ type Category = {
   [key: string]: any;
 };
 type TransactionElement = {
-  id: string;
   category: Category;
-  amount: number;
-  comment: string | undefined;
-  date: Date | string;
-  [key: string]: any;
-};
+} & Transaction;
 type FilterTransactions = ({
   data,
   periodType,
@@ -42,7 +37,7 @@ type DisplayProps = {
   periodIndex: number;
   transactionType: { en: TransactionType; ar: string };
   isLoading: boolean;
-  isFetching:boolean;
+  isFetching: boolean;
   setPeriod: React.Dispatch<React.SetStateAction<number>>;
   displayOff: () => void;
 };

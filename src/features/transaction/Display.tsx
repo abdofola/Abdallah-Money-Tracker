@@ -153,13 +153,13 @@ const Display: React.FC<DisplayProps> = ({
   return (
     <div className="flex flex-col gap-4 mt-4 sm:mt-8 sm:flex-row">
       <Tab.Group
-        className="w-full p-2 bg-white rounded-lg border border-gray-100"
+        className="w-full p-2 py-4 bg-white rounded-lg border border-gray-100"
         defaultTab={periodIndex}
         onChange={setPeriod}
       >
         <Tab.List
           tabs={periods}
-          className="flex justify-center gap-4 font-medium overflow-hidden before:bg-gray-600"
+          className="flex justify-center gap-6 font-medium leading-loose overflow-hidden"
           renderTab={({ tab, isSelected }) => {
             return (
               <Tab
@@ -194,7 +194,7 @@ const Display: React.FC<DisplayProps> = ({
           />
           {Panels}
           <button
-            className="absolute p-2 border rounded-full bottom-2 right-2"
+            className="absolute p-2 border rounded-full bottom-2 right-2 shadow-3D"
             onClick={displayOff}
           >
             <Plus />
@@ -202,12 +202,9 @@ const Display: React.FC<DisplayProps> = ({
         </Tab.Panels>
       </Tab.Group>
       <div className="flex flex-col w-full gap-3">
-        <h3 className="text-lg sm:self-center">
-          <strong className={`relative z-[1] w-max capitalize text-lg text-gray-700 font-medium
-           before:absolute before:-z-10 before:left-0 before:bottom-0 before:w-full before:h-2 before:bg-gradient-to-tr from-pink-200 to-blue-100`}>
-            {translation.headings.summary}
-          </strong>
-        </h3>
+        {/* <h3 className="text-2xl sm:self-center">
+          {translation.headings.summary}
+        </h3> */}
         <Transition
           isMounted={isLoading}
           delay={0}
@@ -237,7 +234,7 @@ const Display: React.FC<DisplayProps> = ({
           )}
         />
         <TransactionList
-          className={`hideScrollBar relative space-y-2 max-h-72 rounded-lg overflow-y-auto ${
+          className={`hideScrollBar relative space-y-2 max-h-96 rounded-lg overflow-y-auto ${
             isFetching ? "opacity-20 animate-pulse" : ""
           }`}
           data={mergedDuplicateData}

@@ -8,7 +8,7 @@ type Response = {
     currency: { currency: Currency };
   };
   mutation: {
-    add: {addCurrency:Currency};
+    add: { addCurrency: Currency };
     delete: Currency;
   };
 };
@@ -19,7 +19,7 @@ type Params = {
     currency: { [k in "id" | "userId"]: string };
   };
   mutation: {
-    add: {name:string, userId:string};
+    add: { name: string; userId: string };
     delete: any;
   };
 };
@@ -44,6 +44,7 @@ const extendedApi = api.injectEndpoints({
             variables: args,
           };
         },
+        providesTags: ["currency"],
       }),
       getCurrency: builder.query<
         Response["query"]["currency"],
@@ -62,6 +63,7 @@ const extendedApi = api.injectEndpoints({
             variables: args,
           };
         },
+        providesTags: ["currency"],
       }),
       addCurrency: builder.mutation<
         Response["mutation"]["add"],
@@ -80,6 +82,7 @@ const extendedApi = api.injectEndpoints({
             variables: args,
           };
         },
+        invalidatesTags: ["currency"],
       }),
     };
   },
@@ -88,5 +91,5 @@ const extendedApi = api.injectEndpoints({
 export const {
   useGetCurrenciesQuery,
   useGetCurrencyQuery,
-  useAddCurrencyMutation
+  useAddCurrencyMutation,
 } = extendedApi;

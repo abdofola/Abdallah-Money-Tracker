@@ -38,17 +38,17 @@ const TabProvider: React.FC<TabGroupProps> = ({
 const List: React.FC<TabItemsProps> = ({ tabs, renderTab, className }) => {
   const [items, setItems] = React.useState<Map<number, HTMLButtonElement>>(
     new Map()
-    );
-    const { selectedIdx } = useTab();
-    const elem = items.get(selectedIdx);
-    const [width, setWidth] = React.useState(elem?.clientWidth);
-    const [offsetLeft, setOffset] = React.useState(elem?.offsetLeft);
+  );
+  const { selectedIdx } = useTab();
+  const elem = items.get(selectedIdx);
+  const [width, setWidth] = React.useState(elem?.clientWidth);
+  const [offsetLeft, setOffset] = React.useState(elem?.offsetLeft);
 
   //when the element `offset` or `clientWidth` changes, update the state.
   if (elem && elem.offsetLeft !== offsetLeft) {
     setWidth(elem.clientWidth);
-    setOffset(elem.offsetLeft)
-  }  
+    setOffset(elem.offsetLeft);
+  }
 
   return (
     <ItemsContext.Provider value={{ setItems }}>
@@ -100,7 +100,7 @@ const Tab: React.FC<TabProps> & Props = ({ className, tab, cb }) => {
   );
 };
 
-const Panels: React.FC<PanelsProps> = ({ children, className }) => {
+const Panels: Props["Panels"] = ({ children, className }) => {
   let id = 0;
   const renderedChildren = React.Children.toArray(children).map((child) => {
     let cloned;
@@ -116,11 +116,7 @@ const Panels: React.FC<PanelsProps> = ({ children, className }) => {
   return <div className={className}>{renderedChildren}</div>;
 };
 
-const Panel: React.FC<{
-  children: React.ReactNode;
-  className: string;
-  id: number;
-}> = ({ children, className, id }) => {
+const Panel: Props["Panel"] = ({ children, className, id }) => {
   const { selectedIdx } = useTab();
   if (id !== selectedIdx) return <></>;
   return (

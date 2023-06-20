@@ -1,12 +1,13 @@
 import { api } from "./api";
 import { gql } from "graphql-request";
 import { Category, Transaction } from "@prisma/client";
+import { TransactionElement } from "@features/transaction/types";
 
 const extendedApi = api.injectEndpoints({
   endpoints(builder) {
     return {
       getTransactions: builder.query<
-        { transactions: Transaction & Partial<Category> },
+        { transactions: TransactionElement[] },
         { userId: string; currencyId: string; categoryId?: string }
       >({
         query: (args) => ({
@@ -109,7 +110,7 @@ const extendedApi = api.injectEndpoints({
               $amount: Int!
               $date: String!
               $categoryId: String!
-              $currencyId:String!
+              $currencyId: String!
               $comment: String
             ) {
               updateTransaction(
@@ -117,7 +118,7 @@ const extendedApi = api.injectEndpoints({
                 amount: $amount
                 date: $date
                 categoryId: $categoryId
-                currencyId:$currencyId
+                currencyId: $currencyId
                 comment: $comment
               ) {
                 amount

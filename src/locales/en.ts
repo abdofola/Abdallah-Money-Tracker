@@ -1,4 +1,9 @@
 export default {
+  stepper: {
+    next: "next",
+    previous: "previous",
+    finished: "finished",
+  },
   welcoming: {
     header: "Welcome to Money flow application",
     p: `It is a digital tool designed to help individuals or businesses keep
@@ -9,7 +14,6 @@ export default {
     financial decisions.Money flow app can be particularly useful for those
     who want to gain a better understanding of their financial situation,
     save money, and plan for the future.`,
-    btn: "get started",
   },
   currency: {
     title: "choose currency",

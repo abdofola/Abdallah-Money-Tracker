@@ -5,7 +5,6 @@
   /* grid-auto-flow: column;
   align-items: center; */
   /* box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow); */
-  padding: 1rem;
   z-index: 10;
   @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:top-0 sm:bottom-auto sm:px-64 sm:shadow-lg sm:border-none sm:rounded-none;
 }

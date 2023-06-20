@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Home, Document, Icon, Plus } from "@components/icons";
@@ -7,23 +7,12 @@ import { en, ar } from "@locales";
 import styles from "./Header.module.css";
 import { Menu } from "@components/Menu";
 import { Currency as TCurrency, User } from "@prisma/client";
-import {
-  Listbox,
-  Transition as HLTransition,
-  RadioGroup as HLRadioGroup,
-} from "@headlessui/react";
+import { Listbox, Transition as HLTransition } from "@headlessui/react";
 import { Transition } from "@components/Transition";
 import { useAddCurrencyMutation, useGetCurrenciesQuery } from "@services";
-import { useLocalStorage, useWindowResize } from "@lib/helpers/hooks";
-import { CURRENCIES } from "src/constants";
+import { useWindowResize } from "@lib/helpers/hooks";
 import { EmptyState, Modal, Spinner } from "@components/ui";
-import { Currency } from "@features/currency";
-import { useAppDispatch, useAppSelector } from "@app/hooks";
-import {
-  CurrencyState,
-  selectCurrentCurrency,
-  setCurrency,
-} from "@features/currency";
+import { Currency, CurrencyRadio } from "@features/currency";
 
 type P = {
   user: User;
@@ -33,7 +22,6 @@ type LanguageSelectionProps = {
   languages: Lang[];
 };
 type CurrenciesRadioProps = { currencies: TCurrency[] };
-type Crnc = { [k in "id" | "short" | "long"]: string };
 
 const pages = {
   home: { path: "/", Icon: <Home /> },
@@ -90,8 +78,15 @@ export default function Header({ user }: P) {
     html.lang = locale!;
   }, [locale]);
 
+  // console.log({ user });
   return (
-    <nav id="nav" className={styles.nav}>
+    <nav
+      id="nav"
+      className={styles.nav.concat(
+        " ",
+        `${!user.last_login && windowWidth < smScreenPx ? "p-0" : "p-4"}`
+      )}
+    >
       {/* <Transition isMounted={windowWidth >= smScreenPx}>
         <Link href={user ? "/api/logout" : "/login"}>
           <a className="flex justify-center items-center w-max h-full px-2 text-gray-500 bg-gray-50 rounded-xl row-start-2">
@@ -120,14 +115,16 @@ export default function Header({ user }: P) {
                           className="w-12 h-12 fill-gray-400"
                         />
                       </span>
-                      <span className="text-lg">{user.email}</span>
+                      <span className="text-lg capitalize">
+                        {user.name ?? user.email}
+                      </span>
                     </header>
                     <main className="space-y-2">
                       <h3 className="capitalize text-lg text-gray-600">
                         {translation.currency.sideMenu.available}
                       </h3>
                       {data.currencies.length > 0 ? (
-                        <CurrenciesRadio currencies={data.currencies} />
+                        <CurrencyRadio currencies={data.currencies} />
                       ) : (
                         <EmptyState
                           iconJSX={
@@ -235,7 +232,7 @@ export default function Header({ user }: P) {
             <LanguageSelection languages={languages} />
           </Transition>
         </li>
-        {renderedListItems}
+        {user.last_login && renderedListItems}
         <Transition isMounted={windowWidth >= smScreenPx}>
           <li>
             <LanguageSelection languages={languages} />
@@ -328,108 +325,3 @@ function LanguageSelection({ languages }: LanguageSelectionProps) {
     </div>
   );
 }
-
-function CurrenciesRadio({ currencies }: CurrenciesRadioProps) {
-  const dispatch = useAppDispatch();
-  const currency = useAppSelector(selectCurrentCurrency);
-  const [curcLS, _] = useLocalStorage<CurrencyState>("currency", {
-    id: "",
-    short: "",
-    long: "",
-  });
-  const [selected, setSelected] = useState(() => {
-    return currencies.find(
-      (crnc) => crnc.name === (currency.short || curcLS.short)
-    );
-  });
-
-  // console.log({ selected, currency });
-  return (
-    <div className="w-full">
-      <div className="mx-auto w-full max-w-md">
-        <HLRadioGroup
-          value={selected}
-          onChange={(c) => {
-            setSelected(c);
-            dispatch(
-              setCurrency({
-                id: c.id,
-                short: c.name as CurrencyState["short"],
-                long: CURRENCIES.find(([k, _v]) => k === c.name)![1],
-              })
-            );
-          }}
-        >
-          <HLRadioGroup.Label className="sr-only">
-            currencies
-          </HLRadioGroup.Label>
-          <div className="space-y-2">
-            {currencies.map((c) => (
-              <HLRadioGroup.Option
-                key={c.id}
-                value={c}
-                className={({ active, checked }) =>
-                  `${
-                    active
-                      ? "ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300"
-                      : ""
-                  }
-                ${checked ? "bg-sky-900 bg-opacity-75 text-white" : "bg-white"}
-                  relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none`
-                }
-              >
-                {({ checked }) => (
-                  <>
-                    <div className="flex w-full items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="text-sm">
-                          <HLRadioGroup.Label
-                            as="p"
-                            className={`flex flex-col font-medium  ${
-                              checked ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            <span>
-                              {CURRENCIES.find(([k, _]) => k === c.name)![1]}
-                            </span>
-                            <span>
-                              {CURRENCIES.find(([k, _]) => k === c.name)![0]}
-                            </span>
-                          </HLRadioGroup.Label>
-                          <HLRadioGroup.Description
-                            as="span"
-                            className={`inline ${
-                              checked ? "text-sky-100" : "text-gray-500"
-                            }`}
-                          ></HLRadioGroup.Description>
-                        </div>
-                      </div>
-                      {checked && (
-                        <div className="shrink-0 text-white">
-                          <Icon
-                            href="/sprite.svg#check"
-                            className="h-6 w-6 fill-white"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </HLRadioGroup.Option>
-            ))}
-          </div>
-        </HLRadioGroup>
-      </div>
-    </div>
-  );
-}
-
-/**
- * SCENARIO:
- * 1- when first use logged in, they should first select a currency.
- * 2- this currency gets saved to localStorage with key of `currency`,
- *  and value of {id, short, long}.
- * 3- when the user wants to add new currency(depend on their role),
- *  a popup will appear to make mutation request to add new currency.
- *  The new added one should be reflected immdiately on the ui level.
- */

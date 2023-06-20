@@ -9,7 +9,7 @@ export const api = createApi({
   baseQuery: graphqlRequestBaseQuery({
     url: enviroment[process.env.NODE_ENV] + "/api/graphql",
   }),
-  tagTypes: ["transactions", "categories"],
+  tagTypes: ["transactions", "categories", "user", "currency"],
   endpoints: (builder) => ({
     getUser: builder.query<{ user: User }, { email: string }>({
       query: ({ email }) => ({
@@ -44,6 +44,7 @@ export const api = createApi({
         `,
         variables: { email },
       }),
+      providesTags: ["user"],
     }),
     addUser: builder.mutation<{ addUser: User }, { email: string }>({
       query: ({ email }) => ({
@@ -59,7 +60,47 @@ export const api = createApi({
         variables: { email },
       }),
     }),
+    updateUser: builder.mutation<
+      { updateUser: User },
+      { id: string; last_login: Date }
+    >({
+      query: (args) => ({
+        document: gql`
+          mutation ($id: String!, $last_login: String!) {
+            updateUser(id: $id, last_login: $last_login) {
+              last_login
+            }
+          }
+        `,
+        variables: args,
+      }),
+      invalidatesTags: ["user"],
+    }),
+    login: builder.mutation<
+      { login: User },
+      { email: string; last_login: Date }
+    >({
+      query: (args) => ({
+        document: gql`
+          mutation ($email: String!, $last_login: String!) {
+            login(email: $email, last_login: $last_login) {
+              id
+              name
+              email
+              last_login
+            }
+          }
+        `,
+        variables: args,
+      }),
+      invalidatesTags: ["user"],
+    }),
   }),
 });
 
-export const { useGetUserQuery, useAddUserMutation } = api;
+export const {
+  useGetUserQuery,
+  useAddUserMutation,
+  useUpdateUserMutation,
+  useLoginMutation,
+} = api;

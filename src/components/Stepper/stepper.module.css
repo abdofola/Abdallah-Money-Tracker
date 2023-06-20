@@ -1,0 +1,18 @@
+.circle {
+  @apply relative flex items-center gap-2 text-gray-400;
+}
+
+.circle circle:last-child {
+  stroke-dasharray: 175.929, 175.929;
+  stroke-dashoffset: 175.92918860102841;
+  /* transform: rotate(-90deg); */
+  transform-origin: 30px 30px;
+  transition: all 0.5s;
+}
+
+.circle:hover circle:last-child,
+.circle:active circle:last-child,
+.circle:focus circle:last-child {
+  stroke-dashoffset: 0;
+  color: theme(colors.black);
+}

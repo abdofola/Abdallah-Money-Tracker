@@ -149,6 +149,7 @@ function TransactionForm({
         <div className="flex gap-2 items-center">
           <input
             className="transition basis-full px-2 py-1 bg-gray-100 shadow-inner rounded-md ring-offset-4 focus:outline-0  focus:ring-1 focus:ring-gray-300"
+            autoFocus
             ref={amountRef}
             id="amount"
             type="number"
@@ -175,6 +176,7 @@ function TransactionForm({
         />
         <Transition isMounted={isOpen}>
           <Modal
+            className="items-end"
             isMounted={isOpen}
             headerTxt={translation.headings.addCategory}
             close={() => setIsOpen(false)}
@@ -210,7 +212,7 @@ function TransactionForm({
               <button
                 type="submit"
                 form="dialog"
-                className="flex justify-center basis-1/3 bg-black text-white py-1 rounded-md"
+                className="grid items-center basis-1/3 h-10 shadow-3D rounded-md"
               >
                 {translation.buttons.add}
               </button>

@@ -1,4 +1,9 @@
-export { useGetUserQuery, useAddUserMutation } from "./api";
+export {
+  useGetUserQuery,
+  useAddUserMutation,
+  useUpdateUserMutation,
+  useLoginMutation,
+} from "./api";
 export { useGetCategoriesQuery, useAddCategoryMutation } from "./categories";
 export {
   useAddTransactionMutation,

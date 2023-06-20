@@ -1,6 +1,6 @@
 import { Html, Head, Main, NextScript } from "next/document";
 
-export default function Document(props) {
+export default function Document() {
   return (
     <Html>
       <Head>

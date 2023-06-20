@@ -27,15 +27,18 @@ builder.queryField("transactions", (t) =>
     },
     resolve: async (query, _root, args, ctx, _info) => {
       const { userId, categoryId, currencyId } = args;
+
       return await ctx.prisma.transaction.findMany({
         ...query,
         orderBy: {
           date: "desc",
         },
         // if there's a query param of `categoryId`
-        where: !categoryId
-          ? { userId, currencyId }
-          : { userId, currencyId, categoryId },
+        where: {
+          user: { is: { id: userId } },
+          currency: { is: { id: currencyId } },
+          category: { is: !categoryId ? {} : { id: categoryId } },
+        },
       });
     },
   })

@@ -32,8 +32,6 @@ const TransactionForm = dynamic(() =>
   import("@features/transaction").then(({ TransactionForm }) => TransactionForm)
 );
 
-type CurrLocalStorage = { [k in "id" | "short" | "long"]?: string };
-
 //TODO: worst-case scenario when user clear the local storage,
 // how to get the selected the currency id ?
 // COMPONENT
@@ -128,8 +126,10 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
     dispatch({ startDate, endDate: null });
   }
 
+  //TODO: size of chart component on large screen is pretty ugly.
+
   return (
-    <div className="flex flex-col items-center gap-4 w-full p-4">
+    <div className="flex flex-col items-center gap-4 w-full max-w-5xl px-2 mx-auto my-8 sm:text-xl">
       <div className="flex items-end">
         <Money className="w-5 h-5 self-center stroke-gray-400" />
         {isLoadingTrxs ? (
@@ -153,7 +153,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
       >
         <Tab.List
           tabs={transactionTypes}
-          className="flex justify-center items-center gap-10"
+          className="flex justify-center items-center leading-loose gap-10"
           renderTab={({ tab, isSelected }) => (
             <Tab
               key={tab.id}

@@ -2,15 +2,12 @@ import React from "react";
 import { getStyle } from "@lib/utils";
 
 type Variants = ["gutter", "layout", "padding", "margin", "width"];
-interface Other {
-  name: string
-}
 export type FormProps = {
   children: React.ReactNode;
   className?: string;
   onSubmit: (formData: { [k: string]: FormDataEntryValue }) => void;
   variants?: { [k in Variants[number]]?: any };
-  [k : string]: any;
+  [k: string]: any;
 };
 
 const style = getStyle<Variants>({
