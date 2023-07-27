@@ -12,6 +12,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
     "@pothos/core": "^3.25.0",
     "@pothos/plugin-prisma": "^3.41.0",
     "@prisma/client": "^4.0.0",
@@ -19,7 +20,7 @@
     "@rtk-query/graphql-request-base-query": "^2.2.0",
     "date-fns": "^2.29.1",
     "graphql": "^16.6.0",
-    "graphql-request": "^5.1.0",
+    "graphql-request": "^6.1.0",
     "graphql-scalars": "^1.20.1",
     "graphql-yoga": "^3.5.1",
     "iron-session": "^6.3.1",

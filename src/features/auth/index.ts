@@ -3,3 +3,5 @@ export {
   selectCurrentUser,
   setCredentials,
 } from "./authSlice";
+
+export { default as Login } from "./Login";

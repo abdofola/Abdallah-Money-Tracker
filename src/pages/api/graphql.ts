@@ -1,8 +1,7 @@
 import { createYoga } from "graphql-yoga";
 import { schema } from "src/graphql/schema";
-import type { NextApiRequest, NextApiResponse } from "next";
 import { createContext } from "src/graphql/context";
-import prisma from "@lib/prisma";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 type TCreateYoga = {
   req: NextApiRequest;

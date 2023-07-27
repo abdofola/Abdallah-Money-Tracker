@@ -5,6 +5,7 @@ type TContext = [
   isOpen: boolean,
   setIsopen: React.Dispatch<React.SetStateAction<boolean>>
 ];
+type MScreenProps = { children: React.ReactNode; className?: string };
 
 const MenuContext = React.createContext<TContext | null>(null);
 
@@ -18,7 +19,7 @@ export default function Menu({ children }: { children: React.ReactNode }) {
 }
 
 function MenuButton() {
-  const [isOpen, setIsOpen] = React.useContext(MenuContext) as TContext;
+  const [isOpen, setIsOpen] = React.useContext(MenuContext)!;
 
   // maintain screen scroll position, and prevent body from scrolling.
   React.useEffect(() => {
@@ -41,12 +42,12 @@ function MenuButton() {
 
   return (
     <button
-      className={`fixed top-6 z-50 flex flex-col justify-between w-5 h-4
+      className={` flex flex-col justify-between w-5 h-4
         before:w-full before:h-[2px] 
         after:w-3/4 after:h-[2px]
         ${
           isOpen
-            ? "justify-self-end w-8 inset-0 my-auto ltr:ml-auto ltr:mr-8 rtl:mr-auto rtl:ml-8 before:rotate-45 before:bg-white"
+            ? "fixed z-50 justify-self-end w-8 inset-0 my-auto ltr:ml-auto ltr:mr-8 rtl:mr-auto rtl:ml-8 before:rotate-45 before:bg-white"
             : "justify-self-start before:bg-gray-500 after:bg-gray-500"
         }`}
       onClick={() => setIsOpen(!isOpen)}
@@ -59,19 +60,19 @@ function MenuButton() {
         ${
           isOpen
             ? "-rotate-45 -translate-y-2 bg-white"
-            : "bg-gray-500 before:bg-gray-50 before:z-[-1]"
+            : "bg-gray-500 before:bg-white before:z-[-1]"
         }`}
       />
     </button>
   );
 }
 
-function MenuScreen({ children }) {
+function MenuScreen({ children, className }: MScreenProps) {
   //TODO:
   //4- menu screen should include
   // a- user avatar alongside the name
   // b- logout button
-  const [isOpen, setIsOpen] = React.useContext(MenuContext) as TContext;
+  const [isOpen, setIsOpen] = React.useContext(MenuContext)!;
 
   return (
     <Transition
@@ -84,8 +85,9 @@ function MenuScreen({ children }) {
         isMounted={isOpen}
         from="opacity-0 ltr:-translate-x-full rtl:translate-x-full"
         to="opacity-100 translate-x-0"
-        className="w-3/4 h-full bg-white drop-shadow-lg"
-        onClick={(e) => e.stopPropagation()}
+        className={className}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        delay={100}
       >
         {children}
       </Transition>

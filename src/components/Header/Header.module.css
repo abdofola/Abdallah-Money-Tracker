@@ -1,18 +1,15 @@
 .nav {
   position: fixed;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-auto-flow: column;
-  align-items: center;
-  padding: 1rem;
+  /* grid-template-columns: repeat(12, 1fr); */
+  /* grid-auto-flow: column;
+  align-items: center; */
+  /* box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow); */
   z-index: 10;
-  @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:rounded-none sm:static sm:border-none;
+  @apply inset-x-0 bottom-0 bg-white border-t rounded-t-3xl sm:top-0 sm:bottom-auto sm:px-64 sm:shadow-lg sm:border-none sm:rounded-none;
 }
 .list {
-  @apply col-span-12 flex justify-center gap-4;
-}
-.list >:last-child {
-  font-family: serif;
+  @apply col-span-12 flex justify-center gap-4 sm:row-start-2;
 }
 
 .lang {
@@ -20,30 +17,28 @@
   justify-content: space-around;
   align-items: center;
   gap: 0.25rem;
-  font-family: serif;
-  @apply px-1 text-gray-600 bg-gray-50 border rounded-2xl;
+  /* @apply px-1 text-gray-600 bg-gray-50 border rounded-2xl; */
 }
-.lang > select {
-  background-color: transparent;
-  text-align: center;
-  cursor: pointer;
-  @apply transition-shadow rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500;
-}
+
 /* center the pages' links regardless the direction
 ------------------------------------*/
-.item:first-child {
+.item:nth-child(2) {
+  /* background-color: red; */
   @apply sm:ltr:ml-auto sm:rtl:mr-auto;
 }
 .item:nth-last-child(2) {
+  /* background-color: yellow; */
   @apply sm:ltr:mr-auto sm:rtl:ml-auto;
 }
 /*----------------------------------------*/
 .pageLink {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   width: 100%;
-  @apply transition-all px-2 rounded-md;
+  height: 100%;
+  @apply transition-all px-2 rounded-xl;
 }
 .pageLink svg {
   @apply stroke-gray-400 sm:hidden;

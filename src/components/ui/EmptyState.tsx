@@ -1,12 +1,22 @@
-import { Icon } from "@components/icons";
 import React from "react";
+import { Icon } from "@components/icons";
 
-export default function EmptyState({ className, icon, renderParagraph }) {
+type EmptyStateProps = {
+  className?: string;
+  icon?: string;
+  renderParagraph: () => JSX.Element;
+  iconJSX?: JSX.Element;
+};
+
+export default function EmptyState({
+  className,
+  icon,
+  renderParagraph,
+  iconJSX,
+}: EmptyStateProps) {
   return (
     <div className={className}>
-      <span>
-        <Icon href={icon} />
-      </span>
+      <span>{icon ? <Icon href={icon} /> : iconJSX}</span>
       {renderParagraph()}
     </div>
   );

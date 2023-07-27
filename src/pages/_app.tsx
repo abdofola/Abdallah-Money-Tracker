@@ -45,7 +45,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
             <span className="animate-progress fixed top-0 z-50 h-1 bg-black" />
           )}
         />
-        <div className={` ${isLoading ? "opacity-25" : ""} `}>{Page}</div>
+        <div className={`w-full h-full ${isLoading ? "opacity-25" : ""}`}>
+          {Page}
+        </div>
       </ErrorBoundary>
     </Provider>
   );

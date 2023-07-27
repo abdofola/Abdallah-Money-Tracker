@@ -6,6 +6,7 @@ builder.prismaObject("Transaction", {
     id: t.exposeID("id"),
     amount: t.exposeInt("amount"),
     category: t.relation("category"),
+    currency: t.relation("currency"),
     date: t.expose("date", { type: "Date" }),
     comment: t.expose("comment", { type: "String", nullable: true }),
     createdAt: t.expose("createdAt", { type: "Date" }),
@@ -13,24 +14,31 @@ builder.prismaObject("Transaction", {
   }),
 });
 
-//Schema behavior
+//SCHEMA BEHAIVIOR
+
 // get all transactions
 builder.queryField("transactions", (t) =>
   t.prismaField({
     type: ["Transaction"],
     args: {
       userId: t.arg.string({ required: true }),
-      category: t.arg.string(),
+      currencyId: t.arg.string({ required: true }),
+      categoryId: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
-      const { userId, category } = args;
+      const { userId, categoryId, currencyId } = args;
+
       return await ctx.prisma.transaction.findMany({
         ...query,
         orderBy: {
           date: "desc",
         },
         // if there's a query param of `categoryId`
-        where: !category ? { userId } : { category: { is: { id: category } } },
+        where: {
+          user: { is: { id: userId } },
+          currency: { is: { id: currencyId } },
+          category: { is: !categoryId ? {} : { id: categoryId } },
+        },
       });
     },
   })
@@ -61,21 +69,16 @@ builder.mutationField("addTransaction", (t) =>
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
       userId: t.arg.string({ required: true }),
+      currencyId: t.arg.string({ required: true }),
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
-      if (!ctx.user) {
+      if (!ctx.session.user) {
         throw new Error(`you need to signin to create your transaction!`);
       }
 
       return await ctx.prisma.transaction.create({
-        data: {
-          amount: args.amount,
-          date: args.date,
-          userId: args.userId,
-          categoryId: args.categoryId,
-          comment: args.comment,
-        },
+        data: args,
         ...query,
       });
     },
@@ -91,6 +94,7 @@ builder.mutationField("updateTransaction", (t) =>
       amount: t.arg.int({ required: true }),
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
+      currencyId: t.arg.string({ required: true }),
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {

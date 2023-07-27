@@ -2,16 +2,10 @@ import React from "react";
 import { getStyle } from "@lib/utils";
 
 type Variants = ["gutter", "layout", "padding", "margin", "width"];
-interface Other {
-  name: string
-}
 export type FormProps = {
   children: React.ReactNode;
-  className?: string;
-  onSubmit: (formData: { [k: string]: FormDataEntryValue }) => void;
   variants?: { [k in Variants[number]]?: any };
-  [k : string]: any;
-};
+} & React.FormHTMLAttributes<HTMLFormElement>;
 
 const style = getStyle<Variants>({
   defaultStyle: "mx-auto bg-white border border-gray-100 rounded-lg",
@@ -57,17 +51,9 @@ export default function Form({
   variants,
   ...props
 }: FormProps) {
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    onSubmit(Object.fromEntries(formData));
-  };
-
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
       className={style(variants).concat(className ? " " + className : "")}
       {...props}
     >

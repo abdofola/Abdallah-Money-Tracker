@@ -1,151 +1,31 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { Category, TransactionElement } from "@features/transaction/types";
 import { gql } from "graphql-request";
 import { graphqlRequestBaseQuery } from "@rtk-query/graphql-request-base-query";
-import { Transaction, User as UserPrisma } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { enviroment } from "@lib/enviroment";
 
-interface User extends UserPrisma {
-  transactions: TransactionElement[];
-  categories: Category[];
-}
-type UserResponse = { addUser: UserPrisma };
-type NestedUserResponse = { user: User };
+export type E = {
+  [k in "name" | "message" | "originalError"]: string;
+};
+
+const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
 
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: graphqlRequestBaseQuery({
-    url: enviroment[process.env.NODE_ENV] + "/api/graphql",
+  baseQuery: graphqlRequestBaseQuery<E>({
+    url,
+    customErrors: (args) => {
+      const [error] = args.response.errors!;
+      return {
+        name: args.name,
+        message: error.message,
+        originalError: error.extensions?.originalError.message,
+      };
+    },
   }),
-  tagTypes: ["transactions", "categories"],
+  tagTypes: ["transactions", "categories", "user", "currency"],
   endpoints: (builder) => ({
-    getTransactions: builder.query<
-      { transactions: TransactionElement[] },
-      { userId: string; category?: string }
-    >({
-      query: ({ userId, category }) => ({
-        document: gql`
-          query GetTransactions($userId: String!, $category: String) {
-            transactions(userId: $userId, category: $category) {
-              id
-              amount
-              date
-              comment
-              category {
-                id
-                name
-                type
-                color
-                iconId
-              }
-            }
-          }
-        `,
-        variables: { userId, category },
-      }),
-      providesTags: ["transactions"],
-    }),
-    getTransaction: builder.query<{ transaction: Transaction }, { id: string }>(
-      {
-        query: ({ id }) => {
-          return {
-            document: gql`
-              query GetTransaction($id: String!) {
-                transaction(id: $id) {
-                  amount
-                  date
-                  comment
-                  category {
-                    id
-                    type
-                    name
-                    color
-                    iconId
-                  }
-                }
-              }
-            `,
-            variables: { id },
-          };
-        },
-        providesTags: ["transactions"],
-      }
-    ),
-    addTransaction: builder.mutation<Transaction, Partial<Transaction>>({
-      query: ({ amount, date, categoryId, comment, userId }) => ({
-        document: gql`
-          mutation AddTransaction(
-            $amount: Int!
-            $date: String!
-            $userId: String!
-            $categoryId: String!
-            $comment: String
-          ) {
-            addTransaction(
-              amount: $amount
-              date: $date
-              userId: $userId
-              categoryId: $categoryId
-              comment: $comment
-            ) {
-              amount
-              date
-              category {
-                id
-              }
-            }
-          }
-        `,
-        variables: { amount, date, categoryId, userId, comment },
-      }),
-      invalidatesTags: ["transactions"],
-    }),
-    updateTransaction: builder.mutation<Transaction, Partial<Transaction>>({
-      query: (transaction) => ({
-        document: gql`
-          mutation UpdateTransaction(
-            $id: String!
-            $amount: Int!
-            $date: String!
-            $categoryId: String!
-            $comment: String
-          ) {
-            updateTransaction(
-              id: $id
-              amount: $amount
-              date: $date
-              categoryId: $categoryId
-              comment: $comment
-            ) {
-              amount
-              date
-              comment
-              category {
-                name
-                type
-              }
-            }
-          }
-        `,
-        variables: transaction,
-      }),
-      invalidatesTags: ["transactions"],
-    }),
-    deleteTransaction: builder.mutation<Transaction, { id: string }>({
-      query: ({ id }) => ({
-        document: gql`
-          mutation DeleteTransaction($id: String!) {
-            deleteTransaction(id: $id) {
-              id
-            }
-          }
-        `,
-        variables: { id },
-      }),
-      invalidatesTags: ["transactions"],
-    }),
-
-    getUser: builder.query<NestedUserResponse, { email: string }>({
+    getUser: builder.query<{ user: User }, { email: string }>({
       query: ({ email }) => ({
         document: gql`
           query GetUser($email: String!) {
@@ -178,30 +58,92 @@ export const api = createApi({
         `,
         variables: { email },
       }),
+      providesTags: ["user"],
     }),
-    addUser: builder.mutation<UserResponse, { email: string }>({
-      query: ({ email }) => ({
+    signup: builder.mutation<
+      { signup: User },
+      { email: string; role?: Role; name?: string }
+    >({
+      query: (args) => ({
         document: gql`
-          mutation Adduser($email: String!) {
-            addUser(email: $email) {
-              id
+          mutation ($email: String!, $name: String, $role: Role) {
+            signup(email: $email, name: $name, role: $role) {
+              name
               email
               role
             }
           }
         `,
-        variables: { email },
+        variables: args,
+      }),
+    }),
+    updateUser: builder.mutation<
+      { updateUser: User },
+      { id: string; last_login: Date }
+    >({
+      query: (args) => ({
+        document: gql`
+          mutation ($id: String!, $last_login: String!) {
+            updateUser(id: $id, last_login: $last_login) {
+              last_login
+            }
+          }
+        `,
+        variables: args,
+      }),
+      invalidatesTags: ["user"],
+    }),
+    login: builder.mutation<
+      { login: User },
+      { email: string; last_login: Date }
+    >({
+      query: (args) => ({
+        document: gql`
+          mutation ($email: String!, $last_login: String!) {
+            login(email: $email, last_login: $last_login) {
+              id
+              name
+              email
+              last_login
+            }
+          }
+        `,
+        variables: args,
+      }),
+      invalidatesTags: ["user"],
+    }),
+    logout: builder.mutation<void, undefined>({
+      query: () => ({
+        document: gql`
+          mutation {
+            logout
+          }
+        `,
+      }),
+    }),
+    admin: builder.mutation<{ admin: User }, { email: string }>({
+      query: (args) => ({
+        document: gql`
+          mutation ($email: String!) {
+            admin(email: $email) {
+              id
+              last_login
+              name
+              role
+            }
+          }
+        `,
+        variables: args,
       }),
     }),
   }),
 });
 
 export const {
-  useDeleteTransactionMutation,
-  useUpdateTransactionMutation,
-  useAddTransactionMutation,
-  useGetTransactionsQuery,
-  useGetTransactionQuery,
   useGetUserQuery,
-  useAddUserMutation,
+  useUpdateUserMutation,
+  useLoginMutation,
+  useSignupMutation,
+  useLogoutMutation,
+  useAdminMutation,
 } = api;

@@ -5,7 +5,8 @@ type TDateContex = {
   startDate: Date;
   endDate: Date | null;
   dispatch: React.Dispatch<{
-    [k in keyof Pick<TDateContex, "startDate" | "endDate">]: Date | null;
+    startDate: Date;
+    endDate: Date | null;
   }>;
 };
 

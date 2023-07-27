@@ -11,7 +11,7 @@ type Props = {
   Group: React.ComponentType<TabGroupProps>;
   List: React.ComponentType<TabItemsProps>;
   Panels: React.ComponentType<PanelsProps>;
-  Panel: React.ComponentType<{ children: React.ReactNode }>;
+  Panel: React.ComponentType<{ children: React.ReactNode, className?:string, id?:number }>;
 };
 type TabGroupProps = {
   children: React.ReactNode;
