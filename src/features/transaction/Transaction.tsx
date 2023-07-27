@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Reducer } from "react";
 import dynamic from "next/dynamic";
 import { Tab } from "@components/Tab";
 import { Money } from "@components/icons";
@@ -22,6 +22,8 @@ import { useLocalStorage } from "@lib/helpers/hooks";
 import { CurrencyState, selectCurrentCurrency } from "@features/currency";
 import { useAppSelector } from "@app/hooks";
 
+type S = { startDate: Date; endDate: Date | null };
+type R = Reducer<S, S>;
 // dynamic imports,
 // to defer loading component until it's first rendered,
 // then subsequent renders will be cached.
@@ -66,13 +68,14 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
     return trans;
   }, [data.transactions]);
   const [display, setDisplay] = React.useState(true);
-  const [dates, dispatch] = React.useReducer(
+  const [dates, dispatch] = React.useReducer<R>(
     (state, newState) => {
       return { ...state, ...newState };
     },
     { startDate: new Date(), endDate: null }
   );
-  const [addTransaction, { isLoading }] = useAddTransactionMutation();
+  const [addTransaction, { isLoading: isLoadingTrxM }] =
+    useAddTransactionMutation();
   const selectedTransaction = transactionTypes[transactionIdx].txt.en;
   const selectedPeriod = periods[periodIdx].txt.en;
   const total = transactions[selectedTransaction].reduce(
@@ -108,13 +111,24 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
             transactionType={t.txt.en}
             displayOn={() => setDisplay(true)}
             mutation={(data: any) => {
-              // console.log({data})
               return addTransaction({
                 ...data,
                 userId: user.id,
               }).unwrap();
             }}
-            status={{ isLoading }}
+            btnJSX={({ isLoading }) => (
+              <button
+                form="add_trx"
+                className="flex justify-center items-center basis-1/3 h-10 capitalize  rounded-lg shadow-3D"
+                type="submit"
+              >
+                {!isLoading && !isLoadingTrxM ? (
+                  translation.buttons.add
+                ) : (
+                  <Spinner />
+                )}
+              </button>
+            )}
           />
         </Transition>
       </DataProvider>

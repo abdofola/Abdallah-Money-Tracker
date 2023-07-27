@@ -1,17 +1,8 @@
 import React from "react";
 import { NextPageWithLayout } from "./_app";
 import { Layout } from "@components/Layout";
-import { setCredentials, Login } from "@features/auth";
+import { Login } from "@features/auth";
 import { Icon } from "@components/icons";
-import { loginOrAddUser } from "@components/HOC";
-
-const UserLogin = loginOrAddUser({
-  api: "login",
-  handler({ payload, router, dispatch }) {
-    dispatch(setCredentials(payload));
-    router.push("/");
-  },
-});
 
 //COMPONENT
 const LoginPage: NextPageWithLayout = () => {

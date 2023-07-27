@@ -71,22 +71,23 @@ const DateSelection: React.FC<DateSelectionProps> = (props) => {
 
 function DateButton(
   { periodRef, customValue, onClick, className }: DateButtonProps,
-  _ref
+  _ref: any
 ) {
   return (
-    <>
-      <button
-        className={className}
-        type="button"
-        onClick={onClick}
-        ref={periodRef}
-      >
-        {customValue}
-      </button>
-    </>
+    <button
+      ref={periodRef}
+      type="button"
+      className={className}
+      name="date"
+      value={customValue}
+      onClick={onClick}
+    >
+      {customValue}
+    </button>
   );
 }
 
+//@ts-ignore
 DateButton = React.forwardRef(DateButton);
 
 export default DateSelection;

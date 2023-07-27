@@ -1,8 +1,10 @@
 export {
   useGetUserQuery,
-  useAddUserMutation,
   useUpdateUserMutation,
+  useSignupMutation,
   useLoginMutation,
+  useLogoutMutation,
+  useAdminMutation
 } from "./api";
 export { useGetCategoriesQuery, useAddCategoryMutation } from "./categories";
 export {

@@ -175,7 +175,7 @@ const Display: React.FC<DisplayProps> = ({
         />
         <Tab.Panels className="relative p-4">
           <DateSelection
-            className="flex mx-auto mb-8 text-sm font-medium border-b border-dashed border-gray-400"
+            className="block mx-auto mb-8 text-sm font-medium border-b border-dashed border-gray-400"
             periodRef={periodRef}
             period={selectedPeriod}
             startDate={start}

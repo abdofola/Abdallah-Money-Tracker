@@ -10,12 +10,8 @@ import { Spinner } from "@components/ui";
 import { User } from "@prisma/client";
 import { useAddCurrencyMutation, useUpdateUserMutation } from "@app/services";
 import { CURRENCIES } from "src/constants";
-import { useAppDispatch, useAppSelector } from "@app/hooks";
-import {
-  CurrencyState,
-  selectCurrentCurrency,
-  setCurrency,
-} from "@features/currency";
+import { useAppDispatch } from "@app/hooks";
+import { CurrencyState, setCurrency } from "@features/currency";
 import { useRouter } from "next/router";
 import { Stepper } from "@components/Stepper";
 import { ar, en } from "@locales";
@@ -58,7 +54,7 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
 
   const {
     user: { last_login },
-  } = await request(url, query, { email: user.email });
+  } = await request<{ user: User }>(url, query, { email: user.email });
 
   return {
     props: { user: { ...user, last_login } },
@@ -171,10 +167,6 @@ const Home: NextPageWithLayout<HomeProps> = ({ user }) => {
 
 //page layout
 Home.Layout = function getLayout(page) {
-  //TODO: 
-  //should not show any route,
-  // if the user is logged-in for the first time.
-  //until they completed all the required steps.
   const { user } = page.props;
   return (
     <Layout session={user} withHeader title="home" className="h-screen">

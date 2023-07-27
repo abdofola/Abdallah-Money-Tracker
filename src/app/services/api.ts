@@ -1,13 +1,27 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { gql } from "graphql-request";
 import { graphqlRequestBaseQuery } from "@rtk-query/graphql-request-base-query";
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { enviroment } from "@lib/enviroment";
+
+export type E = {
+  [k in "name" | "message" | "originalError"]: string;
+};
+
+const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
 
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: graphqlRequestBaseQuery({
-    url: enviroment[process.env.NODE_ENV] + "/api/graphql",
+  baseQuery: graphqlRequestBaseQuery<E>({
+    url,
+    customErrors: (args) => {
+      const [error] = args.response.errors!;
+      return {
+        name: args.name,
+        message: error.message,
+        originalError: error.extensions?.originalError.message,
+      };
+    },
   }),
   tagTypes: ["transactions", "categories", "user", "currency"],
   endpoints: (builder) => ({
@@ -46,18 +60,21 @@ export const api = createApi({
       }),
       providesTags: ["user"],
     }),
-    addUser: builder.mutation<{ addUser: User }, { email: string }>({
-      query: ({ email }) => ({
+    signup: builder.mutation<
+      { signup: User },
+      { email: string; role?: Role; name?: string }
+    >({
+      query: (args) => ({
         document: gql`
-          mutation Adduser($email: String!) {
-            addUser(email: $email) {
-              id
+          mutation ($email: String!, $name: String, $role: Role) {
+            signup(email: $email, name: $name, role: $role) {
+              name
               email
               role
             }
           }
         `,
-        variables: { email },
+        variables: args,
       }),
     }),
     updateUser: builder.mutation<
@@ -95,12 +112,38 @@ export const api = createApi({
       }),
       invalidatesTags: ["user"],
     }),
+    logout: builder.mutation<void, undefined>({
+      query: () => ({
+        document: gql`
+          mutation {
+            logout
+          }
+        `,
+      }),
+    }),
+    admin: builder.mutation<{ admin: User }, { email: string }>({
+      query: (args) => ({
+        document: gql`
+          mutation ($email: String!) {
+            admin(email: $email) {
+              id
+              last_login
+              name
+              role
+            }
+          }
+        `,
+        variables: args,
+      }),
+    }),
   }),
 });
 
 export const {
   useGetUserQuery,
-  useAddUserMutation,
   useUpdateUserMutation,
   useLoginMutation,
+  useSignupMutation,
+  useLogoutMutation,
+  useAdminMutation,
 } = api;

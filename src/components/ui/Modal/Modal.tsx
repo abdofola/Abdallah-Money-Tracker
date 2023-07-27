@@ -11,7 +11,8 @@ type ModalProps = {
   close: () => void;
   headerTxt: String;
   confirmationButton: React.ReactElement;
-  onConfirm?: (data: { [k: string]: any; categoryId?: string }) => void;
+  /** this function runs when submitting modal */
+  onConfirm?: React.FormEventHandler<HTMLFormElement>;
   className?: string;
   isMounted: boolean;
 } & { [k in "to" | "from"]?: string };

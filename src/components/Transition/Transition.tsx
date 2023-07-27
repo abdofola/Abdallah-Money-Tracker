@@ -9,9 +9,13 @@ type P = {
   as?: React.ElementType | (() => JSX.Element);
   className?: string;
   delay?: number;
-  [k:string]:any
+  [k: string]: any;
 };
 
+//TODO:
+// refactor this component
+// 1- alot of unnecessary `if` conditions.
+// 2- add `as` to be `React.Fragment`
 export default function Transition({
   children,
   isMounted,
@@ -19,7 +23,7 @@ export default function Transition({
   to,
   as = "div",
   className = "",
-  delay = 100,
+  delay,
   ...rest
 }: P) {
   const shouldRender = useDelayMountUnmount(isMounted, delay);
@@ -36,5 +40,9 @@ export default function Transition({
     return <React.Fragment>{children}</React.Fragment>;
   }
 
-  return <Element className={style} {...rest}>{children}</Element>;
+  return (
+    <Element className={style} {...rest}>
+      {children}
+    </Element>
+  );
 }

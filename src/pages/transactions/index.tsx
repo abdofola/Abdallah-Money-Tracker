@@ -35,6 +35,8 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
   return { props: { session: user } };
 });
 
+//TODO: 
+// add filter feat. to get the trxs asc or desc by date.
 // component
 const AccountStatement: NextPageWithLayout<P> = ({ session }) => {
   const { query, locale } = useRouter();
@@ -47,7 +49,7 @@ const AccountStatement: NextPageWithLayout<P> = ({ session }) => {
     short: "",
     long: "",
   });
-  const { data, isLoading } = useGetTransactionsQuery({
+  const { data, isLoading, isFetching } = useGetTransactionsQuery({
     categoryId: query.categoryId as string,
     currencyId: currency.id || crncLS.id,
     userId: session.id,
@@ -134,6 +136,7 @@ const AccountStatement: NextPageWithLayout<P> = ({ session }) => {
     );
   });
 
+//  console.log({isFetching})
   return (
     <div
       style={{
@@ -142,7 +145,7 @@ const AccountStatement: NextPageWithLayout<P> = ({ session }) => {
       }}
     >
       <Tab.Group
-        className=" w-[35rem] max-w-full mx-auto"
+        className=" w-[35rem] max-w-full mx-auto leading-loose"
         defaultTab={tabIdx < 0 ? 1 : tabIdx}
       >
         <Tab.List

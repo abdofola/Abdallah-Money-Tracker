@@ -3,7 +3,6 @@ import { Fragment } from "react";
 import { Combobox, Transition } from "@headlessui/react";
 import { CURRENCIES } from "src/constants";
 import { Icon } from "@components/icons";
-import { Spinner } from "@components/ui";
 import { useRouter } from "next/router";
 import { ar, en } from "@locales";
 import { CurrencyState } from "./currencySlice";

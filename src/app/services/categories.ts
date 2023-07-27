@@ -1,6 +1,6 @@
 import { api } from "./api";
 import { gql } from "graphql-request";
-import { Category } from "@features/transaction/types";
+import { Category } from "@prisma/client";
 
 type Response = {
   [k in "income" | "expenses"]: Category[];
@@ -36,33 +36,34 @@ const extendedApi = api.injectEndpoints({
         return categories;
       },
     }),
-    addCategory: builder.mutation<{ addCategory: Category }, Partial<Category>>(
-      {
-        query: (args) => ({
-          document: gql`
-            mutation (
-              $userId: String!
-              $type: Type!
-              $color: String!
-              $iconId: String!
-              $name: Json!
+    addCategory: builder.mutation<
+      { addCategory: Category },
+      Partial<Category> & { userId: string }
+    >({
+      query: (args) => ({
+        document: gql`
+          mutation (
+            $userId: String!
+            $type: Type!
+            $color: String!
+            $iconId: String!
+            $name: Json!
+          ) {
+            addCategory(
+              userId: $userId
+              type: $type
+              color: $color
+              iconId: $iconId
+              name: $name
             ) {
-              addCategory(
-                userId: $userId
-                type: $type
-                color: $color
-                iconId: $iconId
-                name: $name
-              ) {
-                id
-              }
+              id
             }
-          `,
-          variables: args,
-        }),
-        invalidatesTags: ["categories"],
-      }
-    ),
+          }
+        `,
+        variables: args,
+      }),
+      invalidatesTags: ["categories"],
+    }),
   }),
 });
 

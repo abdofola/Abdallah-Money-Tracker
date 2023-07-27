@@ -1,5 +1,10 @@
 import { builder } from "../builder";
 
+const Role = builder.enumType("Role", {
+  values: ["USER", "ADMIN"] as const,
+});
+
+// SCHEMA
 builder.prismaObject("User", {
   fields: (t) => ({
     id: t.exposeID("id"),
@@ -33,23 +38,6 @@ builder.queryField("user", (t) =>
 );
 
 // MUTATION
-// add new user
-builder.mutationField("addUser", (t) =>
-  t.prismaField({
-    type: "User",
-    args: { email: t.arg.string({ required: true }) },
-    // @ts-ignore
-    resolve: async (_query, _root, args, _ctx, _info) => {
-      //TODO: adding new user is permitted for super user admin,
-      // and super **_ONLY_**.
-      try {
-      } catch (error) {
-        throw error;
-      }
-    },
-  })
-);
-
 // updating user
 builder.mutationField("updateUser", (t) =>
   t.prismaField({
@@ -113,5 +101,76 @@ builder.mutationField("login", (t) =>
   })
 );
 
+// signup user
+builder.mutationField("signup", (t) =>
+  t.prismaField({
+    type: "User",
+    args: {
+      email: t.arg.string({ required: true }),
+      name: t.arg.string(),
+      role: t.arg({ type: Role }),
+    },
+    resolve: async (query, _root, args, ctx) => {
+      if (!args.email) {
+        throw new Error("you forgot your email!");
+      }
+      try {
+        const userAlreadyExist = await ctx.prisma.user.findUnique({
+          where: { email: args.email },
+        });
+
+        if (userAlreadyExist != null) {
+          throw new Error("user already exists!");
+        }
+
+        const user = await ctx.prisma.user.create({
+          data: { ...args, role: args.role ? args.role : "USER" },
+          ...query,
+        });
+
+        return user;
+      } catch (err) {
+        throw err;
+      }
+    },
+  })
+);
+
 // logout user
-// TODO
+builder.mutationField("logout", (t) =>
+  t.field({
+    type: "Boolean",
+    resolve: (_root, _args, ctx, _info) => {
+      if (!ctx.session.user) {
+        return false;
+      }
+      ctx.session.destroy();
+      return true;
+    },
+  })
+);
+
+// super admin login
+builder.mutationField("admin", (t) =>
+  t.prismaField({
+    type: "User",
+    args: { email: t.arg.string({ required: true }) },
+    resolve: async (_query, _root, args, ctx) => {
+      const user = await ctx.prisma.user.findUniqueOrThrow({
+        where: args,
+      });
+
+      // check if it's super user admin
+      if (user.email !== "fola@admin.com" && user.role !== "ADMIN") {
+        throw new Error(
+          "who are you, this page will be destroyed after 3 sec...!"
+        );
+      }
+
+      ctx.session.user = user;
+      await ctx.session.save();
+
+      return user;
+    },
+  })
+);

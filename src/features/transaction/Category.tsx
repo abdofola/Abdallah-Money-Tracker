@@ -12,12 +12,10 @@ function CategoryList({
   setSelectedId,
   renderCategory,
   open,
+  register,
 }: CategoriesProps) {
-  const [selected, setSelected] = React.useState<string | null>(null);
   const { locale } = useRouter();
   const translation = locale === "en" ? en : ar;
-  const isControlled =
-    selectedId !== undefined && setSelectedId instanceof Function;
 
   // console.log({selectedId, categories})
   return (
@@ -25,7 +23,7 @@ function CategoryList({
       {categories.map((cat) =>
         renderCategory({
           cat,
-          isSelected: (isControlled ? selectedId : selected) === cat.id,
+          isSelected:  selectedId  === cat.iconId,
           icon: (
             <Icon
               className="w-10 h-10"
@@ -33,11 +31,12 @@ function CategoryList({
             />
           ),
           onClick: () => {
-            isControlled ? setSelectedId(cat.id) : setSelected(cat.id);
+             setSelectedId(cat.iconId) ;
           },
+          register,
         })
       )}
-      <Transition isMounted={canAddCategory!}>
+      <Transition isMounted={Boolean(canAddCategory)}>
         <button type="button" className="grid items-end" onClick={open}>
           <span className=" mx-auto bg-gray-200 rounded-full">
             <Plus className="w-8 h-8" />
@@ -54,9 +53,10 @@ export default function Category({
   isSelected,
   icon,
   onClick,
+  register,
 }: CategoryProps) {
   const { locale } = useRouter();
-  const { color, id, name } = cat;
+  const { color, id, name , iconId} = cat;
 
   return (
     <li className="grid">
@@ -78,12 +78,16 @@ export default function Category({
           {icon}
         </span>
         <input
-          id={id}
           className="appearance-none"
-          type="radio"
-          name="categoryId"
-          value={id}
-          defaultChecked={isSelected}
+          {...register("categoryId", {
+            id,
+            type: "radio",
+            value: iconId,
+            defaultChecked: isSelected,
+            required: true,
+            isControlled: true,
+            errorMsg: "Please select one of these categories.",
+          })}
         />
         <span className=" w-full text-sm capitalize overflow-hidden text-ellipsis text-center">
           {name[locale as "en" | "ar"]}

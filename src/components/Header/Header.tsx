@@ -6,10 +6,14 @@ import { Home, Document, Icon, Plus } from "@components/icons";
 import { en, ar } from "@locales";
 import styles from "./Header.module.css";
 import { Menu } from "@components/Menu";
-import { Currency as TCurrency, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Listbox, Transition as HLTransition } from "@headlessui/react";
 import { Transition } from "@components/Transition";
-import { useAddCurrencyMutation, useGetCurrenciesQuery } from "@services";
+import {
+  useAddCurrencyMutation,
+  useGetCurrenciesQuery,
+  useLogoutMutation,
+} from "@services";
 import { useWindowResize } from "@lib/helpers/hooks";
 import { EmptyState, Modal, Spinner } from "@components/ui";
 import { Currency, CurrencyRadio } from "@features/currency";
@@ -21,7 +25,6 @@ type Lang = { short: "en" | "ar"; long: string };
 type LanguageSelectionProps = {
   languages: Lang[];
 };
-type CurrenciesRadioProps = { currencies: TCurrency[] };
 
 const pages = {
   home: { path: "/", Icon: <Home /> },
@@ -38,9 +41,10 @@ const isActive = (path: string, pathname: string) => pathname === path;
 // because when refreshing a page, the state gets destroyed
 export default function Header({ user }: P) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const windowWidth = useWindowResize();
   const [selected, setSelected] = React.useState<[string, string]>(["", ""]);
-  const { locale, pathname } = useRouter();
+  const { locale, pathname, replace, asPath } = useRouter();
+  const windowWidth = useWindowResize();
+  const [logout] = useLogoutMutation();
   const {
     data = { currencies: [] },
     isLoading: isLoadingQ,
@@ -48,7 +52,7 @@ export default function Header({ user }: P) {
   } = useGetCurrenciesQuery({
     userId: user.id,
   });
-  const [addCurrency, { isLoading: isLoadingM, error }] =
+  const [addCurrency, { isLoading: isLoadingM, error: errorCrncM }] =
     useAddCurrencyMutation();
   const translation = locale === "en" ? en : ar;
   const smScreenPx = 640;
@@ -78,13 +82,13 @@ export default function Header({ user }: P) {
     html.lang = locale!;
   }, [locale]);
 
-  // console.log({ user });
+  // console.log({ errorLogout });
   return (
     <nav
       id="nav"
       className={styles.nav.concat(
         " ",
-        `${!user.last_login && windowWidth < smScreenPx ? "p-0" : "p-4"}`
+        `${!user?.last_login && windowWidth < smScreenPx ? "p-0" : "p-4"}`
       )}
     >
       {/* <Transition isMounted={windowWidth >= smScreenPx}>
@@ -116,7 +120,7 @@ export default function Header({ user }: P) {
                         />
                       </span>
                       <span className="text-lg capitalize">
-                        {user.name ?? user.email}
+                        {user?.name ?? user?.email}
                       </span>
                     </header>
                     <main className="space-y-2">
@@ -193,9 +197,13 @@ export default function Header({ user }: P) {
                         </Modal>
                       </Transition>
                     </main>
-
                     <footer>
-                      <Link href={user ? "/api/logout" : "/login"}>
+                      <button
+                        onClick={async () => {
+                          await logout(undefined);
+                          replace(asPath);
+                        }}
+                      >
                         <a className="flex items-center gap-2 capitalize">
                           <span>
                             <Icon
@@ -203,13 +211,9 @@ export default function Header({ user }: P) {
                               className="w-7 h-7 stroke-gray-100"
                             />
                           </span>
-                          <span>
-                            {user
-                              ? translation.nav["logout"]
-                              : translation.nav["login"]}
-                          </span>
+                          <span>{translation.nav["logout"]}</span>
                         </a>
-                      </Link>
+                      </button>
                     </footer>
                   </Menu.Screen>
                 </Menu>
@@ -232,7 +236,7 @@ export default function Header({ user }: P) {
             <LanguageSelection languages={languages} />
           </Transition>
         </li>
-        {user.last_login && renderedListItems}
+        {user?.last_login && renderedListItems}
         <Transition isMounted={windowWidth >= smScreenPx}>
           <li>
             <LanguageSelection languages={languages} />

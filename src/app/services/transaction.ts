@@ -1,6 +1,6 @@
 import { api } from "./api";
 import { gql } from "graphql-request";
-import { Category, Transaction } from "@prisma/client";
+import { Transaction } from "@prisma/client";
 import { TransactionElement } from "@features/transaction/types";
 
 const extendedApi = api.injectEndpoints({

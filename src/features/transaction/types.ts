@@ -1,6 +1,8 @@
 import React from "react";
 import type { Url } from "url";
-import { Role, Transaction, User } from "@prisma/client";
+import { Transaction, User, Category as TCategory } from "@prisma/client";
+import ReactDatePicker from "react-datepicker";
+import { Register } from "@lib/helpers/hooks/useForm";
 
 type Transform<T> = {
   income: T[];
@@ -8,15 +10,13 @@ type Transform<T> = {
 };
 type PeriodType = "day" | "week" | "month" | "year" | "period";
 type TransactionType = "income" | "expenses";
-type Category = {
-  id: string;
-  type: TransactionType;
+type Category = Omit<TCategory, "createdAt" | "updatedAt" | "userId"> & {
   name: { ar: string; en: string };
-  color: string;
-  iconId: string;
-  [key: string]: any;
 };
 type TransactionElement = {
+  key: string;
+  color: string;
+  value: number;
   category: Category;
 } & Transaction;
 type FilterTransactions = ({
@@ -84,13 +84,14 @@ type TransactionListProps<T = TransactionElement> = {
 type RenderCategoryFnInput = {
   cat: Category;
   isSelected: boolean;
-  onClick: () => void;
   icon: React.ReactElement;
+  onClick: () => void;
+  register: Register;
 };
 type CategoriesProps = {
   categories: Category[];
   canAddCategory?: boolean;
-  selectedId?: string | null;
+  selectedId: string ;
   renderCategory: ({
     cat,
     isSelected,
@@ -98,20 +99,22 @@ type CategoriesProps = {
     icon,
   }: RenderCategoryFnInput) => JSX.Element;
   open?: () => void;
-  setSelectedId?: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedId: (id: string) => void;
+  register: Register;
 };
 type CategoryProps = RenderCategoryFnInput;
 
 type TransactionFormProps = {
   user: User;
-  displayOn: () => void;
   transactionType: "income" | "expenses";
-  mutation: (input: any) => Promise<typeof input>;
-  transactionComment?: string;
+  transactionComment?: string | null;
   transactionDate?: Date;
   categoryId?: string;
   transactionAmount?: string;
   canAddCategory?: boolean;
+  btnJSX: ({ isLoading }: { isLoading: boolean }) => JSX.Element;
+  displayOn: () => void;
+  mutation: (input: any) => Promise<any>;
 };
 export type {
   TransactionProps,

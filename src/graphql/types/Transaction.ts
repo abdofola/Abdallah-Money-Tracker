@@ -73,7 +73,7 @@ builder.mutationField("addTransaction", (t) =>
       comment: t.arg.string(),
     },
     resolve: async (query, _root, args, ctx, _info) => {
-      if (!ctx.user) {
+      if (!ctx.session.user) {
         throw new Error(`you need to signin to create your transaction!`);
       }
 

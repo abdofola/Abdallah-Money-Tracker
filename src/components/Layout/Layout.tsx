@@ -6,8 +6,10 @@ import { User } from "@prisma/client";
 
 type LayoutProps = {
   children: React.ReactNode;
+  /** title of the page */
   title: string;
-  session?: { user: User };
+  /** user session */
+  session?: User;
   withHeader?: boolean;
   [key: string]: any;
 };
