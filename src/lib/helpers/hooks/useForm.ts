@@ -104,7 +104,7 @@ export function useForm<T extends { [k: string]: any }>(initalState?: T) {
         const data = new FormData(form);
         const formJson = Object.fromEntries(data);
         const allFields = { ...formState.data, ...formJson };
-        console.log({ formJson });
+        //console.log({ formJson });
 
         // loop through the controlled elements
         for (let k in allFields) {
