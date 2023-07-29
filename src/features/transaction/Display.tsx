@@ -79,7 +79,7 @@ const Display: React.FC<DisplayProps> = ({
   const periodRef = React.useRef<HTMLButtonElement | null>(null);
   const { locale } = useRouter();
   const { data, startDate: start, endDate: end, dispatch } = useDate();
-  const mergedDuplicateData = React.useMemo(() => {
+  const mergedDuplicateCategories = React.useMemo(() => {
     const filteredData = filterTransactions({
       data,
       periodType: periods[periodIndex]["txt"].en,
@@ -127,13 +127,13 @@ const Display: React.FC<DisplayProps> = ({
     return merged;
   }, [start, end, periodIndex, data]);
   const selectedPeriod = periods[periodIndex]["txt"].en;
-  const total = mergedDuplicateData.reduce((acc, curr) => acc + curr.amount, 0);
+  const total = mergedDuplicateCategories.reduce((acc, curr) => acc + curr.amount, 0);
   const translation = locale === "en" ? en : ar;
   const Panels = periods.map((p) => {
     return (
       <Tab.Panel key={p.id}>
         <Donut
-          data={mergedDuplicateData}
+          data={mergedDuplicateCategories}
           donutInnerLabel={
             total > 0 ? (
               <DisplayAmount amount={total} />
@@ -211,7 +211,7 @@ const Display: React.FC<DisplayProps> = ({
           as={() => <Spinner variants={{ width: "md" }} />}
         />
         <Transition
-          isMounted={!isLoading && mergedDuplicateData.length === 0}
+          isMounted={!isLoading && mergedDuplicateCategories.length === 0}
           delay={0}
           as={() => (
             <EmptyState
@@ -237,7 +237,7 @@ const Display: React.FC<DisplayProps> = ({
           className={`hideScrollBar relative space-y-2 max-h-96 rounded-lg overflow-y-auto ${
             isFetching ? "opacity-20 animate-pulse" : ""
           }`}
-          data={mergedDuplicateData}
+          data={mergedDuplicateCategories}
           renderItem={(item) => {
             const percentage = calculatePercentage(item.amount, total);
             return (
