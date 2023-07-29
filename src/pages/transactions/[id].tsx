@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEvent } from "react";
 import { useRouter } from "next/router";
 import { NextPageWithLayout } from "../_app";
 import { withSessionSsr } from "@lib/session";
@@ -137,7 +137,8 @@ function DisplayDetails({ details, displayOff }: DetailProps) {
   const { amount, category, date, comment, transactionId } = details;
   const translation = locale === "en" ? en : ar;
   const btnText = locale === "en" ? "delete" : "حذف";
-  const onConfirm = () => {
+  const onConfirm = (e:FormEvent) => {
+    e.preventDefault();
     deleteTranaction({ id: transactionId })
       .unwrap()
       .then((_payload) => {
@@ -205,7 +206,7 @@ function DisplayDetails({ details, displayOff }: DetailProps) {
             onConfirm={onConfirm}
             confirmationButton={
               <button
-                type="button"
+                type="submit"
                 className="grid place-items-center basis-1/3 h-10 text-center text-white bg-red-600 shadow-3D rounded-lg"
               >
                 {isLoading ? (
