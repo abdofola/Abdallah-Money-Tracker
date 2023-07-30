@@ -85,17 +85,21 @@ builder.mutationField("login", (t) =>
           return user;
         }
 
-        const updatedUser = await ctx.prisma.user.update({
-          where: { email: user.email },
-          data: { last_login: args.last_login },
-        });
+        try {
+          const updatedUser = await ctx.prisma.user.update({
+            where: { email: user.email },
+            data: { last_login: args.last_login },
+          });
 
-        ctx.session.user = updatedUser;
-        await ctx.session.save();
+          ctx.session.user = updatedUser;
+          await ctx.session.save();
 
-        return updatedUser;
+          return updatedUser;
+        } catch (err) {
+          throw err;
+        }
       } catch (err) {
-        throw err;
+        throw new Error("No user found");
       }
     },
   })

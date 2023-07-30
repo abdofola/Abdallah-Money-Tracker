@@ -16,7 +16,7 @@ export const api = createApi({
     url,
     customErrors: (args) => {
       const [error] = args.response.errors!;
-      console.log({args})
+      console.log({error})
       return {
         name: args.name,
         message: error.message,

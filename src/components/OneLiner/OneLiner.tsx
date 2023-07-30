@@ -97,7 +97,7 @@ export default function OneLiner({
             href="/sprite.svg#exclamation-mark"
             className="w-6 h-6 fill-red-500"
           />
-          <span className="">{apiError}</span>
+          <span >{apiError}</span>
         </div>
       </Transition>
     </div>
