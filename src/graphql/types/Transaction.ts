@@ -4,7 +4,7 @@ import { builder } from "../builder";
 builder.prismaObject("Transaction", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    amount: t.exposeInt("amount"),
+    amount: t.exposeFloat("amount"),
     category: t.relation("category"),
     currency: t.relation("currency"),
     date: t.expose("date", { type: "Date" }),
@@ -65,7 +65,7 @@ builder.mutationField("addTransaction", (t) =>
   t.prismaField({
     type: "Transaction",
     args: {
-      amount: t.arg.int({ required: true }),
+      amount: t.arg.float({ required: true }),
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
       userId: t.arg.string({ required: true }),
@@ -77,10 +77,15 @@ builder.mutationField("addTransaction", (t) =>
         throw new Error(`you need to signin to create your transaction!`);
       }
 
-      return await ctx.prisma.transaction.create({
-        data: args,
-        ...query,
-      });
+      try {
+        return await ctx.prisma.transaction.create({
+          data: args,
+          ...query,
+        });
+      } catch (error) {
+        console.log({ error });
+        throw error;
+      }
     },
   })
 );

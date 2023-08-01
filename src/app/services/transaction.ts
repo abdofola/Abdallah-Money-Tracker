@@ -71,7 +71,7 @@ const extendedApi = api.injectEndpoints({
         query: (args) => ({
           document: gql`
             mutation AddTransaction(
-              $amount: Int!
+              $amount: Float!
               $date: String!
               $userId: String!
               $categoryId: String!

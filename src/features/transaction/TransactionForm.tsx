@@ -122,9 +122,11 @@ function TransactionForm({
   };
 
   if (categoryId && index < 0) {
-  // in case the user emptied the localStorage,
-  // add category again.
-    const category = otherCategories[transactionType].find(c => c.iconId === categoryId)
+    // in case the user emptied the localStorage,
+    // add category again.
+    const category = otherCategories[transactionType].find(
+      (c) => c.iconId === categoryId
+    );
     setCategoriesLS((prev) => ({
       ...prev,
       [transactionType]: [...prev[transactionType], category],
@@ -167,6 +169,7 @@ function TransactionForm({
               type: "number",
               min: 0,
               id: "amount",
+              step: "0.01",
               required: true,
               isControlled: true,
             })}
