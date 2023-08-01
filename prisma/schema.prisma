@@ -36,7 +36,7 @@ model Currency {
 model Transaction {
   id         String    @id @default(uuid())
   userId     String
-  amount     Int
+  amount     Float
   date       DateTime
   comment    String?
   category   Category  @relation(fields: [categoryId], references: [id])
