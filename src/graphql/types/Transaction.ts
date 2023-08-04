@@ -96,7 +96,7 @@ builder.mutationField("updateTransaction", (t) =>
     type: "Transaction",
     args: {
       id: t.arg.string({ required: true }),
-      amount: t.arg.int({ required: true }),
+      amount: t.arg.float({ required: true }),
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
       currencyId: t.arg.string({ required: true }),
