@@ -48,6 +48,7 @@ const query = gql`
 export const getServerSideProps = withSessionSsr(async ({ req }) => {
   const { user } = req.session;
   const url = enviroment[process.env.NODE_ENV] + "/api/graphql";
+
   try {
     const loggedInUser = await request<{ user: User }>(url, query, {
       email: user?.email,
@@ -62,6 +63,7 @@ export const getServerSideProps = withSessionSsr(async ({ req }) => {
   } catch (err) {
     return { redirect: { permanent: false, destination: "/login" } };
   }
+  
 });
 
 // component
