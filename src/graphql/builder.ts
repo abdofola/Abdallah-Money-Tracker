@@ -22,6 +22,16 @@ export const builder = new SchemaBuilder<TSchemaBuilder>({
   prisma: { client: prisma },
 });
 
+builder.scalarType("Decimal", {
+  serialize: (value) => value.toString(),
+  parseValue: (value) => {
+    if (typeof value !== "string") {
+      throw new TypeError("Decimal must be a string");
+    }
+
+    return new Decimal(value);
+  },
+});
 builder.addScalarType("Date", DateResolver, {});
 builder.addScalarType("Json", JSONResolver, {});
 builder.queryType({});
