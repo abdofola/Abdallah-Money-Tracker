@@ -17,7 +17,7 @@ model User {
   email        String        @unique
   role         Role          @default(USER)
   createdAt    DateTime      @default(now())
-  updatedAt    DateTime?      @updatedAt
+  updatedAt    DateTime?     @updatedAt
   last_login   DateTime?
   categories   Category[]
   currencies   Currency[]
@@ -35,7 +35,7 @@ model Currency {
 model Transaction {
   id         String   @id @default(uuid())
   userId     String
-  amount     Float
+  amount     Decimal
   date       DateTime
   comment    String?
   categoryId String

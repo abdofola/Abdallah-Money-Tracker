@@ -63,6 +63,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
         key: t.id,
         color: t.category.color,
         value: t.amount,
+        amount: Number(t.amount) as unknown as typeof t.amount
       });
     }
     return trans;
@@ -79,7 +80,7 @@ const Transaction: React.FC<TransactionProps> = ({ user }) => {
   const selectedTransaction = transactionTypes[transactionIdx].txt.en;
   const selectedPeriod = periods[periodIdx].txt.en;
   const total = transactions[selectedTransaction].reduce(
-    (acc, curr) => acc + curr.amount,
+    (acc, curr) => acc + Number(curr.amount),
     0
   );
   const { startDate, endDate } = dates;

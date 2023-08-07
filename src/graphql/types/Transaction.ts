@@ -4,7 +4,7 @@ import { builder } from "../builder";
 builder.prismaObject("Transaction", {
   fields: (t) => ({
     id: t.exposeID("id"),
-    amount: t.exposeFloat("amount"),
+    amount: t.expose("amount", { type: "Decimal" }),
     category: t.relation("category"),
     currency: t.relation("currency"),
     date: t.expose("date", { type: "Date" }),
@@ -65,7 +65,7 @@ builder.mutationField("addTransaction", (t) =>
   t.prismaField({
     type: "Transaction",
     args: {
-      amount: t.arg.float({ required: true }),
+      amount: t.arg({ type: "Decimal", required: true }),
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
       userId: t.arg.string({ required: true }),
@@ -96,7 +96,7 @@ builder.mutationField("updateTransaction", (t) =>
     type: "Transaction",
     args: {
       id: t.arg.string({ required: true }),
-      amount: t.arg.float({ required: true }),
+      amount: t.arg({ type: "Decimal", required: true }),
       date: t.arg.string({ required: true }),
       categoryId: t.arg.string({ required: true }),
       currencyId: t.arg.string({ required: true }),

@@ -16,7 +16,7 @@ type Category = Omit<TCategory, "createdAt" | "updatedAt" | "userId"> & {
 type TransactionElement = {
   key: string;
   color: string;
-  value: number;
+  value: Transaction['amount'];
   category: Category;
 } & Transaction;
 type FilterTransactions = ({
