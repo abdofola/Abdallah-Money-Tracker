@@ -109,7 +109,7 @@ function TransactionForm({
         categoryId: catId,
         currencyId: currency.id || crncLS.id,
         date: formState.data.date,
-        amount: Number(formState.data.amount),
+        amount: (formState.data.amount),
       });
       // console.log({ newTrx });
     } catch (err) {

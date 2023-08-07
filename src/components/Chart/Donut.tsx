@@ -1,15 +1,15 @@
 import React from "react";
-import { PieChart } from "react-minimal-pie-chart";
+import { PieChart, PieChartProps } from "react-minimal-pie-chart";
 import ReactTooltip from "react-tooltip";
 import { TransactionElement } from "@features/transaction/types";
 import { useRouter } from "next/router";
 
 type DonutProps = {
-  data: TransactionElement[];
+  data: PieChartProps["data"];
   donutInnerLabel: React.ReactNode;
 };
 
-const initialData = [{ key: 0, value: 0 }];
+const initialData = [{ key: 0, value: 0, color: "" }];
 const makeTooltipContent = (entry: any, local = "ar") => {
   return local === "en"
     ? `Sector ${entry.category.name[local]} has value ${entry.value}`
