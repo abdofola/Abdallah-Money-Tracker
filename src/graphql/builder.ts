@@ -22,6 +22,7 @@ export const builder = new SchemaBuilder<TSchemaBuilder>({
   prisma: { client: prisma },
 });
 
+// new scalar definition
 builder.scalarType("Decimal", {
   serialize: (value) => value.toString(),
   parseValue: (value) => {
